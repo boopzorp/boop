@@ -39,7 +39,7 @@ export function BookSearch({ onBookSelect }: BookSearchProps) {
       console.error('Book search failed:', error);
       toast({
         title: 'Book Search Error',
-        description: 'Could not fetch results. Please check your API key.',
+        description: 'Could not fetch book results from the API.',
         variant: 'destructive',
       });
     } finally {

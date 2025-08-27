@@ -2,64 +2,42 @@
 
 import type { GoogleBookVolume } from '@/types';
 
-// This is a temporary type, as we are adapting the component
-// The important part is that it has a structure that can be mapped to GoogleBookVolume
-interface AnnasArchiveBook {
-    title: string;
-    author: string;
-    cover_url: string;
+interface ItunesBook {
+  trackId: number;
+  trackName: string;
+  artistName: string;
+  artworkUrl100: string;
 }
 
-
 export const searchBooks = async (query: string): Promise<GoogleBookVolume[]> => {
-  const apiKey = process.env.RAPIDAPI_KEY;
-
-  if (!apiKey) {
-    throw new Error('Missing RapidAPI key. Please add it to your .env file.');
-  }
-
   if (query.length < 3) {
     return [];
   }
 
   try {
-    const response = await fetch(`https://annas-archive-api.p.rapidapi.com/search?q=${encodeURIComponent(query)}&limit=10`, {
-        method: 'GET',
-        headers: {
-            'X-RapidAPI-Key': apiKey,
-            'X-RapidAPI-Host': 'annas-archive-api.p.rapidapi.com'
-        }
-    });
+    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=ebook&limit=10`);
     
     if (!response.ok) {
-        let errorBody;
-        try {
-            errorBody = await response.json();
-        } catch (e) {
-            throw new Error(`RapidAPI error: ${response.statusText}`);
-        }
-        console.error('RapidAPI error:', errorBody);
-        throw new Error(`RapidAPI error: ${errorBody.message || response.statusText}`);
+        throw new Error(`iTunes API error: ${response.statusText}`);
     }
 
     const data = await response.json();
     
-    // The response is an array of objects
-    if (!data || data.length === 0) {
+    if (!data.results || data.results.length === 0) {
         return [];
     }
     
-    // Adapt the response to the GoogleBookVolume structure our component expects
-    return data.map((book: AnnasArchiveBook, index: number) => ({
-      id: `${book.title}-${index}`, // Create a pseudo-id
+    // Adapt the iTunes response to the GoogleBookVolume structure our component expects
+    return data.results.map((book: ItunesBook) => ({
+      id: book.trackId.toString(),
       volumeInfo: {
-        title: book.title,
-        authors: book.author ? book.author.split(', ') : ['Unknown Author'],
+        title: book.trackName,
+        authors: [book.artistName],
+        // Get a higher resolution image by replacing '100x100' with '600x600'
         imageLinks: {
-          thumbnail: book.cover_url,
-          smallThumbnail: book.cover_url,
+          thumbnail: book.artworkUrl100.replace('100x100', '600x600'),
+          smallThumbnail: book.artworkUrl100,
         },
-        // Add dummy data for other fields to match the type
         publisher: '',
         publishedDate: '',
         description: '',
@@ -67,7 +45,7 @@ export const searchBooks = async (query: string): Promise<GoogleBookVolume[]> =>
     }));
 
   } catch (error) {
-    console.error('Failed to fetch from RapidAPI:', error);
+    console.error('Failed to fetch from iTunes API:', error);
     if (error instanceof Error) {
         throw new Error(error.message);
     }
