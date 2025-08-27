@@ -1,4 +1,4 @@
-export type EntryType = "book" | "movie" | "music";
+export type EntryType = "book" | "movie" | "music" | "blog";
 
 export type Block = {
   id: string;

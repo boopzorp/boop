@@ -98,6 +98,7 @@ export default function EditorPage() {
                     <SelectItem value="book">Book</SelectItem>
                     <SelectItem value="movie">Movie</SelectItem>
                     <SelectItem value="music">Music</SelectItem>
+                    <SelectItem value="blog">Blog</SelectItem>
                 </SelectContent>
             </Select>
           </div>

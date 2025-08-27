@@ -86,6 +86,7 @@ export function MonthlyMeter({ entries }: MonthlyMeterProps) {
                 <SelectItem value="book">Books</SelectItem>
                 <SelectItem value="movie">Movies</SelectItem>
                 <SelectItem value="music">Music</SelectItem>
+                <SelectItem value="blog">Blogs</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -43,6 +43,14 @@ const typeStyles: Record<EntryType, {
         textVertical: true,
         spineBg: 'bg-primary',
         spineShadow: 'shadow-[inset_1px_0_2px_rgba(255,255,255,0.2),_inset_-1px_0_2px_rgba(0,0,0,0.5)]'
+    },
+    blog: {
+        spineWidth: 15,
+        itemHeight: 220,
+        coverWidth: 320,
+        textVertical: false,
+        spineBg: 'bg-primary',
+        spineShadow: 'shadow-[inset_1px_0_2px_rgba(255,255,255,0.2),_inset_-1px_0_2px_rgba(0,0,0,0.5)]'
     }
 }
 
@@ -116,7 +124,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             <span
               className={cn("font-headline text-sm font-bold", {
                 'text-primary-foreground': type === 'book',
-                'text-white/90': type === 'movie' || type === 'music'
+                'text-white/90': type === 'movie' || type === 'music' || type === 'blog'
               })}
               style={{
                 writingMode: styles.textVertical ? 'vertical-rl' : 'horizontal-tb',
