@@ -152,25 +152,25 @@ export default function EditEntryPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center bg-background/80 backdrop-blur-sm border-b">
+       <header className="fixed top-0 left-0 z-20 p-4 w-full flex flex-wrap justify-between items-center bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-2">
           <Link href="/admin" className="flex items-center gap-2">
             <Logo />
           </Link>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4 mt-2 md:mt-0 w-full md:w-auto justify-end">
           <Link href="/admin">
             <Button variant="ghost">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Shelf
+              <ArrowLeft className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Back to Shelf</span>
             </Button>
           </Link>
           <Button onClick={handleSave}>Save Changes</Button>
         </div>
       </header>
-      <main className="flex-1 flex flex-col items-center justify-center pt-24">
+      <main className="flex-1 flex flex-col items-center justify-center pt-32 md:pt-24">
         <div className="w-full max-w-4xl mx-auto p-8 space-y-6">
-          <div className="w-1/3">
+          <div className="w-full md:w-1/3">
             <Label htmlFor="tab">Tab</Label>
             <Select value={selectedTabId} onValueChange={(value: string) => setSelectedTabId(value)}>
                 <SelectTrigger id="tab">
