@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Entry, EntryType } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -19,7 +19,9 @@ export function MonthlyMeter({ entries }: MonthlyMeterProps) {
   
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // This code runs only on the client, after the component has mounted.
+    // This prevents the hydration mismatch between server and client.
     setCurrentDate(new Date());
   }, []);
 
@@ -60,7 +62,7 @@ export function MonthlyMeter({ entries }: MonthlyMeterProps) {
     <Card className="m-2">
       <CardHeader>
         <CardTitle>Monthly Meter</CardTitle>
-        <CardDescription>{monthName} Progress</CardDescription>
+        <CardDescription>{monthName || 'Loading...'}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex gap-2 items-center">
