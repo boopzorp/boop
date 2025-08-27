@@ -24,7 +24,8 @@ export default function Home() {
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [isDetailViewOpen, setDetailViewOpen] = useState(false);
   
-  const [activeTabId, setActiveTabId] = useState<string>('book');
+  const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   
   const [isNewTabDialogOpen, setIsNewTabDialogOpen] = useState(false);
   
@@ -36,6 +37,16 @@ export default function Home() {
       });
     }
   }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted && tabs.length > 0 && !activeTabId) {
+      setActiveTabId(tabs[0].id);
+    }
+  }, [isMounted, tabs, activeTabId]);
 
   const handleColorChange = (tabId: string, color: string) => {
     setTabColor(tabId, color);
@@ -59,7 +70,7 @@ export default function Home() {
     setIsNewTabDialogOpen(false);
   };
 
-  const activeTab = tabs.find(t => t.id === activeTabId) ?? tabs[0];
+  const activeTab = tabs.find(t => t.id === activeTabId);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -80,37 +91,41 @@ export default function Home() {
         </div>
         
         <div className="w-full max-w-7xl">
-            <TabSelector 
-                tabs={tabs} 
-                activeTabId={activeTabId} 
-                onTabChange={setActiveTabId}
-                colors={colors}
-                onColorChange={handleColorChange}
-                onAddTab={() => setIsNewTabDialogOpen(true)}
-                showCustomize={false}
-            />
-            <AnimatePresence mode="wait">
-              {activeTab && (
-                  <motion.div 
-                      key={activeTabId}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="p-4 rounded-b-lg rounded-tr-lg shadow-lg"
-                      style={{ 
-                          backgroundColor: `${colors[activeTabId] || '#cccccc'}33`, // 33 for ~20% opacity
-                          transition: 'background-color 0.5s ease-in-out',
-                      }} 
-                  >
-                      <InteractiveShelf 
-                          entries={entries.filter(e => e.tabId === activeTabId)} 
-                          type={activeTab.type} 
-                          onOpenDetail={handleOpenDetail} 
-                      />
-                  </motion.div>
-              )}
-            </AnimatePresence>
+            {isMounted && activeTabId && (
+              <>
+                <TabSelector 
+                    tabs={tabs} 
+                    activeTabId={activeTabId} 
+                    onTabChange={setActiveTabId}
+                    colors={colors}
+                    onColorChange={handleColorChange}
+                    onAddTab={() => setIsNewTabDialogOpen(true)}
+                    showCustomize={false}
+                />
+                <AnimatePresence mode="wait">
+                  {activeTab && (
+                      <motion.div 
+                          key={activeTabId}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="p-4 rounded-b-lg rounded-tr-lg shadow-lg"
+                          style={{ 
+                              backgroundColor: `${colors[activeTabId] || '#cccccc'}33`, // 33 for ~20% opacity
+                              transition: 'background-color 0.5s ease-in-out',
+                          }} 
+                      >
+                          <InteractiveShelf 
+                              entries={entries.filter(e => e.tabId === activeTabId)} 
+                              type={activeTab.type} 
+                              onOpenDetail={handleOpenDetail} 
+                          />
+                      </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
         </div>
       </main>
       <EntryDetail entry={selectedEntry} isOpen={isDetailViewOpen} onClose={handleCloseDetail} />
