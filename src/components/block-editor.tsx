@@ -120,7 +120,7 @@ const BlockItem = ({
       editorProps: {
         attributes: {
           class:
-            'prose prose-lg dark:prose-invert focus:outline-none max-w-none text-lg border-none focus-visible:ring-0 shadow-none p-0 bg-transparent w-full text-foreground',
+            'focus:outline-none max-w-none text-lg text-foreground border-none focus-visible:ring-0 shadow-none p-0 bg-transparent w-full',
         },
       },
     },
