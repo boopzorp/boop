@@ -3,15 +3,8 @@
 import { useState, useMemo } from 'react';
 import type { Entry } from '@/types';
 import { mockEntries } from '@/data/mock-data';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarInset,
-  SidebarProvider,
-} from '@/components/ui/sidebar';
 import { Shelf } from '@/components/shelf';
 import { PageHeader } from '@/components/page-header';
-import { MonthlyMeter } from '@/components/monthly-meter';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function Home() {
@@ -51,38 +44,29 @@ export default function Home() {
   };
 
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarContent>
-          <MonthlyMeter entries={entries} />
-        </SidebarContent>
-      </Sidebar>
-      <SidebarInset>
-        <div className="flex min-h-screen w-full flex-col">
-          <PageHeader
-            onSearchChange={(e) => setSearchQuery(e.target.value)}
-            onAddEntry={handleAddEntry}
-          />
-          <main className="flex-1 overflow-hidden p-4 sm:p-6 md:p-8">
-            <ScrollArea className="h-full">
-              <div className="space-y-12 pr-4">
-                <Shelf
-                  title="Books"
-                  items={books}
-                />
-                <Shelf
-                  title="Movies"
-                  items={movies}
-                />
-                <Shelf
-                  title="Music Collection"
-                  items={music}
-                />
-              </div>
-            </ScrollArea>
-          </main>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex min-h-screen w-full flex-col">
+      <PageHeader
+        onSearchChange={(e) => setSearchQuery(e.target.value)}
+        onAddEntry={handleAddEntry}
+      />
+      <main className="flex-1 overflow-hidden p-4 sm:p-6 md:p-8">
+        <ScrollArea className="h-full">
+          <div className="space-y-12 pr-4">
+            <Shelf
+              title="Books"
+              items={books}
+            />
+            <Shelf
+              title="Movies"
+              items={movies}
+            />
+            <Shelf
+              title="Music Collection"
+              items={music}
+            />
+          </div>
+        </ScrollArea>
+      </main>
+    </div>
   );
 }
