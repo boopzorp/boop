@@ -137,9 +137,9 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                     height={styles.itemHeight}
                     className="h-full w-auto object-cover -translate-x-1/2 left-1/2 relative filter blur-sm brightness-50"
                 />
-                 <div className="absolute inset-0 flex items-center p-1 overflow-hidden">
+                 <div className="absolute inset-0 flex items-center justify-center p-1 overflow-hidden">
                     <span
-                        className="font-headline text-sm font-bold text-white/90"
+                        className="font-headline text-xs font-bold text-white/90"
                         style={{
                             writingMode: 'vertical-rl',
                             textOrientation: 'mixed',
@@ -147,8 +147,6 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                             whiteSpace: 'nowrap',
                             textOverflow: 'ellipsis',
                             maxHeight: '100%',
-                            textAlign: 'center',
-                            width: '100%',
                             textShadow: '0 0 4px rgba(0,0,0,0.8)'
                         }}
                     >
