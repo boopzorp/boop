@@ -34,7 +34,7 @@ export function GoogleBooksSearch({ onBookSelect }: GoogleBooksSearchProps) {
     setIsLoading(true);
     try {
       const books = await searchBooks(query);
-      setResults(books);
+      setResults(books || []); // Ensure results is always an array
     } catch (error) {
       console.error('Google Books search failed:', error);
       toast({
