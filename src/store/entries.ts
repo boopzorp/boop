@@ -9,7 +9,9 @@ interface EntryState {
   tabs: Tab[];
   colors: Record<string, string>;
   addEntry: (entry: Omit<Entry, 'id' | 'addedAt'>) => void;
+  deleteEntry: (entryId: string) => void;
   addTab: (tab: { label: string; type: EntryType }) => string;
+  deleteTab: (tabId: string) => void;
   setTabColor: (tabId: string, color: string) => void;
 }
 
@@ -40,6 +42,11 @@ export const useEntryStore = create<EntryState>()(
         };
         set((state) => ({ entries: [newEntry, ...state.entries] }));
       },
+      deleteEntry: (entryId) => {
+        set((state) => ({
+          entries: state.entries.filter((entry) => entry.id !== entryId),
+        }));
+      },
       addTab: (tab) => {
         const newTabId = `${tab.label.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
         const newTab: Tab = {
@@ -54,6 +61,12 @@ export const useEntryStore = create<EntryState>()(
           },
         }));
         return newTabId;
+      },
+      deleteTab: (tabId) => {
+        set((state) => ({
+          tabs: state.tabs.filter((tab) => tab.id !== tabId),
+          entries: state.entries.filter((entry) => entry.tabId !== tabId),
+        }));
       },
       setTabColor: (tabId, color) => {
         set((state) => ({

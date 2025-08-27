@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils";
 import { ColorPalette } from "./color-palette";
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Settings2, Plus } from 'lucide-react';
+import { Settings2, Plus, Trash2 } from 'lucide-react';
+import { ConfirmationDialog } from './confirmation-dialog';
+import { useEntryStore } from '@/store/entries';
 
 type TabSelectorProps = {
   tabs: Tab[];
@@ -19,6 +21,20 @@ type TabSelectorProps = {
 
 export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorChange, onAddTab }: TabSelectorProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const { deleteTab } = useEntryStore();
+
+  const activeTab = tabs.find(t => t.id === activeTabId);
+
+  const handleDeleteTab = () => {
+    if (!activeTab) return;
+    deleteTab(activeTabId);
+    // After deleting, switch to the first available tab, or handle empty state
+    const newActiveTabId = tabs.length > 1 ? tabs.find(t => t.id !== activeTabId)!.id : '';
+    onTabChange(newActiveTabId);
+    setDeleteAlertOpen(false); // Close the confirmation dialog
+    setIsPopoverOpen(false); // Close the popover
+  };
   
   return (
     <div className="flex justify-between items-end px-1">
@@ -56,7 +72,7 @@ export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorCha
               Customize
             </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto">
+        <PopoverContent className="w-auto p-2 space-y-2">
            <ColorPalette
             selectedColor={colors[activeTabId]}
             onColorSelect={(color) => {
@@ -64,8 +80,26 @@ export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorCha
               setIsPopoverOpen(false);
             }}
           />
+           <Button 
+              variant="destructive" 
+              size="sm" 
+              className="w-full"
+              onClick={() => setDeleteAlertOpen(true)}
+              disabled={!activeTab}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Tab
+            </Button>
         </PopoverContent>
       </Popover>
+
+      <ConfirmationDialog
+        isOpen={isDeleteAlertOpen}
+        onOpenChange={setDeleteAlertOpen}
+        onConfirm={handleDeleteTab}
+        title={`Delete "${activeTab?.label}" Tab?`}
+        description="This action cannot be undone. This will permanently delete the tab and all entries within it."
+      />
     </div>
   );
 }
