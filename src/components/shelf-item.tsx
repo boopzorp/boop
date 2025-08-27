@@ -135,8 +135,26 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                     alt={`${title} spine`}
                     width={styles.coverWidth}
                     height={styles.itemHeight}
-                    className="h-full w-auto object-cover -translate-x-1/2 left-1/2 relative"
+                    className="h-full w-auto object-cover -translate-x-1/2 left-1/2 relative filter blur-sm brightness-50"
                 />
+                 <div className="absolute inset-0 flex items-center p-1 overflow-hidden">
+                    <span
+                        className="font-headline text-sm font-bold text-white/90"
+                        style={{
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed',
+                            transform: 'rotate(180deg)',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis',
+                            maxHeight: '100%',
+                            textAlign: 'center',
+                            width: '100%',
+                            textShadow: '0 0 4px rgba(0,0,0,0.8)'
+                        }}
+                    >
+                    {title}
+                    </span>
+                 </div>
             </motion.div>
         ) : (
           <motion.div
