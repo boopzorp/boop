@@ -75,7 +75,7 @@ export default function Home() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-4xl font-bold font-anton tracking-wide text-foreground mb-2"
+              className="text-3xl md:text-4xl font-bold font-anton tracking-wide text-foreground mb-2"
             >
                 Welcome to The Logs
             </motion.h2>

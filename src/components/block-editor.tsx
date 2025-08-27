@@ -78,7 +78,7 @@ export function BlockEditor({ title, onTitleChange, blocks, onBlocksChange }: Bl
        <AutoSizingTextarea
         id="title"
         placeholder="Entry Title..."
-        className="text-5xl font-bold border-none focus-visible:ring-0 shadow-none p-0 h-auto bg-transparent"
+        className="text-3xl md:text-5xl font-bold border-none focus-visible:ring-0 shadow-none p-0 h-auto bg-transparent"
         value={title}
         onChange={(e) => onTitleChange(e.target.value)}
       />
