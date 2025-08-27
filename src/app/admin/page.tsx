@@ -12,6 +12,7 @@ import { Logo } from '@/components/logo';
 import { NewTabDialog } from '@/components/new-tab-dialog';
 import type { Tab } from '@/types';
 import { useEntryStore } from '@/store/entries';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const initialTabs: Tab[] = [
   { id: 'book', label: 'Books', type: 'book' },
@@ -94,21 +95,28 @@ export default function AdminPage() {
                 onColorChange={handleColorChange}
                 onAddTab={() => setIsNewTabDialogOpen(true)}
             />
-            {activeTab && (
-                <div 
-                    className="p-4 rounded-b-lg rounded-tr-lg shadow-lg"
-                    style={{ 
-                        backgroundColor: `${colors[activeTabId] || '#cccccc'}33`, // 33 for ~20% opacity
-                        transition: 'background-color 0.5s ease-in-out',
-                    }} 
-                >
-                    <InteractiveShelf 
-                        entries={entries.filter(e => e.tabId === activeTabId)} 
-                        type={activeTab.type} 
-                        onOpenDetail={handleOpenDetail} 
-                    />
-                </div>
-            )}
+             <AnimatePresence mode="wait">
+                {activeTab && (
+                    <motion.div 
+                        key={activeTabId}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="p-4 rounded-b-lg rounded-tr-lg shadow-lg"
+                        style={{ 
+                            backgroundColor: `${colors[activeTabId] || '#cccccc'}33`, // 33 for ~20% opacity
+                            transition: 'background-color 0.5s ease-in-out',
+                        }} 
+                    >
+                        <InteractiveShelf 
+                            entries={entries.filter(e => e.tabId === activeTabId)} 
+                            type={activeTab.type} 
+                            onOpenDetail={handleOpenDetail} 
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
 
       </main>
