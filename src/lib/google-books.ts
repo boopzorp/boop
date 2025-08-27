@@ -14,10 +14,17 @@ export const searchBooks = async (query: string): Promise<GoogleBookVolume[]> =>
   }
 
   try {
+    // Correctly format the query parameter
     const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${apiKey}&maxResults=10`);
     
     if (!response.ok) {
-        const errorBody = await response.json();
+        let errorBody;
+        try {
+            errorBody = await response.json();
+        } catch (e) {
+            // If the response body is not JSON, use the status text
+            throw new Error(`Google Books API error: ${response.statusText}`);
+        }
         console.error('Google Books API error:', errorBody);
         throw new Error(`Google Books API error: ${errorBody.error.message || response.statusText}`);
     }
