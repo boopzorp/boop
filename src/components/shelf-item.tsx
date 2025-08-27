@@ -32,7 +32,7 @@ const typeStyles: Record<EntryType, {
         spineWidth: 24,
         itemHeight: 320,
         coverWidth: 200,
-        textVertical: false,
+        textVertical: true,
         spineBg: 'bg-primary',
         spineShadow: 'shadow-[inset_1px_0_3px_rgba(255,255,255,0.2),_inset_-1px_0_3px_rgba(0,0,0,0.4)]'
     },
@@ -125,8 +125,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 maxHeight: '100%',
-                padding: type === 'book' ? '10px 0' : (type === 'music' ? '10px 0' : '0 2px'),
-                textAlign: type === 'movie' ? 'left' : 'center',
+                padding: type === 'book' ? '10px 0' : (type === 'music' ? '10px 0' : '10px 0'),
+                textAlign: type === 'movie' ? 'center' : 'center',
                 width: '100%'
               }}
             >
