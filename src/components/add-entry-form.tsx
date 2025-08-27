@@ -32,7 +32,7 @@ const formSchema = z.object({
 })
 
 type AddEntryFormProps = {
-  onAddEntry: (entry: Omit<Entry, "id" | "addedAt">) => void;
+  onAddEntry: (entry: Omit<Entry, "id" | "addedAt" | "imageUrl">) => void;
   onFinished: () => void;
 };
 
@@ -72,7 +72,7 @@ export function AddEntryForm({ onAddEntry, onFinished }: AddEntryFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueeChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />

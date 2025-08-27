@@ -7,4 +7,5 @@ export type Entry = {
   creator: string; // Author, Director, Artist
   notes: string;
   addedAt: Date;
+  imageUrl: string;
 };

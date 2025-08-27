@@ -10,17 +10,6 @@ type ShelfItemProps = {
   onSelect: (entry: Entry) => void;
 };
 
-const bookColors = [
-  'bg-slate-700', 'bg-gray-700', 'bg-zinc-700', 'bg-neutral-700', 'bg-stone-700',
-  'bg-red-900', 'bg-orange-900', 'bg-amber-900', 'bg-yellow-900', 'bg-lime-900',
-  'bg-green-900', 'bg-emerald-900', 'bg-teal-900', 'bg-cyan-900', 'bg-sky-900',
-  'bg-blue-900', 'bg-indigo-900', 'bg-violet-900', 'bg-purple-900', 'bg-fuchsia-900',
-  'bg-pink-900', 'bg-rose-900',
-];
-
-const movieColor = 'bg-zinc-800';
-const musicColor = 'bg-stone-800';
-
 export function ShelfItem({ entry, onSelect }: ShelfItemProps) {
   const [style, setStyle] = useState<{
     backgroundColor?: string;
@@ -32,7 +21,6 @@ export function ShelfItem({ entry, onSelect }: ShelfItemProps) {
   useEffect(() => {
     // Math.random() needs to be in useEffect to avoid hydration mismatch
     const randomHeight = `${Math.floor(Math.random() * (100 - 85 + 1)) + 85}%`;
-    const randomBookColor = bookColors[Math.floor(Math.random() * bookColors.length)];
     
     switch (entry.type) {
       case 'book':
