@@ -96,8 +96,11 @@ export default function AdminPage() {
             />
             {activeTab && (
                 <div 
-                    className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
-                    style={{ backgroundColor: `${colors[activeTabId] || '#cccccc'}33` }} // 33 for ~20% opacity
+                    className="p-4 rounded-b-lg rounded-tr-lg shadow-lg"
+                    style={{ 
+                        backgroundColor: `${colors[activeTabId] || '#cccccc'}33`, // 33 for ~20% opacity
+                        transition: 'background-color 0.5s ease-in-out',
+                    }} 
                 >
                     <InteractiveShelf 
                         entries={entries.filter(e => e.tabId === activeTabId)} 

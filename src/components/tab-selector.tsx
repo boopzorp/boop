@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Tab } from "@/types";
 import { cn } from "@/lib/utils";
 import { ColorPalette } from "./color-palette";
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Settings2, Plus, Trash2 } from 'lucide-react';
+import { Settings2, Plus, Trash2, MoreHorizontal } from 'lucide-react';
 import { ConfirmationDialog } from './confirmation-dialog';
 import { useEntryStore } from '@/store/entries';
 
@@ -20,10 +20,20 @@ type TabSelectorProps = {
   showCustomize?: boolean;
 };
 
+const TABS_PER_PAGE = 4;
+
 export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorChange, onAddTab, showCustomize = true }: TabSelectorProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const { deleteTab } = useEntryStore();
+  const [currentPage, setCurrentPage] = useState(0);
+
+  useEffect(() => {
+    const activeIndex = tabs.findIndex(t => t.id === activeTabId);
+    if (activeIndex !== -1) {
+      setCurrentPage(Math.floor(activeIndex / TABS_PER_PAGE));
+    }
+  }, [activeTabId, tabs]);
 
   const activeTab = tabs.find(t => t.id === activeTabId);
 
@@ -36,11 +46,22 @@ export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorCha
     setDeleteAlertOpen(false); // Close the confirmation dialog
     setIsPopoverOpen(false); // Close the popover
   };
+
+  const totalPages = Math.ceil(tabs.length / TABS_PER_PAGE);
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+  };
+
+  const visibleTabs = tabs.slice(
+    currentPage * TABS_PER_PAGE,
+    (currentPage + 1) * TABS_PER_PAGE
+  );
   
   return (
     <div className="flex justify-between items-end px-1">
       <div className="flex -space-x-2">
-        {tabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
@@ -59,6 +80,14 @@ export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorCha
             <span className={cn("capitalize", { 'text-black/80 font-semibold': activeTabId === tab.id })}>{tab.label}</span>
           </button>
         ))}
+        {totalPages > 1 && (
+             <button
+             onClick={handleNextPage}
+             className="px-3 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ease-in-out relative bottom-[-1px] border border-b-0 text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary"
+             >
+                 <MoreHorizontal className="h-4 w-4" />
+             </button>
+        )}
         {showCustomize && (
             <button
             onClick={onAddTab}
