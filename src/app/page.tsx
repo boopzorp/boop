@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { TabSelector } from '@/components/tab-selector';
 import { Logo } from '@/components/logo';
-import { ColorPalette } from '@/components/color-palette';
 
 export default function Home() {
   const [entries] = useState<Entry[]>(mockEntries);
@@ -64,7 +63,10 @@ export default function Home() {
             colors={colors}
             onColorChange={handleColorChange}
           />
-          <div className="bg-secondary/30 p-4 rounded-b-lg rounded-tr-lg shadow-lg">
+          <div 
+            className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
+            style={{ backgroundColor: `${colors[activeType]}33` }} // 33 for ~20% opacity
+          >
             <InteractiveShelf 
               entries={entries.filter(e => e.type === activeType)} 
               type={activeType} 
