@@ -74,7 +74,7 @@ export default function Home() {
                 Welcome to The Logs
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                This is a place to stash all the good stuff—the books that blew your mind, the movies you can't stop thinking about, and the tunes that get you through the day.
+                This is my corner on the internet and has everything that makes me 'me'. 😬
             </p>
         </div>
         

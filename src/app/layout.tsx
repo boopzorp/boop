@@ -19,7 +19,7 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: 'The Logs',
-  description: 'A personal log for your books, movies, music, and more.',
+  description: 'A personal log for everything me.',
 };
 
 export default function RootLayout({
