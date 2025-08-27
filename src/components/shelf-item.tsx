@@ -29,14 +29,14 @@ export function ShelfItem({ entry, isSelected, onSelect }: ShelfItemProps) {
   
   useEffect(() => {
     // Math.random() needs to be in useEffect to avoid hydration mismatch
-    const randomHeight = `${Math.floor(Math.random() * (100 - 85 + 1)) + 85}%`;
+    const randomWidth = `${Math.floor(Math.random() * (40 - 28 + 1)) + 28}px`;
     
     switch (entry.type) {
       case 'book':
         setSpineStyle({
           backgroundColor: `hsl(var(--primary))`,
-          height: randomHeight,
-          width: `${Math.floor(Math.random() * (40 - 28 + 1)) + 28}px`,
+          height: '90%',
+          width: randomWidth,
           color: `hsl(var(--primary-foreground))`
         });
         break;
