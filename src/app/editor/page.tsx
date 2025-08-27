@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Wand2 } from 'lucide-react';
@@ -10,23 +10,34 @@ import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { GenerateOutputSchema } from '@/ai/flows/schemas';
 import { Logo } from '@/components/logo';
-import type { Block, EntryType } from '@/types';
+import type { Block, Tab } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 
+const initialTabs: Tab[] = [
+  { id: 'book', label: 'Books', type: 'book' },
+  { id: 'movie', label: 'Movies', type: 'movie' },
+  { id: 'music', label: 'Music', type: 'music' },
+];
+
 export default function EditorPage() {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<EntryType>('book');
+  const [selectedTabId, setSelectedTabId] = useState<string>('book');
   const [blocks, setBlocks] = useState<Block[]>([
     { id: '1', type: 'paragraph', content: '' },
   ]);
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  
+  // In a real app, tabs would be fetched from a database.
+  // For now, we'll use a hardcoded list that matches the admin page.
+  const [tabs, setTabs] = useState<Tab[]>(initialTabs);
 
   const handleSave = () => {
     // Here you would typically save the content to a database.
     // For now, we'll just log it to the console.
-    console.log({ title, category, blocks });
+    const selectedTab = tabs.find(t => t.id === selectedTabId);
+    console.log({ title, tabId: selectedTabId, type: selectedTab?.type, blocks });
     toast({
       title: 'Entry Saved!',
       description: 'Your journal entry has been saved to the console.',
@@ -89,16 +100,15 @@ export default function EditorPage() {
       <main className="flex-1 flex flex-col items-center justify-center pt-24">
         <div className="w-full max-w-4xl mx-auto p-8 space-y-6">
           <div className="w-1/3">
-            <Label htmlFor="category">Category</Label>
-            <Select value={category} onValueChange={(value: EntryType) => setCategory(value)}>
-                <SelectTrigger id="category">
-                    <SelectValue placeholder="Select a category" />
+            <Label htmlFor="tab">Tab</Label>
+            <Select value={selectedTabId} onValueChange={(value: string) => setSelectedTabId(value)}>
+                <SelectTrigger id="tab">
+                    <SelectValue placeholder="Select a tab" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="book">Book</SelectItem>
-                    <SelectItem value="movie">Movie</SelectItem>
-                    <SelectItem value="music">Music</SelectItem>
-                    <SelectItem value="blog">Blog</SelectItem>
+                    {tabs.map(tab => (
+                        <SelectItem key={tab.id} value={tab.id}>{tab.label}</SelectItem>
+                    ))}
                 </SelectContent>
             </Select>
           </div>

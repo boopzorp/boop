@@ -8,6 +8,7 @@ export type Block = {
 
 export type Entry = {
   id: string;
+  tabId: string; // <-- New field to link to a tab
   type: EntryType;
   title: string;
   creator: string; // Author, Director, Artist

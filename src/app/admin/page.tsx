@@ -71,8 +71,7 @@ export default function AdminPage() {
     setIsNewTabDialogOpen(false);
   };
 
-  const activeTab = tabs.find(t => t.id === activeTabId) ?? tabs[0];
-  const activeType = activeTab.type;
+  const activeTab = tabs.find(t => t.id === activeTabId);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -108,16 +107,18 @@ export default function AdminPage() {
                     onColorChange={handleColorChange}
                     onAddTab={() => setIsNewTabDialogOpen(true)}
                 />
-                <div 
-                    className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
-                    style={{ backgroundColor: `${colors[activeTabId] || '#cccccc'}33` }} // 33 for ~20% opacity
-                >
-                    <InteractiveShelf 
-                    entries={entries.filter(e => e.type === activeType)} 
-                    type={activeType} 
-                    onOpenDetail={handleOpenDetail} 
-                    />
-                </div>
+                {activeTab && (
+                    <div 
+                        className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
+                        style={{ backgroundColor: `${colors[activeTabId] || '#cccccc'}33` }} // 33 for ~20% opacity
+                    >
+                        <InteractiveShelf 
+                            entries={entries.filter(e => e.tabId === activeTabId)} 
+                            type={activeTab.type} 
+                            onOpenDetail={handleOpenDetail} 
+                        />
+                    </div>
+                )}
             </div>
             <div className="md:col-span-1">
                 <Card className="h-full">

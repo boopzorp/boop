@@ -9,6 +9,7 @@ export const mockEntries: Entry[] = [
   // Books
   {
     id: 'book-1',
+    tabId: 'book',
     type: 'book',
     title: 'Dune',
     creator: 'Frank Herbert',
@@ -18,6 +19,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'book-2',
+    tabId: 'book',
     type: 'book',
     title: 'Project Hail Mary',
     creator: 'Andy Weir',
@@ -27,6 +29,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'book-3',
+    tabId: 'book',
     type: 'book',
     title: 'The Hobbit',
     creator: 'J.R.R. Tolkien',
@@ -36,6 +39,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'book-4',
+    tabId: 'book',
     type: 'book',
     title: '1984',
     creator: 'George Orwell',
@@ -45,6 +49,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'book-5',
+    tabId: 'book',
     type: 'book',
     title: 'The Hitchhiker\'s Guide to the Galaxy',
     creator: 'Douglas Adams',
@@ -54,6 +59,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'book-6',
+    tabId: 'book',
     type: 'book',
     title: 'To Kill a Mockingbird',
     creator: 'Harper Lee',
@@ -63,6 +69,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'book-7',
+    tabId: 'book',
     type: 'book',
     title: 'The Catcher in the Rye',
     creator: 'J.D. Salinger',
@@ -72,6 +79,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'book-8',
+    tabId: 'book',
     type: 'book',
     title: 'Brave New World',
     creator: 'Aldous Huxley',
@@ -83,6 +91,7 @@ export const mockEntries: Entry[] = [
   // Movies
   {
     id: 'movie-1',
+    tabId: 'movie',
     type: 'movie',
     title: 'Blade Runner 2049',
     creator: 'Denis Villeneuve',
@@ -92,6 +101,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'movie-2',
+    tabId: 'movie',
     type: 'movie',
     title: 'Interstellar',
     creator: 'Christopher Nolan',
@@ -101,6 +111,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'movie-3',
+    tabId: 'movie',
     type: 'movie',
     title: 'The Godfather',
     creator: 'Francis Ford Coppola',
@@ -110,6 +121,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'movie-4',
+    tabId: 'movie',
     type: 'movie',
     title: 'Pulp Fiction',
     creator: 'Quentin Tarantino',
@@ -121,6 +133,7 @@ export const mockEntries: Entry[] = [
   // Music
   {
     id: 'music-1',
+    tabId: 'music',
     type: 'music',
     title: 'Discovery',
     creator: 'Daft Punk',
@@ -130,6 +143,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'music-2',
+    tabId: 'music',
     type: 'music',
     title: 'Random Access Memories',
     creator: 'Daft Punk',
@@ -139,6 +153,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'music-3',
+    tabId: 'music',
     type: 'music',
     title: 'Dark Side of the Moon',
     creator: 'Pink Floyd',
@@ -148,6 +163,7 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'music-4',
+    tabId: 'music',
     type: 'music',
     title: 'Thriller',
     creator: 'Michael Jackson',
