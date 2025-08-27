@@ -20,6 +20,17 @@ import { OMDBSearch } from '@/components/omdb-search';
 import { useEntryStore } from '@/store/entries';
 import { generateHTML } from '@tiptap/html';
 import { editorExtensions } from '@/components/block-editor/extensions';
+import type { JSONContent } from '@tiptap/react';
+
+const defaultBlockContent: JSONContent = {
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+      content: [],
+    },
+  ],
+};
 
 export default function EditEntryPage() {
   const router = useRouter();
@@ -51,10 +62,10 @@ export default function EditEntryPage() {
           setCreator(fetchedEntry.creator);
           setImageUrl(fetchedEntry.imageUrl);
           setSelectedTabId(fetchedEntry.tabId);
-          // Ensure content is always an array and notes are handled
-          const initialBlocks = fetchedEntry.content?.length
+          // Ensure content is always an array and notes are handled correctly
+          const initialBlocks = (fetchedEntry.content?.length)
             ? fetchedEntry.content
-            : [{ id: '1', type: 'paragraph', content: fetchedEntry.notes || '' }];
+            : [{ id: '1', type: 'paragraph', content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: fetchedEntry.notes || '' }] }] } }];
           setBlocks(initialBlocks);
         } else {
           toast({
@@ -81,11 +92,11 @@ export default function EditEntryPage() {
       return;
     }
 
-    const firstImage = blocks.find(b => b.type === 'image')?.content;
+    const firstImage = blocks.find(b => b.type === 'image')?.content as string | undefined;
     const plainTextNotes = blocks
       .filter(b => b.type === 'paragraph' && typeof b.content === 'object' && b.content !== null)
       .map(b => generateHTML(b.content as any, editorExtensions))
-      .join('\n\n');
+      .join('');
 
 
     const updatedEntry: Partial<Omit<Entry, 'id' | 'addedAt'>> = {
@@ -94,7 +105,7 @@ export default function EditEntryPage() {
       imageUrl: imageUrl || firstImage || `https://picsum.photos/400/600`,
       tabId: selectedTabId,
       type: selectedTab.type,
-      notes: plainTextNotes, // You might want a better plain text conversion here
+      notes: plainTextNotes, 
       content: blocks,
     };
 

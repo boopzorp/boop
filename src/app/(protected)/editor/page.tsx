@@ -69,11 +69,11 @@ export default function EditorPage() {
       return;
     }
 
-    const firstImage = blocks.find(b => b.type === 'image')?.content;
+    const firstImage = blocks.find(b => b.type === 'image')?.content as string | undefined;
     const plainTextNotes = blocks
       .filter(b => b.type === 'paragraph' && typeof b.content === 'object' && b.content !== null)
       .map(b => generateHTML(b.content as any, editorExtensions))
-      .join('\n\n');
+      .join('');
 
     const newEntry: Omit<Entry, 'id' | 'addedAt'> = {
       title,
