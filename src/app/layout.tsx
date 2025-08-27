@@ -7,8 +7,8 @@ import { cn } from '@/lib/utils';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: 'Shelf Life',
-  description: 'Your personal journal for music, movies, and books.',
+  title: 'My Brain Dump',
+  description: 'A place to dump your thoughts on music, movies, and books.',
 };
 
 export default function RootLayout({

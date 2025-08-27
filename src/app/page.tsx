@@ -37,7 +37,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Logo className="h-8 w-8" />
-          <h1 className="text-2xl font-bold tracking-tight">Shelf Life</h1>
+          <h1 className="text-2xl font-bold tracking-tight">My Brain Dump</h1>
         </div>
         <Link href="/editor">
           <Button>

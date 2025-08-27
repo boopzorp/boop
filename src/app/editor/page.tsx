@@ -66,7 +66,7 @@ export default function EditorPage() {
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Logo className="h-8 w-8" />
-            <h1 className="text-2xl font-bold tracking-tight">Shelf Life</h1>
+            <h1 className="text-2xl font-bold tracking-tight">My Brain Dump</h1>
           </Link>
         </div>
         <div className="flex items-center gap-4">
