@@ -12,9 +12,6 @@ import { TabSelector } from '@/components/tab-selector';
 import { Logo } from '@/components/logo';
 import { NewTabDialog } from '@/components/new-tab-dialog';
 import type { Tab } from '@/types';
-import { Sparkles } from 'lucide-react';
-import { MonthlyMeter } from '@/components/monthly-meter';
-import { Card, CardContent } from '@/components/ui/card';
 
 const initialTabs: Tab[] = [
   { id: 'book', label: 'Books', type: 'book' },
@@ -97,36 +94,27 @@ export default function AdminPage() {
             </p>
         </div>
         
-        <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="md:col-span-3">
-                <TabSelector 
-                    tabs={tabs} 
-                    activeTabId={activeTabId} 
-                    onTabChange={setActiveTabId}
-                    colors={colors}
-                    onColorChange={handleColorChange}
-                    onAddTab={() => setIsNewTabDialogOpen(true)}
-                />
-                {activeTab && (
-                    <div 
-                        className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
-                        style={{ backgroundColor: `${colors[activeTabId] || '#cccccc'}33` }} // 33 for ~20% opacity
-                    >
-                        <InteractiveShelf 
-                            entries={entries.filter(e => e.tabId === activeTabId)} 
-                            type={activeTab.type} 
-                            onOpenDetail={handleOpenDetail} 
-                        />
-                    </div>
-                )}
-            </div>
-            <div className="md:col-span-1">
-                <Card className="h-full">
-                    <CardContent className="p-0">
-                        <MonthlyMeter entries={entries} />
-                    </CardContent>
-                </Card>
-            </div>
+        <div className="w-full max-w-7xl">
+            <TabSelector 
+                tabs={tabs} 
+                activeTabId={activeTabId} 
+                onTabChange={setActiveTabId}
+                colors={colors}
+                onColorChange={handleColorChange}
+                onAddTab={() => setIsNewTabDialogOpen(true)}
+            />
+            {activeTab && (
+                <div 
+                    className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
+                    style={{ backgroundColor: `${colors[activeTabId] || '#cccccc'}33` }} // 33 for ~20% opacity
+                >
+                    <InteractiveShelf 
+                        entries={entries.filter(e => e.tabId === activeTabId)} 
+                        type={activeTab.type} 
+                        onOpenDetail={handleOpenDetail} 
+                    />
+                </div>
+            )}
         </div>
 
       </main>
