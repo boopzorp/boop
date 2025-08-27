@@ -44,6 +44,14 @@ const typeStyles: Record<EntryType, {
         spineBg: 'bg-primary',
         spineShadow: 'shadow-[inset_1px_0_3px_rgba(255,255,255,0.2),_inset_-1px_0_3px_rgba(0,0,0,0.4)]'
     },
+    tv: {
+        spineWidth: 24,
+        itemHeight: 320,
+        coverWidth: 200,
+        textVertical: true,
+        spineBg: 'bg-primary',
+        spineShadow: 'shadow-[inset_1px_0_3px_rgba(255,255,255,0.2),_inset_-1px_0_3px_rgba(0,0,0,0.4)]'
+    },
     anime: {
         spineWidth: 24,
         itemHeight: 320,

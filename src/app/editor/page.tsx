@@ -158,7 +158,7 @@ export default function EditorPage() {
             </Select>
           </div>
           
-          {activeTab?.type === 'movie' && (
+          {(activeTab?.type === 'movie' || activeTab?.type === 'tv') && (
             <div className="space-y-4">
               <Label>Search OMDB</Label>
               <OMDBSearch onMovieSelect={handleMovieSelect} />

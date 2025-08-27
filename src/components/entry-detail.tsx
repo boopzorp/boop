@@ -57,6 +57,7 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
             return { width: 400, height: 400 };
         case 'movie':
         case 'anime':
+        case 'tv':
             return { width: 400, height: 560 };
         case 'blog':
         case 'book':
