@@ -30,6 +30,10 @@ const ParagraphBlock = ({ block, editor }: { block: Block; editor: Editor | null
 
 
 export function BlockEditor({ title, onTitleChange, blocks, onBlocksChange }: BlockEditorProps) {
+  
+  const isValidJSONContent = (content: any): boolean => {
+    return content && typeof content === 'object' && content.type === 'doc';
+  };
 
   const editor = useEditor({
     extensions: editorExtensions,
@@ -116,9 +120,6 @@ export function BlockEditor({ title, onTitleChange, blocks, onBlocksChange }: Bl
     },
   });
 
-  const isValidJSONContent = (content: any): boolean => {
-    return content && typeof content === 'object' && content.type === 'doc';
-  };
 
   React.useEffect(() => {
     if (editor && !editor.isDestroyed && blocks) {
@@ -285,4 +286,3 @@ export function BlockEditor({ title, onTitleChange, blocks, onBlocksChange }: Bl
     </div>
   );
 }
-
