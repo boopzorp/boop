@@ -126,6 +126,14 @@ export default function EditEntryPage() {
       const newBlocks = [...blocks];
       newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: url });
       setBlocks(newBlocks);
+    } else {
+      // If there's already an image block, update the first one
+      const newBlocks = [...blocks];
+      const firstImageIndex = newBlocks.findIndex(b => b.type === 'image');
+      if (firstImageIndex !== -1) {
+        newBlocks[firstImageIndex] = { ...newBlocks[firstImageIndex], content: url };
+        setBlocks(newBlocks);
+      }
     }
   };
 
