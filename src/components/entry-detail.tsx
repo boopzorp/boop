@@ -3,8 +3,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, Pencil } from 'lucide-react';
 import type { Entry } from "@/types";
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
@@ -123,14 +124,20 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: Entr
                   data-ai-hint={`${entry.type} cover`}
                 />
                 {showDelete && (
-                  <Button 
-                      variant="destructive" 
-                      className="w-full mt-4"
-                      onClick={() => setDeleteAlertOpen(true)}
-                    >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                      Delete Entry
+                  <div className="flex items-center gap-2 mt-4">
+                    <Link href={`/editor/${entry.id}`} className="w-full">
+                      <Button variant="outline" className="w-full">
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit Entry
+                      </Button>
+                    </Link>
+                    <Button 
+                        variant="destructive" 
+                        onClick={() => setDeleteAlertOpen(true)}
+                      >
+                      <Trash2 className="h-4 w-4" />
                     </Button>
+                  </div>
                 )}
               </div>
 

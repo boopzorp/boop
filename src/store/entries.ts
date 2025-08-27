@@ -1,6 +1,6 @@
 
 import { create } from 'zustand';
-import type { Entry, Tab, EntryType } from '@/types';
+import type { Entry, Tab, EntryType, Block } from '@/types';
 import { 
   collection, 
   getDocs, 
@@ -8,6 +8,7 @@ import {
   deleteDoc, 
   doc, 
   updateDoc,
+  getDoc,
   Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
@@ -18,7 +19,9 @@ interface EntryState {
   colors: Record<string, string>;
   isLoaded: boolean;
   fetchAllData: () => Promise<void>;
+  fetchEntryById: (id: string) => Promise<Entry | null>;
   addEntry: (entry: Omit<Entry, 'id' | 'addedAt'>) => Promise<void>;
+  updateEntry: (id: string, entry: Partial<Omit<Entry, 'id' | 'addedAt'>>) => Promise<void>;
   deleteEntry: (entryId: string) => Promise<void>;
   addTab: (tab: { label: string; type: EntryType }) => Promise<string | undefined>;
   deleteTab: (tabId: string) => Promise<void>;
@@ -68,6 +71,28 @@ export const useEntryStore = create<EntryState>((set, get) => ({
     }
   },
 
+  fetchEntryById: async (id: string): Promise<Entry | null> => {
+    try {
+      const docRef = doc(db, 'entries', id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          ...data,
+          addedAt: (data.addedAt as Timestamp).toDate(),
+        } as Entry;
+      } else {
+        console.log("No such document!");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching document:", error);
+      return null;
+    }
+  },
+
   addEntry: async (entry) => {
     try {
       const newEntryData = {
@@ -83,6 +108,20 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       set((state) => ({ entries: [newEntry, ...state.entries] }));
     } catch (error) {
       console.error("Error adding entry: ", error);
+    }
+  },
+
+  updateEntry: async (id, entryUpdate) => {
+    try {
+      const entryRef = doc(db, 'entries', id);
+      await updateDoc(entryRef, entryUpdate);
+      set(state => ({
+        entries: state.entries.map(e => 
+          e.id === id ? { ...e, ...entryUpdate } : e
+        ),
+      }));
+    } catch (error) {
+      console.error("Error updating entry: ", error);
     }
   },
 
