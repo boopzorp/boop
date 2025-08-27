@@ -10,21 +10,33 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { TabSelector } from '@/components/tab-selector';
 import { Logo } from '@/components/logo';
+import { NewTabDialog } from '@/components/new-tab-dialog';
+import type { Tab } from '@/types';
+
+const initialTabs: Tab[] = [
+  { id: 'book', label: 'Books', type: 'book' },
+  { id: 'movie', label: 'Movies', type: 'movie' },
+  { id: 'music', label: 'Music', type: 'music' },
+];
 
 export default function Home() {
-  const [entries] = useState<Entry[]>(mockEntries);
+  const [entries, setEntries] = useState<Entry[]>(mockEntries);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [isDetailViewOpen, setDetailViewOpen] = useState(false);
-  const [activeType, setActiveType] = useState<EntryType>('book');
   
-  const [colors, setColors] = useState<Record<EntryType, string>>({
+  const [tabs, setTabs] = useState<Tab[]>(initialTabs);
+  const [activeTabId, setActiveTabId] = useState<string>('book');
+  
+  const [colors, setColors] = useState<Record<string, string>>({
     book: '#F7B2AD',
     movie: '#9AB7D3',
     music: '#A2D5C6',
   });
 
-  const handleColorChange = (type: EntryType, color: string) => {
-    setColors(prev => ({ ...prev, [type]: color }));
+  const [isNewTabDialogOpen, setIsNewTabDialogOpen] = useState(false);
+
+  const handleColorChange = (tabId: string, color: string) => {
+    setColors(prev => ({ ...prev, [tabId]: color }));
   };
 
   const handleOpenDetail = (entry: Entry) => {
@@ -38,8 +50,27 @@ export default function Home() {
       setSelectedEntry(null);
     }, 300);
   };
-  
-  const types: EntryType[] = ['book', 'movie', 'music'];
+
+  const handleAddTab = (newTab: {label: string, type: EntryType}) => {
+    const newTabId = `${newTab.label.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+    const tabToAdd: Tab = {
+      id: newTabId,
+      label: newTab.label,
+      type: newTab.type,
+    };
+    setTabs(prev => [...prev, tabToAdd]);
+    // Set a default color for the new tab
+    const paletteColors = ['#F7B2AD', '#9AB7D3', '#A2D5C6', '#F9E498', '#C6B7D3'];
+    setColors(prev => ({
+      ...prev,
+      [newTabId]: paletteColors[Math.floor(Math.random() * paletteColors.length)]
+    }));
+    setActiveTabId(newTabId); // Switch to the new tab
+    setIsNewTabDialogOpen(false);
+  };
+
+  const activeTab = tabs.find(t => t.id === activeTabId) ?? tabs[0];
+  const activeType = activeTab.type;
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -57,15 +88,16 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center pt-24 space-y-8">
         <div className="w-full max-w-7xl">
           <TabSelector 
-            types={types} 
-            activeType={activeType} 
-            onTypeChange={setActiveType}
+            tabs={tabs} 
+            activeTabId={activeTabId} 
+            onTabChange={setActiveTabId}
             colors={colors}
             onColorChange={handleColorChange}
+            onAddTab={() => setIsNewTabDialogOpen(true)}
           />
           <div 
             className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
-            style={{ backgroundColor: `${colors[activeType]}33` }} // 33 for ~20% opacity
+            style={{ backgroundColor: `${colors[activeTabId] || '#cccccc'}33` }} // 33 for ~20% opacity
           >
             <InteractiveShelf 
               entries={entries.filter(e => e.type === activeType)} 
@@ -76,6 +108,11 @@ export default function Home() {
         </div>
       </main>
       <EntryDetail entry={selectedEntry} isOpen={isDetailViewOpen} onClose={handleCloseDetail} />
+      <NewTabDialog 
+        isOpen={isNewTabDialogOpen}
+        onOpenChange={setIsNewTabDialogOpen}
+        onAddTab={handleAddTab}
+      />
     </div>
   );
 }

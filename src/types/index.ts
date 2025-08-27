@@ -9,3 +9,9 @@ export type Entry = {
   addedAt: Date;
   imageUrl: string;
 };
+
+export type Tab = {
+  id: string;
+  label: string;
+  type: EntryType;
+};

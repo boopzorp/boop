@@ -1,46 +1,53 @@
 "use client";
 
 import { useState } from 'react';
-import type { EntryType } from "@/types";
+import type { Tab } from "@/types";
 import { cn } from "@/lib/utils";
 import { ColorPalette } from "./color-palette";
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Settings2 } from 'lucide-react';
+import { Settings2, Plus } from 'lucide-react';
 
 type TabSelectorProps = {
-  types: EntryType[];
-  activeType: EntryType;
-  onTypeChange: (type: EntryType) => void;
-  colors: Record<EntryType, string>;
-  onColorChange: (type: EntryType, color: string) => void;
+  tabs: Tab[];
+  activeTabId: string;
+  onTabChange: (tabId: string) => void;
+  colors: Record<string, string>;
+  onColorChange: (tabId: string, color: string) => void;
+  onAddTab: () => void;
 };
 
-export function TabSelector({ types, activeType, onTypeChange, colors, onColorChange }: TabSelectorProps) {
+export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorChange, onAddTab }: TabSelectorProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   
   return (
     <div className="flex justify-between items-end px-1">
       <div className="flex -space-x-2">
-        {types.map((type) => (
+        {tabs.map((tab) => (
           <button
-            key={type}
-            onClick={() => onTypeChange(type)}
+            key={tab.id}
+            onClick={() => onTabChange(tab.id)}
             className={cn(
               "px-6 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ease-in-out relative bottom-[-1px] border border-b-0",
               {
-                "z-10": activeType === type,
-                "text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary": activeType !== type,
+                "z-10": activeTabId === tab.id,
+                "text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary": activeTabId !== tab.id,
               }
             )}
             style={{
-              backgroundColor: activeType === type ? colors[activeType] : undefined,
-              borderColor: activeType === type ? colors[activeType] : 'transparent',
+              backgroundColor: activeTabId === tab.id ? colors[tab.id] : undefined,
+              borderColor: activeTabId === tab.id ? colors[tab.id] : 'transparent',
             }}
           >
-            <span className={cn("capitalize", { 'text-black/80 font-semibold': activeType === type })}>{type}s</span>
+            <span className={cn("capitalize", { 'text-black/80 font-semibold': activeTabId === tab.id })}>{tab.label}</span>
           </button>
         ))}
+        <button
+          onClick={onAddTab}
+          className="px-3 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ease-in-out relative bottom-[-1px] border border-b-0 text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary"
+        >
+            <Plus className="h-4 w-4" />
+        </button>
       </div>
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
@@ -51,9 +58,9 @@ export function TabSelector({ types, activeType, onTypeChange, colors, onColorCh
         </PopoverTrigger>
         <PopoverContent className="w-auto">
            <ColorPalette
-            selectedColor={colors[activeType]}
+            selectedColor={colors[activeTabId]}
             onColorSelect={(color) => {
-              onColorChange(activeType, color);
+              onColorChange(activeTabId, color);
               setIsPopoverOpen(false);
             }}
           />
