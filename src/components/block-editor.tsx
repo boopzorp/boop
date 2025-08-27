@@ -8,11 +8,11 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { cn } from '@/lib/utils';
 import type { Block } from '@/types';
-import { useEditor, EditorContent, BubbleMenu } from '@tiap-tap/react';
-import type { Editor } from '@tiap-tap/react';
+import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
+import type { Editor } from '@tiptap/react';
 import { editorExtensions } from './block-editor/extensions';
 import { Reorder, useDragControls } from 'framer-motion';
-import type { JSONContent } from '@tiap-tap/react';
+import type { JSONContent } from '@tiptap/react';
 
 type BlockEditorProps = {
   title: string;
