@@ -8,13 +8,14 @@ import { ArrowLeft } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
-import type { Block, Tab, SpotifyTrack, Entry, GoogleBookVolume, JikanAnime, JikanManga } from '@/types';
+import type { Block, Tab, SpotifyTrack, Entry, GoogleBookVolume, JikanAnime, JikanManga, OMDBSearchResult } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { SpotifySearch } from '@/components/spotify-search';
 import { GoogleBooksSearch } from '@/components/google-books-search';
 import { JikanSearch } from '@/components/jikan-search';
 import { MangaSearch } from '@/components/manga-search';
+import { OMDBSearch } from '@/components/omdb-search';
 import { useEntryStore } from '@/store/entries';
 
 export default function EditorPage() {
@@ -113,6 +114,14 @@ export default function EditorPage() {
     }
   };
 
+  const handleMovieSelect = (movie: OMDBSearchResult) => {
+    setTitle(movie.Title);
+    setCreator(movie.Year); // Basic search doesn't provide director, user can edit
+    if (movie.Poster && movie.Poster !== 'N/A') {
+      setEntryImage(movie.Poster);
+    }
+  };
+
   const activeTab = tabs.find(t => t.id === selectedTabId);
 
   return (
@@ -148,6 +157,13 @@ export default function EditorPage() {
                 </SelectContent>
             </Select>
           </div>
+          
+          {activeTab?.type === 'movie' && (
+            <div className="space-y-4">
+              <Label>Search OMDB</Label>
+              <OMDBSearch onMovieSelect={handleMovieSelect} />
+            </div>
+          )}
 
           {activeTab?.type === 'music' && (
             <div className="space-y-4">

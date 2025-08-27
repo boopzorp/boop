@@ -103,3 +103,12 @@ export interface JikanManga {
     };
     authors: JikanAuthor[];
 }
+
+// OMDB API Types
+export interface OMDBSearchResult {
+  Title: string;
+  Year: string;
+  imdbID: string;
+  Type: string;
+  Poster: string;
+}
