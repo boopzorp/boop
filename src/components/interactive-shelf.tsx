@@ -51,7 +51,10 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
   if (type === 'music') {
     return (
       <div className="w-full flex flex-col items-center justify-center">
-        <div className="relative w-full h-[400px] flex items-center justify-center">
+        <div 
+          className="relative w-full h-[400px] flex items-center justify-center"
+          style={{ perspective: '1000px' }}
+        >
           <div
             ref={scrollContainerRef}
             className="w-full h-full overflow-x-auto overflow-y-hidden flex items-end justify-start px-12"
@@ -64,12 +67,18 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
               className="flex items-end gap-4"
               style={{ height: '350px' }}
             >
-              {filteredEntries.map((item) => (
-                <div
+              {filteredEntries.map((item, index) => (
+                <motion.div
                   key={item.id}
                    onClick={(e) => {
                     e.stopPropagation();
                     onOpenDetail(item);
+                  }}
+                  initial={{ rotateY: 0, y: 0, scale: 1 }}
+                  whileHover={{ y: -15, scale: 1.05, rotateY: 0 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  style={{
+                    transform: `rotateZ(${(index % 2 === 0 ? 1 : -1) * (2 + (item.id.charCodeAt(5) % 3))}deg)`,
                   }}
                 >
                   <ShelfItem
@@ -77,7 +86,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
                     isSelected={false} // For music, isSelected is handled by onOpenDetail
                     onOpenDetail={onOpenDetail}
                   />
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
