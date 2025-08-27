@@ -12,7 +12,7 @@ import type { Block, Tab, SpotifyTrack, Entry, GoogleBookVolume, JikanAnime, Jik
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { SpotifySearch } from '@/components/spotify-search';
-import { GoogleBooksSearch } from '@/components/google-books-search';
+import { BookSearch } from '@/components/book-search';
 import { JikanSearch } from '@/components/jikan-search';
 import { MangaSearch } from '@/components/manga-search';
 import { OMDBSearch } from '@/components/omdb-search';
@@ -174,8 +174,8 @@ export default function EditorPage() {
 
           {activeTab?.type === 'book' && (
             <div className="space-y-4">
-              <Label>Search Google Books</Label>
-              <GoogleBooksSearch onBookSelect={handleBookSelect} />
+              <Label>Search Books</Label>
+              <BookSearch onBookSelect={handleBookSelect} />
             </div>
           )}
 

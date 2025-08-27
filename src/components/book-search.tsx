@@ -3,16 +3,16 @@
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import { searchBooks } from '@/lib/google-books';
+import { searchBooks } from '@/lib/book-search';
 import type { GoogleBookVolume } from '@/types';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
-type GoogleBooksSearchProps = {
+type BookSearchProps = {
   onBookSelect: (book: GoogleBookVolume) => void;
 };
 
-export function GoogleBooksSearch({ onBookSelect }: GoogleBooksSearchProps) {
+export function BookSearch({ onBookSelect }: BookSearchProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<GoogleBookVolume[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,9 +36,9 @@ export function GoogleBooksSearch({ onBookSelect }: GoogleBooksSearchProps) {
       const books = await searchBooks(query);
       setResults(books || []); // Ensure results is always an array
     } catch (error) {
-      console.error('Google Books search failed:', error);
+      console.error('Book search failed:', error);
       toast({
-        title: 'Google Books Search Error',
+        title: 'Book Search Error',
         description: 'Could not fetch results. Please check your API key.',
         variant: 'destructive',
       });
