@@ -48,13 +48,15 @@ export default function EditorPage() {
       return;
     }
 
+    const firstImage = blocks.find(b => b.type === 'image')?.content;
+
     const newEntry: Omit<Entry, 'id' | 'addedAt'> = {
       title,
       creator,
-      imageUrl,
+      imageUrl: imageUrl || firstImage || `https://picsum.photos/400/600`,
       tabId: selectedTabId,
       type: selectedTab.type,
-      notes: blocks.map(b => b.content).join('\n\n'), // Simple conversion for now
+      notes: blocks.filter(b => b.type === 'paragraph').map(b => b.content).join('\n\n'),
       content: blocks,
     };
 

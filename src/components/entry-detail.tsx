@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import type { Entry } from "@/types";
+import type { Entry, Block } from "@/types";
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 
@@ -13,6 +13,41 @@ type EntryDetailProps = {
   onClose: () => void;
 };
 
+function renderContent(entry: Entry) {
+  if (entry.content && entry.content.length > 0) {
+    return (
+      <div className="space-y-4">
+        {entry.content.map(block => {
+          if (block.type === 'image' && block.content) {
+            // Note: The main image is already displayed on the left,
+            // so we might not need to render the first image block here.
+            // This is just an example of how to render all content blocks.
+            // We'll skip the first image to avoid duplication.
+            if (block.content === entry.imageUrl) return null;
+            return (
+              <div key={block.id} className="my-4">
+                <Image
+                  src={block.content}
+                  alt="Entry content image"
+                  width={600}
+                  height={400}
+                  className="rounded-md object-cover"
+                />
+              </div>
+            );
+          }
+          if (block.type === 'paragraph') {
+            return <p key={block.id} className="whitespace-pre-wrap">{block.content}</p>;
+          }
+          return null;
+        })}
+      </div>
+    );
+  }
+  // Fallback to notes if content is not available
+  return <p className='whitespace-pre-wrap'>{entry.notes}</p>;
+}
+
 export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
   
   const getImageDimensions = (entryType: string | undefined) => {
@@ -21,6 +56,7 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
             return { width: 400, height: 400 };
         case 'movie':
             return { width: 400, height: 560 };
+        case 'blog':
         case 'book':
         default:
             return { width: 400, height: 600 };
@@ -72,7 +108,7 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
               <div className="prose prose-lg pr-4 prose-invert">
                 <h1 className="font-bold text-4xl mb-2 text-foreground">{entry.title}</h1>
                 <h2 className="text-xl text-muted-foreground font-normal mb-6">{entry.creator}</h2>
-                <p className='whitespace-pre-wrap'>{entry.notes}</p>
+                {renderContent(entry)}
               </div>
             </ScrollArea>
           </motion.div>
