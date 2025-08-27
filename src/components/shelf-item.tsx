@@ -14,8 +14,8 @@ type ShelfItemProps = {
 };
 
 const imageDimensions = {
-  book: { width: 150, height: 150, hint: 'book cover' },
-  movie: { width: 150, height: 150, hint: 'movie poster' },
+  book: { width: 150, height: 225, hint: 'book cover' },
+  movie: { width: 150, height: 225, hint: 'movie poster' },
   music: { width: 150, height: 150, hint: 'album art' },
 };
 
