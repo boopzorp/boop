@@ -20,7 +20,7 @@ const initialTabs: Tab[] = [
   { id: 'music', label: 'Music', type: 'music' },
 ];
 
-export default function Home() {
+export default function AdminPage() {
   const [entries, setEntries] = useState<Entry[]>(mockEntries);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [isDetailViewOpen, setDetailViewOpen] = useState(false);
@@ -79,6 +79,12 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <Logo />
         </div>
+        <Link href="/editor">
+          <Button>
+            <PlusCircle />
+            New Entry
+          </Button>
+        </Link>
       </header>
       <main className="flex-1 flex flex-col items-center pt-24 space-y-8 px-4">
 
