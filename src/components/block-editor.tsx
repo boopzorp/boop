@@ -39,25 +39,25 @@ const ParagraphBlock = ({
       <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
         <div className="flex items-center gap-1 bg-background p-1 rounded-md shadow-lg border">
           <Button
-            variant={editor.isActive('bold') ? 'secondary' : 'ghost'}
+            variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleBold().run()}
           >
-            <Bold className="h-4 w-4" />
+            <Bold className={cn("h-4 w-4", { 'text-primary': editor.isActive('bold') })} />
           </Button>
           <Button
-            variant={editor.isActive('italic') ? 'secondary' : 'ghost'}
+            variant="ghost"
             size="sm"
             onClick={() => editor.chain().focus().toggleItalic().run()}
           >
-            <Italic className="h-4 w-4" />
+            <Italic className={cn("h-4 w-4", { 'text-primary': editor.isActive('italic') })} />
           </Button>
           <Button
-            variant={editor.isActive('link') ? 'secondary' : 'ghost'}
+            variant="ghost"
             size="sm"
             onClick={() => setLink(editor)}
           >
-            <LinkIcon className="h-4 w-4" />
+            <LinkIcon className={cn("h-4 w-4", { 'text-primary': editor.isActive('link') })} />
           </Button>
         </div>
       </BubbleMenu>
