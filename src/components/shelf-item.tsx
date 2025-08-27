@@ -8,12 +8,13 @@ type ShelfItemProps = {
   entry: Entry;
   isSelected: boolean;
   onSelect: () => void;
+  onOpenDetail: (entry: Entry) => void;
 };
 
-export function ShelfItem({ entry, isSelected, onSelect }: ShelfItemProps) {
+export function ShelfItem({ entry, isSelected, onSelect, onOpenDetail }: ShelfItemProps) {
   const { title } = entry;
-  const spineColor = `hsl(var(--primary))`;
-  const textColor = `hsl(var(--primary-foreground))`;
+  const spineColor = `hsl(var(--background))`;
+  const textColor = `hsl(var(--primary))`;
 
   const itemVariants = {
     initial: {
@@ -24,6 +25,11 @@ export function ShelfItem({ entry, isSelected, onSelect }: ShelfItemProps) {
       y: -15,
       transition: { type: "spring", stiffness: 300, damping: 20 },
     },
+  };
+
+  const handleCoverClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // prevent re-selecting
+    onOpenDetail(entry);
   };
 
   return (
@@ -45,6 +51,7 @@ export function ShelfItem({ entry, isSelected, onSelect }: ShelfItemProps) {
             animate={{ opacity: 1, transition: { delay: 0.15 } }}
             exit={{ opacity: 0 }}
             className="absolute inset-0"
+            onClick={handleCoverClick}
           >
             <Image
               src={entry.imageUrl}
@@ -61,7 +68,7 @@ export function ShelfItem({ entry, isSelected, onSelect }: ShelfItemProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 0.15 } }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 flex items-center justify-center p-1 shadow-md"
+            className="absolute inset-0 flex items-center justify-center p-1 shadow-md border-r border-black/10"
             style={{ backgroundColor: spineColor }}
           >
             <span
