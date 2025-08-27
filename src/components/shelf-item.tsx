@@ -125,8 +125,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 maxHeight: '100%',
-                padding: type === 'book' ? '10px 0' : (type === 'music' ? '10px 0' : '10px 0'),
-                textAlign: type === 'movie' ? 'center' : 'center',
+                padding: type === 'book' ? '10px 0' : (type === 'movie' ? '10px 0' : '10px 0'),
+                textAlign: type === 'music' ? 'center' : (type === 'movie' ? 'center' : 'center'),
                 width: '100%'
               }}
             >
