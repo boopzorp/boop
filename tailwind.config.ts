@@ -13,6 +13,8 @@ export default {
         sans: ['var(--font-sans)', 'sans-serif'],
         headline: ['var(--font-sans)', 'sans-serif'],
         serif: ['serif'],
+        anton: ['var(--font-anton)'],
+        caveat: ['var(--font-caveat)'],
       },
       colors: {
         background: 'hsl(var(--background))',
