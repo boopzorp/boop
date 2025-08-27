@@ -2,17 +2,15 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { cn } from "@/lib/utils";
 import type { Entry } from "@/types";
 
 type ShelfItemProps = {
   entry: Entry;
   isSelected: boolean;
   onSelect: () => void;
-  style?: React.CSSProperties;
 };
 
-export function ShelfItem({ entry, isSelected, onSelect, style }: ShelfItemProps) {
+export function ShelfItem({ entry, isSelected, onSelect }: ShelfItemProps) {
   const { title } = entry;
   const spineColor = `hsl(var(--primary))`;
   const textColor = `hsl(var(--primary-foreground))`;
@@ -32,51 +30,57 @@ export function ShelfItem({ entry, isSelected, onSelect, style }: ShelfItemProps
     <motion.div
       onClick={onSelect}
       className="group relative flex-shrink-0 cursor-pointer"
-      style={{...style, width: '35px', height: '300px'}}
+      style={{ width: isSelected ? '240px' : '35px', height: '300px' }}
       variants={itemVariants}
       initial="initial"
       whileHover="hover"
       animate={isSelected ? "hover" : "initial"}
+      transition={{ type: 'spring', stiffness: 400, damping: 40 }}
     >
-      {/* Spine */}
-      <div
-        className="absolute inset-0 flex items-center justify-center p-1 shadow-md"
-        style={{ backgroundColor: spineColor }}
-      >
-        <span
-          className="font-headline text-sm font-bold text-center"
-          style={{
-            color: textColor,
-            writingMode: 'vertical-rl',
-            textOrientation: 'mixed',
-            transform: 'rotate(180deg)',
-          }}
-        >
-          {title}
-        </span>
-      </div>
-
-      {/* Cover on Hover/Select */}
-      <motion.div
-        className="pointer-events-none absolute bottom-full left-1/2 mb-4"
-        initial={{ opacity: 0, scale: 0.8, y: 10, x: "-50%" }}
-        animate={{
-          opacity: isSelected ? 1 : 0,
-          scale: isSelected ? 1 : 0.8,
-          y: isSelected ? 0 : 10,
-          x: "-50%",
-        }}
-        transition={{ type: "spring", stiffness: 400, damping: 25, delay: isSelected ? 0.1 : 0 }}
-      >
-        <Image
-          src={entry.imageUrl}
-          alt={`Cover for ${title}`}
-          width={160}
-          height={240}
-          className="rounded-md object-cover shadow-2xl"
-          data-ai-hint="book cover"
-        />
-      </motion.div>
+      <AnimatePresence>
+        {isSelected ? (
+          <motion.div
+            key="cover"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { delay: 0.15 } }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={entry.imageUrl}
+              alt={`Cover for ${title}`}
+              width={240}
+              height={300}
+              className="rounded-md object-cover shadow-2xl w-full h-full"
+              data-ai-hint="book cover"
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="spine"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { delay: 0.15 } }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center p-1 shadow-md"
+            style={{ backgroundColor: spineColor }}
+          >
+            <span
+              className="font-headline text-sm font-bold text-center"
+              style={{
+                color: textColor,
+                writingMode: 'vertical-rl',
+                textOrientation: 'mixed',
+                transform: 'rotate(180deg)',
+              }}
+            >
+              {title}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
+
+// Add this at the end of the file to ensure AnimatePresence is imported
+import { AnimatePresence } from 'framer-motion';
