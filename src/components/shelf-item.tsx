@@ -1,21 +1,22 @@
 "use client"
 
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Entry } from "@/types";
 
 type ShelfItemProps = {
   entry: Entry;
   isSelected: boolean;
-  onSelect: () => void;
   onOpenDetail: (entry: Entry) => void;
 };
 
-export function ShelfItem({ entry, isSelected, onSelect, onOpenDetail }: ShelfItemProps) {
-  const { title } = entry;
-  const spineColor = `hsl(var(--background))`;
-  const textColor = `hsl(var(--primary))`;
+const SPINE_WIDTH = 40;
+const ITEM_HEIGHT = 350;
+const COVER_WIDTH = 250;
 
+export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
+  const { title } = entry;
+  
   const itemVariants = {
     initial: {
       y: 0,
@@ -28,15 +29,17 @@ export function ShelfItem({ entry, isSelected, onSelect, onOpenDetail }: ShelfIt
   };
 
   const handleCoverClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // prevent re-selecting
+    e.stopPropagation();
     onOpenDetail(entry);
   };
 
   return (
     <motion.div
-      onClick={onSelect}
       className="group relative flex-shrink-0 cursor-pointer"
-      style={{ width: isSelected ? '240px' : '35px', height: '300px' }}
+      style={{ 
+        width: isSelected ? `${COVER_WIDTH}px` : `${SPINE_WIDTH}px`, 
+        height: `${ITEM_HEIGHT}px`
+      }}
       variants={itemVariants}
       initial="initial"
       whileHover="hover"
@@ -47,17 +50,17 @@ export function ShelfItem({ entry, isSelected, onSelect, onOpenDetail }: ShelfIt
         {isSelected ? (
           <motion.div
             key="cover"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 0.15 } }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, transition: { delay: 0.15 } }}
+            exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
             className="absolute inset-0"
             onClick={handleCoverClick}
           >
             <Image
               src={entry.imageUrl}
               alt={`Cover for ${title}`}
-              width={240}
-              height={300}
+              width={COVER_WIDTH}
+              height={ITEM_HEIGHT}
               className="rounded-md object-cover shadow-2xl w-full h-full"
               data-ai-hint="book cover"
             />
@@ -66,18 +69,21 @@ export function ShelfItem({ entry, isSelected, onSelect, onOpenDetail }: ShelfIt
           <motion.div
             key="spine"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 0.15 } }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 flex items-center justify-center p-1 shadow-md border-r border-black/10"
-            style={{ backgroundColor: spineColor }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.05 } }}
+            className="absolute inset-0 flex items-center justify-center p-1 bg-[#FDFBF6] shadow-[inset_2px_0_5px_rgba(0,0,0,0.1),_inset_-1px_0_2px_rgba(255,255,255,0.3)]"
           >
             <span
-              className="font-headline text-sm font-bold text-center"
+              className="font-headline text-sm font-bold text-center text-[#333333]"
               style={{
-                color: textColor,
                 writingMode: 'vertical-rl',
                 textOrientation: 'mixed',
                 transform: 'rotate(180deg)',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                maxHeight: '100%',
+                padding: '8px 0',
               }}
             >
               {title}
@@ -88,6 +94,3 @@ export function ShelfItem({ entry, isSelected, onSelect, onOpenDetail }: ShelfIt
     </motion.div>
   );
 }
-
-// Add this at the end of the file to ensure AnimatePresence is imported
-import { AnimatePresence } from 'framer-motion';

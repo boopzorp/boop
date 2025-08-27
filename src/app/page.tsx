@@ -42,7 +42,7 @@ export default function Home() {
           </Button>
         </Link>
       </header>
-      <main className="flex-1 flex flex-col items-center justify-center pt-24">
+      <main className="flex-1 flex flex-col items-center justify-center">
         <InteractiveShelf entries={entries} onOpenDetail={handleOpenDetail} />
       </main>
       <EntryDetail entry={selectedEntry} isOpen={isDetailViewOpen} onClose={handleCloseDetail} />
