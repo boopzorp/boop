@@ -2,19 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import type { Entry } from '@/types';
+import type { Entry, EntryType } from '@/types';
 import { mockEntries } from '@/data/mock-data';
 import { InteractiveShelf } from '@/components/interactive-shelf';
 import { EntryDetail } from '@/components/entry-detail';
 import { Logo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { TabSelector } from '@/components/tab-selector';
 
 export default function Home() {
   const [entries] = useState<Entry[]>(mockEntries);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [isDetailViewOpen, setDetailViewOpen] = useState(false);
+  const [activeType, setActiveType] = useState<EntryType>('book');
 
   const handleOpenDetail = (entry: Entry) => {
     setSelectedEntry(entry);
@@ -28,6 +29,8 @@ export default function Home() {
       setSelectedEntry(null);
     }, 300);
   };
+  
+  const types: EntryType[] = ['book', 'movie', 'music'];
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-[#f5f1e8] text-[#2d2d2d]">
@@ -44,19 +47,15 @@ export default function Home() {
         </Link>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center pt-24 space-y-8">
-        <div className='w-full max-w-7xl'>
-          <h2 className="text-3xl font-bold font-headline px-12 mb-4">Books</h2>
-          <InteractiveShelf entries={entries} type="book" onOpenDetail={handleOpenDetail} />
-        </div>
-        <Separator className="my-8" />
-        <div className='w-full max-w-7xl'>
-          <h2 className="text-3xl font-bold font-headline px-12 mb-4">Movies</h2>
-          <InteractiveShelf entries={entries} type="movie" onOpenDetail={handleOpenDetail} />
-        </div>
-        <Separator className="my-8" />
-        <div className='w-full max-w-7xl'>
-          <h2 className="text-3xl font-bold font-headline px-12 mb-4">Music</h2>
-          <InteractiveShelf entries={entries} type="music" onOpenDetail={handleOpenDetail} />
+        <div className="w-full max-w-7xl">
+          <TabSelector types={types} activeType={activeType} onTypeChange={setActiveType} />
+          <div className="bg-white/60 p-4 rounded-b-lg rounded-tr-lg shadow-lg">
+            <InteractiveShelf 
+              entries={entries.filter(e => e.type === activeType)} 
+              type={activeType} 
+              onOpenDetail={handleOpenDetail} 
+            />
+          </div>
         </div>
       </main>
       <EntryDetail entry={selectedEntry} isOpen={isDetailViewOpen} onClose={handleCloseDetail} />
