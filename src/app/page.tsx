@@ -1,15 +1,16 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Entry, EntryType } from '@/types';
-import { mockEntries } from '@/data/mock-data';
 import { InteractiveShelf } from '@/components/interactive-shelf';
 import { EntryDetail } from '@/components/entry-detail';
 import { TabSelector } from '@/components/tab-selector';
 import { Logo } from '@/components/logo';
 import { NewTabDialog } from '@/components/new-tab-dialog';
 import type { Tab } from '@/types';
+import { useEntryStore } from '@/store/entries';
+
 
 const initialTabs: Tab[] = [
   { id: 'book', label: 'Books', type: 'book' },
@@ -18,23 +19,25 @@ const initialTabs: Tab[] = [
 ];
 
 export default function Home() {
-  const [entries, setEntries] = useState<Entry[]>(mockEntries);
+  const { entries, tabs, addTab, colors, setTabColor } = useEntryStore();
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [isDetailViewOpen, setDetailViewOpen] = useState(false);
   
-  const [tabs, setTabs] = useState<Tab[]>(initialTabs);
   const [activeTabId, setActiveTabId] = useState<string>('book');
   
-  const [colors, setColors] = useState<Record<string, string>>({
-    book: '#F7B2AD',
-    movie: '#9AB7D3',
-    music: '#A2D5C6',
-  });
-
   const [isNewTabDialogOpen, setIsNewTabDialogOpen] = useState(false);
+  
+  // Hydrate the store with initial tabs on mount if it's empty
+  useEffect(() => {
+    if (useEntryStore.getState().tabs.length === 0) {
+      initialTabs.forEach(tab => {
+        useEntryStore.getState().addTab({ label: tab.label, type: tab.type });
+      });
+    }
+  }, []);
 
   const handleColorChange = (tabId: string, color: string) => {
-    setColors(prev => ({ ...prev, [tabId]: color }));
+    setTabColor(tabId, color);
   };
 
   const handleOpenDetail = (entry: Entry) => {
@@ -50,18 +53,7 @@ export default function Home() {
   };
 
   const handleAddTab = (newTab: {label: string, type: EntryType}) => {
-    const newTabId = `${newTab.label.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-    const tabToAdd: Tab = {
-      id: newTabId,
-      label: newTab.label,
-      type: newTab.type,
-    };
-    setTabs(prev => [...prev, tabToAdd]);
-    // Set a default color for the new tab to avoid client/server mismatch from Math.random()
-    setColors(prev => ({
-      ...prev,
-      [newTabId]: '#C0C0C0' // Cool Grey
-    }));
+    const newTabId = addTab(newTab);
     setActiveTabId(newTabId); // Switch to the new tab
     setIsNewTabDialogOpen(false);
   };

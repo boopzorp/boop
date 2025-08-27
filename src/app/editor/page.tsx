@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Wand2 } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
@@ -10,44 +11,61 @@ import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { GenerateOutputSchema } from '@/ai/flows/schemas';
 import { Logo } from '@/components/logo';
-import type { Block, Tab, SpotifyTrack } from '@/types';
+import type { Block, Tab, SpotifyTrack, Entry } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { SpotifySearch } from '@/components/spotify-search';
-
-const initialTabs: Tab[] = [
-  { id: 'book', label: 'Books', type: 'book' },
-  { id: 'movie', label: 'Movies', type: 'movie' },
-  { id: 'music', label: 'Music', type: 'music' },
-];
+import { useEntryStore } from '@/store/entries';
 
 export default function EditorPage() {
+  const router = useRouter();
+  const { tabs, addEntry } = useEntryStore();
+  
   const [title, setTitle] = useState('');
   const [creator, setCreator] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [selectedTabId, setSelectedTabId] = useState<string>('book');
+  const [selectedTabId, setSelectedTabId] = useState<string>(tabs.length > 0 ? tabs[0].id : '');
   const [blocks, setBlocks] = useState<Block[]>([
     { id: '1', type: 'paragraph', content: '' },
   ]);
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
-  
-  const [tabs, setTabs] = useState<Tab[]>(initialTabs);
+
+  useEffect(() => {
+    if (tabs.length > 0 && !selectedTabId) {
+      setSelectedTabId(tabs[0].id);
+    }
+  }, [tabs, selectedTabId]);
 
   const handleSave = () => {
     const selectedTab = tabs.find(t => t.id === selectedTabId);
-    console.log({ 
-      title, 
+    if (!selectedTab) {
+      toast({
+        title: 'No Tab Selected',
+        description: 'Please select a tab for this entry.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const newEntry: Omit<Entry, 'id' | 'addedAt'> = {
+      title,
       creator,
       imageUrl,
-      tabId: selectedTabId, 
-      type: selectedTab?.type, 
-      blocks 
-    });
+      tabId: selectedTabId,
+      type: selectedTab.type,
+      notes: blocks.map(b => b.content).join('\n\n'), // Simple conversion for now
+      content: blocks,
+    };
+
+    addEntry(newEntry);
+
     toast({
-      title: 'Entry Saved!',
-      description: 'Your journal entry has been saved to the console.',
+      title: 'Entry Published!',
+      description: 'Your journal entry has been published.',
     });
+    
+    router.push('/admin');
   };
   
   const handleGenerate = async () => {
@@ -85,12 +103,13 @@ export default function EditorPage() {
     setTitle(track.name);
     setCreator(track.artists.map(a => a.name).join(', '));
     if (track.album.images.length > 0) {
-      setImageUrl(track.album.images[0].url);
-      const newBlocks = blocks.map(b => b); // Create a new array
-      if (newBlocks.length === 0 || newBlocks[0].type !== 'image') {
-        newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: track.album.images[0].url });
-      } else {
-        newBlocks[0] = { ...newBlocks[0], content: track.album.images[0].url };
+      const coverUrl = track.album.images[0].url;
+      setImageUrl(coverUrl);
+      const newBlocks = blocks.filter(b => b.type !== 'image'); // Remove existing image block
+      newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: coverUrl });
+      // Clear empty paragraph if it's the only one left
+      if (newBlocks.length > 1 && newBlocks[1].type === 'paragraph' && newBlocks[1].content === '') {
+        newBlocks.splice(1, 1);
       }
       setBlocks(newBlocks);
     }
