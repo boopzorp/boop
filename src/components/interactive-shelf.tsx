@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { Entry } from "@/types";
 import { ShelfItem } from "./shelf-item";
@@ -10,6 +11,8 @@ type InteractiveShelfProps = {
 };
 
 export function InteractiveShelf({ entries, onSelectEntry }: InteractiveShelfProps) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -28,13 +31,25 @@ export function InteractiveShelf({ entries, onSelectEntry }: InteractiveShelfPro
           initial="hidden"
           animate="visible"
         >
-          {entries.filter(e => e.type === 'book').map((item) => (
-            <ShelfItem 
-              key={item.id} 
-              entry={item} 
-              onSelect={() => onSelectEntry(item)}
-            />
-          ))}
+          {entries.filter(e => e.type === 'book').map((item, index) => {
+            return (
+              <ShelfItem
+                key={item.id}
+                entry={item}
+                isSelected={selectedId === item.id}
+                onSelect={() => {
+                  const newSelectedId = selectedId === item.id ? null : item.id;
+                  setSelectedId(newSelectedId);
+                  if (newSelectedId) {
+                    onSelectEntry(item);
+                  }
+                }}
+                style={{
+                  transform: `translateX(${-index * 10}px)`,
+                }}
+              />
+            );
+          })}
         </motion.div>
         <div className="h-4 w-4/5 bg-primary/80 rounded-sm shadow-lg" />
     </div>
