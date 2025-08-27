@@ -14,7 +14,6 @@ export const searchBooks = async (query: string): Promise<GoogleBookVolume[]> =>
   }
 
   try {
-    // Correctly format the query parameter
     const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${apiKey}&maxResults=10`);
     
     if (!response.ok) {
