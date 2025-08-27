@@ -60,6 +60,7 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
             return { width: 400, height: 560 };
         case 'blog':
         case 'book':
+        case 'manga':
         default:
             return { width: 400, height: 600 };
     }

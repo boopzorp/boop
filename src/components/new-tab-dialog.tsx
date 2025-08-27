@@ -65,6 +65,7 @@ export function NewTabDialog({ isOpen, onOpenChange, onAddTab }: NewTabDialogPro
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="book">Book (Thick Spine)</SelectItem>
+                    <SelectItem value="manga">Manga (Thick Spine)</SelectItem>
                     <SelectItem value="movie">Movie (Medium Spine)</SelectItem>
                     <SelectItem value="anime">Anime (Medium Spine)</SelectItem>
                     <SelectItem value="music">Music (Thin Spine)</SelectItem>

@@ -1,4 +1,4 @@
-export type EntryType = "book" | "movie" | "music" | "blog" | "anime";
+export type EntryType = "book" | "movie" | "music" | "blog" | "anime" | "manga";
 
 export type Block = {
   id: string;
@@ -79,6 +79,11 @@ export interface JikanStudio {
   name: string;
 }
 
+export interface JikanAuthor {
+  mal_id: number;
+  name: string;
+}
+
 export interface JikanAnime {
   mal_id: number;
   title: string;
@@ -87,4 +92,14 @@ export interface JikanAnime {
     webp: JikanImage;
   };
   studios: JikanStudio[];
+}
+
+export interface JikanManga {
+    mal_id: number;
+    title: string;
+    images: {
+      jpg: JikanImage;
+      webp: JikanImage;
+    };
+    authors: JikanAuthor[];
 }

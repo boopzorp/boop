@@ -28,6 +28,14 @@ const typeStyles: Record<EntryType, {
         spineBg: 'bg-primary',
         spineShadow: 'shadow-[inset_2px_0_5px_rgba(0,0,0,0.1),_inset_-1px_0_2px_rgba(255,255,255,0.3)]'
     },
+    manga: {
+        spineWidth: 40,
+        itemHeight: 350,
+        coverWidth: 250,
+        textVertical: true,
+        spineBg: 'bg-primary',
+        spineShadow: 'shadow-[inset_2px_0_5px_rgba(0,0,0,0.1),_inset_-1px_0_2px_rgba(255,255,255,0.3)]'
+    },
     movie: {
         spineWidth: 24,
         itemHeight: 320,
@@ -157,12 +165,12 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
               width={styles.coverWidth}
               height={styles.itemHeight}
               className={cn("rounded-md object-cover shadow-2xl w-full h-full", {
-                'border-2 border-white/20': type === 'movie' || type === 'music' || type === 'anime'
+                'border-2 border-white/20': type === 'movie' || type === 'music' || type === 'anime' || type === 'manga'
               })}
               data-ai-hint={`${type} cover`}
             />
           </motion.div>
-        ) : type === 'anime' ? (
+        ) : type === 'anime' || type === 'manga' ? (
              <motion.div
                 key="spine-image"
                 initial={{ opacity: 0 }}
@@ -212,7 +220,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             <span
               className={cn("font-headline text-sm font-bold", {
                 'text-primary-foreground': type === 'book',
-                'text-white/90': type === 'movie' || type === 'music' || type === 'blog' || type === 'anime'
+                'text-white/90': type === 'movie' || type === 'music' || type === 'blog' || type === 'anime' || type === 'manga'
               })}
               style={{
                 writingMode: styles.textVertical ? 'vertical-rl' : 'undefined',
