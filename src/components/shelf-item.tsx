@@ -178,7 +178,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
               data-ai-hint={`${type} cover`}
             />
           </motion.div>
-        ) : type === 'anime' || type === 'manga' || type === 'movie' ? (
+        ) : type === 'book' || type === 'anime' || type === 'manga' || type === 'movie' ? (
              <motion.div
                 key="spine-image"
                 initial={{ opacity: 0 }}
