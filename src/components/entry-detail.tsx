@@ -14,6 +14,21 @@ type EntryDetailProps = {
 };
 
 export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
+  
+  const getImageDimensions = (entryType: string | undefined) => {
+    switch (entryType) {
+        case 'music':
+            return { width: 400, height: 400 };
+        case 'movie':
+            return { width: 400, height: 560 };
+        case 'book':
+        default:
+            return { width: 400, height: 600 };
+    }
+  }
+
+  const imageDimensions = getImageDimensions(entry?.type);
+
   return (
     <AnimatePresence>
       {isOpen && entry && (
@@ -46,10 +61,10 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
               <Image
                 src={entry.imageUrl}
                 alt={`Cover for ${entry.title}`}
-                width={400}
-                height={600}
+                width={imageDimensions.width}
+                height={imageDimensions.height}
                 className="rounded-md object-cover shadow-lg w-full h-auto"
-                data-ai-hint="book cover"
+                data-ai-hint={`${entry.type} cover`}
               />
             </div>
 
