@@ -98,10 +98,10 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: Entr
              <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 rounded-full h-10 w-10 z-50 text-white bg-black/50 hover:bg-black/75 hover:text-white"
+                className="absolute top-4 right-4 rounded-full h-8 w-8 z-50 text-white bg-black/50 hover:bg-black/75 hover:text-white"
                 onClick={onClose}
               >
-                <X className="h-6 w-6" />
+                <X className="h-4 w-4" />
                 <span className="sr-only">Close</span>
               </Button>
             <motion.div
