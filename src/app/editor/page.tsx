@@ -4,12 +4,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Wand2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
-import { generate } from '@/ai/flows/generate-flow';
 import { useToast } from '@/hooks/use-toast';
-import { z } from 'zod';
-import { GenerateOutputSchema } from '@/ai/flows/schemas';
 import { Logo } from '@/components/logo';
 import type { Block, Tab, SpotifyTrack, Entry } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -28,7 +25,6 @@ export default function EditorPage() {
   const [blocks, setBlocks] = useState<Block[]>([
     { id: '1', type: 'paragraph', content: '' },
   ]);
-  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -69,37 +65,6 @@ export default function EditorPage() {
     
     router.push('/admin');
   };
-  
-  const handleGenerate = async () => {
-    if (!title) {
-      toast({
-        title: 'Title is required',
-        description: 'Please enter a title before generating content.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
-    setIsGenerating(true);
-    try {
-      const result: z.infer<typeof GenerateOutputSchema> = await generate({ title });
-      const newBlocks = result.story.map((paragraph, index) => ({
-        id: `${Date.now()}-${index}`,
-        type: 'paragraph',
-        content: paragraph,
-      }));
-      setBlocks(newBlocks);
-    } catch (error) {
-       toast({
-        title: 'Error Generating Content',
-        description: 'An unexpected error occurred.',
-        variant: 'destructive',
-      });
-      console.error(error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   const handleTrackSelect = (track: SpotifyTrack) => {
     setTitle(track.name);
@@ -128,10 +93,6 @@ export default function EditorPage() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <Button onClick={handleGenerate} variant="outline" disabled={isGenerating}>
-            <Wand2 className="mr-2 h-4 w-4" />
-            {isGenerating ? 'Generating...' : 'Generate with AI'}
-          </Button>
           <Link href="/admin">
             <Button variant="ghost">
               <ArrowLeft className="mr-2 h-4 w-4" />
