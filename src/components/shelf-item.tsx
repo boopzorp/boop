@@ -85,6 +85,49 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   
   const showCover = isSelected || type === 'music';
 
+  if (type === 'music') {
+    return (
+        <motion.div
+            className="group relative flex-shrink-0 cursor-pointer"
+            style={{ 
+                width: `${styles.coverWidth}px`, 
+                height: `${styles.itemHeight}px`
+            }}
+            variants={itemVariants}
+            initial="initial"
+            whileHover="hover"
+            animate={isSelected ? "hover" : "initial"}
+            transition={{ type: 'spring', stiffness: 400, damping: 40 }}
+            onClick={handleCoverClick}
+        >
+            <div 
+                className={cn(
+                    "relative w-full h-full rounded-md shadow-2xl transition-transform duration-300 ease-in-out group-hover:scale-105",
+                )}
+            >
+                {/* CD Disc */}
+                <div className={cn(
+                    "absolute top-0 right-[-60px] w-[200px] h-[200px] rounded-full transition-transform duration-500 ease-out group-hover:translate-x-[-45px]",
+                    "bg-zinc-800",
+                    "bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.1)_0%,_rgba(0,0,0,0.4)_40%,_rgba(255,255,255,0.1)_70%)]"
+                )}>
+                    <div className="absolute top-1/2 left-1/2 w-8 h-8 rounded-full bg-zinc-900 -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                
+                {/* Album Art */}
+                <Image
+                    src={entry.imageUrl}
+                    alt={`Cover for ${title}`}
+                    width={styles.coverWidth}
+                    height={styles.itemHeight}
+                    className="relative rounded-md object-cover w-full h-full border-2 border-white/20"
+                    data-ai-hint={`${type} cover`}
+                />
+            </div>
+        </motion.div>
+    )
+  }
+
   return (
     <motion.div
       className="group relative flex-shrink-0 cursor-pointer"
