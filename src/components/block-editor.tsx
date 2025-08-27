@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useEffect } from 'react';
@@ -100,7 +101,7 @@ export function BlockEditor({ title, onTitleChange, blocks, onBlocksChange }: Bl
             ) : (
                <div className="w-full p-4 border rounded-lg flex flex-col gap-2">
                 {block.content ? (
-                  <Image src={block.content} alt="User uploaded content" width={800} height={400} className="rounded-md object-cover" />
+                  <Image src={block.content} alt="User uploaded content" width={800} height={400} className="rounded-md object-contain w-full max-h-96" />
                 ) : null}
                 <Input 
                   id={block.id}
