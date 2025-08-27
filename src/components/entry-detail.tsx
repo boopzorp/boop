@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -14,6 +15,7 @@ type EntryDetailProps = {
   entry: Entry | null;
   isOpen: boolean;
   onClose: () => void;
+  showDelete?: boolean;
 };
 
 function renderContent(entry: Entry) {
@@ -52,7 +54,7 @@ function renderContent(entry: Entry) {
   return <p className='whitespace-pre-wrap'>{entry.notes}</p>;
 }
 
-export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
+export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: EntryDetailProps) {
   const { deleteEntry } = useEntryStore();
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
   
@@ -93,6 +95,15 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
             className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center backdrop-blur-sm"
             onClick={onClose}
           >
+             <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-4 right-4 rounded-full h-10 w-10 z-50 text-white bg-black/50 hover:bg-black/75 hover:text-white"
+                onClick={onClose}
+              >
+                <X className="h-6 w-6" />
+                <span className="sr-only">Close</span>
+              </Button>
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
@@ -101,15 +112,6 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
               className="relative bg-background border w-full max-w-4xl h-[90vh] rounded-lg shadow-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8"
               onClick={(e) => e.stopPropagation()}
             >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-4 right-4 rounded-full h-8 w-8 z-10"
-                onClick={onClose}
-              >
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </Button>
 
               <div className="w-full md:w-1/3 flex-shrink-0">
                 <Image
@@ -120,14 +122,16 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
                   className="rounded-md object-cover shadow-lg w-full h-auto max-h-[40vh] md:max-h-full"
                   data-ai-hint={`${entry.type} cover`}
                 />
-                 <Button 
-                    variant="destructive" 
-                    className="w-full mt-4"
-                    onClick={() => setDeleteAlertOpen(true)}
-                  >
-                   <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Entry
-                  </Button>
+                {showDelete && (
+                  <Button 
+                      variant="destructive" 
+                      className="w-full mt-4"
+                      onClick={() => setDeleteAlertOpen(true)}
+                    >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Entry
+                    </Button>
+                )}
               </div>
 
               <ScrollArea className="w-full md:w-2/3 h-full">

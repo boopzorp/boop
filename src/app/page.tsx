@@ -82,12 +82,22 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center pt-24 space-y-8 px-4">
 
         <div className="w-full max-w-7xl text-center bg-secondary/50 p-8 rounded-lg">
-            <h2 className="text-4xl font-bold font-anton tracking-wide text-foreground mb-2">
+            <motion.h2 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl font-bold font-anton tracking-wide text-foreground mb-2"
+            >
                 Welcome to The Logs
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-lg text-muted-foreground max-w-2xl mx-auto"
+            >
                 This is my corner on the internet and has everything that makes me 'me'. 😬
-            </p>
+            </motion.p>
         </div>
         
         <div className="w-full max-w-7xl">
