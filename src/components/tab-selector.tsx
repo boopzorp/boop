@@ -17,9 +17,10 @@ type TabSelectorProps = {
   colors: Record<string, string>;
   onColorChange: (tabId: string, color: string) => void;
   onAddTab: () => void;
+  showCustomize?: boolean;
 };
 
-export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorChange, onAddTab }: TabSelectorProps) {
+export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorChange, onAddTab, showCustomize = true }: TabSelectorProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const { deleteTab } = useEntryStore();
@@ -58,40 +59,44 @@ export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorCha
             <span className={cn("capitalize", { 'text-black/80 font-semibold': activeTabId === tab.id })}>{tab.label}</span>
           </button>
         ))}
-        <button
-          onClick={onAddTab}
-          className="px-3 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ease-in-out relative bottom-[-1px] border border-b-0 text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary"
-        >
-            <Plus className="h-4 w-4" />
-        </button>
-      </div>
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-        <PopoverTrigger asChild>
-           <Button variant="ghost" size="sm">
-              <Settings2 className="mr-2 h-4 w-4" />
-              Customize
-            </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-2 space-y-2">
-           <ColorPalette
-            selectedColor={colors[activeTabId]}
-            onColorSelect={(color) => {
-              onColorChange(activeTabId, color);
-              setIsPopoverOpen(false);
-            }}
-          />
-           <Button 
-              variant="destructive" 
-              size="sm" 
-              className="w-full"
-              onClick={() => setDeleteAlertOpen(true)}
-              disabled={!activeTab}
+        {showCustomize && (
+            <button
+            onClick={onAddTab}
+            className="px-3 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ease-in-out relative bottom-[-1px] border border-b-0 text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary"
             >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Tab
-            </Button>
-        </PopoverContent>
-      </Popover>
+                <Plus className="h-4 w-4" />
+            </button>
+        )}
+      </div>
+      {showCustomize && (
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+            <PopoverTrigger asChild>
+            <Button variant="ghost" size="sm">
+                <Settings2 className="mr-2 h-4 w-4" />
+                Customize
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-2 space-y-2">
+            <ColorPalette
+                selectedColor={colors[activeTabId]}
+                onColorSelect={(color) => {
+                onColorChange(activeTabId, color);
+                setIsPopoverOpen(false);
+                }}
+            />
+            <Button 
+                variant="destructive" 
+                size="sm" 
+                className="w-full"
+                onClick={() => setDeleteAlertOpen(true)}
+                disabled={!activeTab}
+                >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Tab
+                </Button>
+            </PopoverContent>
+        </Popover>
+      )}
 
       <ConfirmationDialog
         isOpen={isDeleteAlertOpen}

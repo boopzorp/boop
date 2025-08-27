@@ -86,6 +86,7 @@ export default function Home() {
                 colors={colors}
                 onColorChange={handleColorChange}
                 onAddTab={() => setIsNewTabDialogOpen(true)}
+                showCustomize={false}
             />
             {activeTab && (
                 <div 
