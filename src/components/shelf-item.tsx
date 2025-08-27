@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from "@/lib/utils";
 import type { Entry } from "@/types";
-import { X } from 'lucide-react';
 
 type ShelfItemProps = {
   entry: Entry;
@@ -101,7 +100,7 @@ export function ShelfItem({ entry, isSelected, onSelect }: ShelfItemProps) {
             key="spine"
             variants={spineVariants}
             exit="exit"
-            className="w-full h-full flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center p-1"
           >
             <span
               className="font-headline text-xs font-bold"
@@ -109,7 +108,10 @@ export function ShelfItem({ entry, isSelected, onSelect }: ShelfItemProps) {
                 writingMode: 'vertical-rl',
                 textOrientation: 'mixed',
                 transform: 'rotate(180deg)',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxHeight: '100%',
               }}
             >
               {entry.title}
