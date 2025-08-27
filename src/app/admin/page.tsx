@@ -60,7 +60,7 @@ export default function AdminPage() {
     setIsNewTabDialogOpen(false);
   };
 
-  const activeTab = tabs.find(t => t.id === activeTabId);
+  const activeTab = tabs.find(t => t.id === activeTabId) ?? tabs[0];
 
   return (
     <div className="flex min-h-screen w-full flex-col">
