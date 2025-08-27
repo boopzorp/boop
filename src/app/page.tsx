@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -66,7 +67,6 @@ export default function Home() {
   };
 
   const activeTab = tabs.find(t => t.id === activeTabId) ?? tabs[0];
-  const activeType = activeTab.type;
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -95,16 +95,18 @@ export default function Home() {
                 onColorChange={handleColorChange}
                 onAddTab={() => setIsNewTabDialogOpen(true)}
             />
-            <div 
-                className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
-                style={{ backgroundColor: `${colors[activeTabId] || '#cccccc'}33` }} // 33 for ~20% opacity
-            >
-                <InteractiveShelf 
-                    entries={entries.filter(e => e.type === activeType)} 
-                    type={activeType} 
-                    onOpenDetail={handleOpenDetail} 
-                />
-            </div>
+            {activeTab && (
+                <div 
+                    className="p-4 rounded-b-lg rounded-tr-lg shadow-lg transition-colors duration-300"
+                    style={{ backgroundColor: `${colors[activeTabId] || '#cccccc'}33` }} // 33 for ~20% opacity
+                >
+                    <InteractiveShelf 
+                        entries={entries.filter(e => e.tabId === activeTabId)} 
+                        type={activeTab.type} 
+                        onOpenDetail={handleOpenDetail} 
+                    />
+                </div>
+            )}
         </div>
       </main>
       <EntryDetail entry={selectedEntry} isOpen={isDetailViewOpen} onClose={handleCloseDetail} />
