@@ -98,26 +98,26 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="relative bg-background border w-full max-w-4xl h-[90vh] rounded-lg shadow-2xl p-8 flex gap-8"
+              className="relative bg-background border w-full max-w-4xl h-[90vh] rounded-lg shadow-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8"
               onClick={(e) => e.stopPropagation()}
             >
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 rounded-full h-8 w-8"
+                className="absolute top-4 right-4 rounded-full h-8 w-8 z-10"
                 onClick={onClose}
               >
                 <X className="h-5 w-5" />
                 <span className="sr-only">Close</span>
               </Button>
 
-              <div className="w-1/3 flex-shrink-0">
+              <div className="w-full md:w-1/3 flex-shrink-0">
                 <Image
                   src={entry.imageUrl}
                   alt={`Cover for ${entry.title}`}
                   width={imageDimensions.width}
                   height={imageDimensions.height}
-                  className="rounded-md object-cover shadow-lg w-full h-auto"
+                  className="rounded-md object-cover shadow-lg w-full h-auto max-h-[40vh] md:max-h-full"
                   data-ai-hint={`${entry.type} cover`}
                 />
                  <Button 
@@ -130,10 +130,10 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
                   </Button>
               </div>
 
-              <ScrollArea className="w-2/3 h-full">
+              <ScrollArea className="w-full md:w-2/3 h-full">
                 <div className="prose prose-lg pr-4 prose-invert">
-                  <h1 className="font-bold text-4xl mb-2 text-foreground">{entry.title}</h1>
-                  <h2 className="text-xl text-muted-foreground font-normal mb-6">{entry.creator}</h2>
+                  <h1 className="font-bold text-3xl md:text-4xl mb-2 text-foreground">{entry.title}</h1>
+                  <h2 className="text-lg md:text-xl text-muted-foreground font-normal mb-6">{entry.creator}</h2>
                   {renderContent(entry)}
                 </div>
               </ScrollArea>
