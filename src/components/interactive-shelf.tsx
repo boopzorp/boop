@@ -18,7 +18,7 @@ const getSpineWidth = (type: EntryType) => {
     case 'movie':
       return 24;
     case 'music':
-      return 15;
+      return 220; // Cover width for grid
     default:
       return 40;
   }
@@ -43,10 +43,49 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
   
   const SPINE_WIDTH = getSpineWidth(type);
   const COVER_WIDTH = getCoverWidth(type);
-  const GAP = 8;
+  const GAP = 16; // Increased gap for grid
   
   const filteredEntries = entries.filter(e => e.type === type);
   const selectedIndex = selectedId ? filteredEntries.findIndex(e => e.id === selectedId) : -1;
+
+  if (type === 'music') {
+    return (
+      <div className="w-full flex flex-col items-center justify-center">
+        <div className="relative w-full h-[400px] flex items-center justify-center">
+          <div
+            ref={scrollContainerRef}
+            className="w-full h-full overflow-x-auto overflow-y-hidden flex items-end justify-start px-12"
+            style={{
+              scrollbarWidth: 'none', 
+              msOverflowStyle: 'none'
+            }}
+          >
+            <div
+              className="flex items-end gap-4"
+              style={{ height: '350px' }}
+            >
+              {filteredEntries.map((item) => (
+                <div
+                  key={item.id}
+                   onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenDetail(item);
+                  }}
+                >
+                  <ShelfItem
+                    entry={item}
+                    isSelected={false} // For music, isSelected is handled by onOpenDetail
+                    onOpenDetail={onOpenDetail}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="h-4 w-11/12 max-w-6xl bg-secondary rounded-sm shadow-lg" style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }} />
+      </div>
+    );
+  }
 
   const handleSelect = (entry: Entry) => {
     if (selectedId === entry.id) {

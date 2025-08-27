@@ -37,7 +37,7 @@ const typeStyles: Record<EntryType, {
         spineShadow: 'shadow-[inset_1px_0_3px_rgba(255,255,255,0.2),_inset_-1px_0_3px_rgba(0,0,0,0.4)]'
     },
     music: {
-        spineWidth: 15,
+        spineWidth: 220, // Always show cover for music
         itemHeight: 220,
         coverWidth: 220,
         textVertical: true,
@@ -74,12 +74,14 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
     e.stopPropagation();
     onOpenDetail(entry);
   };
+  
+  const showCover = isSelected || type === 'music';
 
   return (
     <motion.div
       className="group relative flex-shrink-0 cursor-pointer"
       style={{ 
-        width: isSelected ? `${styles.coverWidth}px` : `${styles.spineWidth}px`, 
+        width: showCover ? `${styles.coverWidth}px` : `${styles.spineWidth}px`, 
         height: `${styles.itemHeight}px`
       }}
       variants={itemVariants}
@@ -89,11 +91,11 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
       transition={{ type: 'spring', stiffness: 400, damping: 40 }}
     >
       <AnimatePresence>
-        {isSelected ? (
+        {showCover ? (
           <motion.div
             key="cover"
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1, transition: { delay: 0.15 } }}
+            animate={{ opacity: 1, scale: 1, transition: { delay: type === 'music' ? 0 : 0.15 } }}
             exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
             className="absolute inset-0"
             onClick={handleCoverClick}
