@@ -1,3 +1,4 @@
+
 "use client"
 
 import Image from 'next/image';
@@ -24,7 +25,7 @@ const typeStyles: Record<EntryType, {
         itemHeight: 350,
         coverWidth: 250,
         textVertical: true,
-        spineBg: 'bg-[#FDFBF6]',
+        spineBg: 'bg-primary',
         spineShadow: 'shadow-[inset_2px_0_5px_rgba(0,0,0,0.1),_inset_-1px_0_2px_rgba(255,255,255,0.3)]'
     },
     movie: {
@@ -32,7 +33,7 @@ const typeStyles: Record<EntryType, {
         itemHeight: 320,
         coverWidth: 200,
         textVertical: false,
-        spineBg: 'bg-blue-900/80',
+        spineBg: 'bg-primary',
         spineShadow: 'shadow-[inset_1px_0_3px_rgba(255,255,255,0.2),_inset_-1px_0_3px_rgba(0,0,0,0.4)]'
     },
     music: {
@@ -40,7 +41,7 @@ const typeStyles: Record<EntryType, {
         itemHeight: 220,
         coverWidth: 220,
         textVertical: true,
-        spineBg: 'bg-gray-800',
+        spineBg: 'bg-primary',
         spineShadow: 'shadow-[inset_1px_0_2px_rgba(255,255,255,0.2),_inset_-1px_0_2px_rgba(0,0,0,0.5)]'
     }
 }
@@ -107,14 +108,14 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.05 } }}
             className={cn(
-                "absolute inset-0 flex items-center justify-center p-1", 
+                "absolute inset-0 flex items-end justify-center p-1 overflow-hidden", 
                 styles.spineBg, 
                 styles.spineShadow
             )}
           >
             <span
-              className={cn("font-headline text-sm font-bold text-center", {
-                'text-[#333333]': type === 'book',
+              className={cn("font-headline text-sm font-bold origin-bottom-left text-primary-foreground", {
+                'text-primary-foreground': type === 'book',
                 'text-white/90': type === 'movie' || type === 'music'
               })}
               style={{
@@ -123,10 +124,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 transform: styles.textVertical ? 'rotate(180deg)' : 'rotate(0deg)',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
-                overflow: 'hidden',
-                maxHeight: '100%',
-                maxWidth: '100%',
-                padding: styles.textVertical ? '8px 0' : '0 4px',
+                maxHeight: '95%',
+                paddingBottom: styles.textVertical ? '10px' : '0'
               }}
             >
               {title}
