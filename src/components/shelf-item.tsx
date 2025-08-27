@@ -69,7 +69,7 @@ const typeStyles: Record<EntryType, {
         spineShadow: 'shadow-[inset_1px_0_2px_rgba(255,255,255,0.2),_inset_-1px_0_2px_rgba(0,0,0,0.5)]'
     },
     blog: {
-        spineWidth: 15,
+        spineWidth: 320,
         itemHeight: 220,
         coverWidth: 320,
         textVertical: false,
@@ -99,7 +99,37 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
     onOpenDetail(entry);
   };
   
-  const showCover = isSelected || type === 'music';
+  const showCover = isSelected || type === 'music' || type === 'blog';
+
+  if (type === 'blog') {
+    return (
+        <motion.div
+            className="group relative flex-shrink-0 cursor-pointer overflow-hidden rounded-lg shadow-xl"
+            style={{ 
+                width: `${styles.coverWidth}px`, 
+                height: `${styles.itemHeight}px`,
+            }}
+            variants={itemVariants}
+            initial="initial"
+            whileHover="hover"
+            transition={{ type: 'spring', stiffness: 400, damping: 40 }}
+            onClick={handleCoverClick}
+        >
+            <Image
+                src={entry.imageUrl}
+                alt={`Cover for ${title}`}
+                width={styles.coverWidth}
+                height={styles.itemHeight}
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-300 filter blur-sm group-hover:blur-none group-hover:scale-110"
+                data-ai-hint={`${type} cover`}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative h-full flex items-center justify-center text-center p-4">
+                <h3 className="text-white text-2xl font-bold font-anton tracking-wide text-shadow-lg">{title}</h3>
+            </div>
+        </motion.div>
+    )
+  }
 
   if (type === 'music') {
     return (
