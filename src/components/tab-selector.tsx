@@ -11,21 +11,18 @@ type TabSelectorProps = {
 
 export function TabSelector({ types, activeType, onTypeChange }: TabSelectorProps) {
   return (
-    <div className="flex px-4">
+    <div className="flex px-1 space-x-1">
       {types.map((type) => (
         <button
           key={type}
           onClick={() => onTypeChange(type)}
           className={cn(
-            "px-6 py-2 rounded-t-lg text-lg font-semibold transition-all duration-200 ease-in-out transform -mb-px relative",
+            "px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 ease-in-out",
             {
-              "bg-secondary/30 text-foreground z-10 shadow-lg": activeType === type,
-              "bg-secondary/10 hover:bg-secondary/20 text-muted-foreground": activeType !== type,
+              "bg-secondary/50 text-foreground": activeType === type,
+              "text-muted-foreground hover:text-foreground": activeType !== type,
             }
           )}
-          style={{
-            clipPath: 'polygon(0% 100%, 0% 15%, 10% 0%, 90% 0%, 100% 15%, 100% 100%)',
-          }}
         >
           <span className="capitalize">{type}s</span>
         </button>
