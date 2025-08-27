@@ -108,13 +108,13 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.05 } }}
             className={cn(
-                "absolute inset-0 flex p-1 overflow-hidden", 
+                "absolute inset-0 flex items-center p-1 overflow-hidden", 
                 styles.spineBg, 
                 styles.spineShadow
             )}
           >
             <span
-              className={cn("font-headline text-sm font-bold text-primary-foreground", {
+              className={cn("font-headline text-sm font-bold", {
                 'text-primary-foreground': type === 'book',
                 'text-white/90': type === 'movie' || type === 'music'
               })}
@@ -125,9 +125,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 maxHeight: '100%',
-                paddingBottom: styles.textVertical ? '10px' : '0',
-                paddingTop: styles.textVertical ? '10px' : '0',
-                textAlign: 'center',
+                padding: type === 'book' ? '10px 0' : (type === 'music' ? '10px 0' : '0 2px'),
+                textAlign: type === 'movie' ? 'left' : 'center',
                 width: '100%'
               }}
             >
