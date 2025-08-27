@@ -46,3 +46,23 @@ export interface SpotifyTrack {
   artists: SpotifyArtist[];
   album: SpotifyAlbum;
 }
+
+// Google Books API Types
+export interface ImageLinks {
+  smallThumbnail: string;
+  thumbnail: string;
+}
+
+export interface VolumeInfo {
+  title: string;
+  authors: string[];
+  publisher: string;
+  publishedDate: string;
+  description: string;
+  imageLinks?: ImageLinks;
+}
+
+export interface GoogleBookVolume {
+  id: string;
+  volumeInfo: VolumeInfo;
+}

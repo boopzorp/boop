@@ -8,10 +8,11 @@ import { ArrowLeft } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
-import type { Block, Tab, SpotifyTrack, Entry } from '@/types';
+import type { Block, Tab, SpotifyTrack, Entry, GoogleBookVolume } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { SpotifySearch } from '@/components/spotify-search';
+import { GoogleBooksSearch } from '@/components/google-books-search';
 import { useEntryStore } from '@/store/entries';
 
 export default function EditorPage() {
@@ -66,19 +67,31 @@ export default function EditorPage() {
     router.push('/admin');
   };
 
+  const setEntryImage = (url: string) => {
+    setImageUrl(url);
+    const newBlocks = blocks.filter(b => b.type !== 'image');
+    newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: url });
+    if (newBlocks.length > 1 && newBlocks[1].type === 'paragraph' && newBlocks[1].content === '') {
+      newBlocks.splice(1, 1);
+    }
+    setBlocks(newBlocks);
+  };
+
   const handleTrackSelect = (track: SpotifyTrack) => {
     setTitle(track.name);
     setCreator(track.artists.map(a => a.name).join(', '));
     if (track.album.images.length > 0) {
-      const coverUrl = track.album.images[0].url;
-      setImageUrl(coverUrl);
-      const newBlocks = blocks.filter(b => b.type !== 'image'); // Remove existing image block
-      newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: coverUrl });
-      // Clear empty paragraph if it's the only one left
-      if (newBlocks.length > 1 && newBlocks[1].type === 'paragraph' && newBlocks[1].content === '') {
-        newBlocks.splice(1, 1);
-      }
-      setBlocks(newBlocks);
+      setEntryImage(track.album.images[0].url);
+    }
+  };
+
+  const handleBookSelect = (book: GoogleBookVolume) => {
+    setTitle(book.volumeInfo.title);
+    setCreator(book.volumeInfo.authors?.join(', ') || 'Unknown Author');
+    if (book.volumeInfo.imageLinks?.thumbnail) {
+      // Use a higher resolution version of the image if available
+      const coverUrl = book.volumeInfo.imageLinks.thumbnail.replace('&zoom=1', '&zoom=0');
+      setEntryImage(coverUrl);
     }
   };
 
@@ -122,6 +135,13 @@ export default function EditorPage() {
             <div className="space-y-4">
               <Label>Search Spotify</Label>
               <SpotifySearch onTrackSelect={handleTrackSelect} />
+            </div>
+          )}
+
+          {activeTab?.type === 'book' && (
+            <div className="space-y-4">
+              <Label>Search Google Books</Label>
+              <GoogleBooksSearch onBookSelect={handleBookSelect} />
             </div>
           )}
 
