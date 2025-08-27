@@ -1,85 +1,140 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Entry, Tab, EntryType } from '@/types';
-import { mockEntries } from '@/data/mock-data';
 
-// Define the state structure
+import { create } from 'zustand';
+import type { Entry, Tab, EntryType } from '@/types';
+import { 
+  collection, 
+  getDocs, 
+  addDoc, 
+  deleteDoc, 
+  doc, 
+  updateDoc,
+  Timestamp
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
+
 interface EntryState {
   entries: Entry[];
   tabs: Tab[];
   colors: Record<string, string>;
-  addEntry: (entry: Omit<Entry, 'id' | 'addedAt'>) => void;
-  deleteEntry: (entryId: string) => void;
-  addTab: (tab: { label: string; type: EntryType }) => string;
-  deleteTab: (tabId: string) => void;
-  setTabColor: (tabId: string, color: string) => void;
+  isLoaded: boolean;
+  fetchAllData: () => Promise<void>;
+  addEntry: (entry: Omit<Entry, 'id' | 'addedAt'>) => Promise<void>;
+  deleteEntry: (entryId: string) => Promise<void>;
+  addTab: (tab: { label: string; type: EntryType }) => Promise<string | undefined>;
+  deleteTab: (tabId: string) => Promise<void>;
+  setTabColor: (tabId: string, color: string) => Promise<void>;
 }
 
-const initialTabs: Tab[] = [
-  { id: 'book', label: 'Books', type: 'book' },
-  { id: 'movie', label: 'Movies', type: 'movie' },
-  { id: 'music', label: 'Music', type: 'music' },
-];
-
-const initialColors: Record<string, string> = {
-    book: '#F7B2AD',
-    movie: '#9AB7D3',
-    music: '#A2D5C6',
+const fetchTabs = async (): Promise<{ tabs: Tab[], colors: Record<string, string> }> => {
+  const tabsCollection = collection(db, 'tabs');
+  const tabSnapshot = await getDocs(tabsCollection);
+  const tabs: Tab[] = [];
+  const colors: Record<string, string> = {};
+  tabSnapshot.forEach((doc) => {
+    const data = doc.data();
+    tabs.push({ id: doc.id, label: data.label, type: data.type });
+    colors[doc.id] = data.color || '#C0C0C0';
+  });
+  return { tabs, colors };
 };
 
+const fetchEntries = async (): Promise<Entry[]> => {
+  const entriesCollection = collection(db, 'entries');
+  const entrySnapshot = await getDocs(entriesCollection);
+  return entrySnapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      addedAt: (data.addedAt as Timestamp).toDate(),
+    } as Entry;
+  });
+};
 
-export const useEntryStore = create<EntryState>()(
-  persist(
-    (set, get) => ({
-      entries: mockEntries,
-      tabs: initialTabs,
-      colors: initialColors,
-      addEntry: (entry) => {
-        const newEntry: Entry = {
-          ...entry,
-          id: `entry-${Date.now()}-${Math.random()}`,
-          addedAt: new Date(),
-        };
-        set((state) => ({ entries: [newEntry, ...state.entries] }));
-      },
-      deleteEntry: (entryId) => {
-        set((state) => ({
-          entries: state.entries.filter((entry) => entry.id !== entryId),
-        }));
-      },
-      addTab: (tab) => {
-        const newTabId = `${tab.label.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-        const newTab: Tab = {
-            id: newTabId,
-            ...tab,
-        };
+export const useEntryStore = create<EntryState>((set, get) => ({
+  entries: [],
+  tabs: [],
+  colors: {},
+  isLoaded: false,
+  
+  fetchAllData: async () => {
+    if (get().isLoaded) return;
+    try {
+      const [{ tabs, colors }, entries] = await Promise.all([fetchTabs(), fetchEntries()]);
+      set({ tabs, colors, entries, isLoaded: true });
+    } catch (error) {
+      console.error("Error fetching data from Firestore:", error);
+      set({ isLoaded: true }); // Mark as loaded even if there's an error
+    }
+  },
+
+  addEntry: async (entry) => {
+    try {
+      const newEntryData = {
+        ...entry,
+        addedAt: Timestamp.now(),
+      };
+      const docRef = await addDoc(collection(db, 'entries'), newEntryData);
+      const newEntry: Entry = {
+        ...newEntryData,
+        id: docRef.id,
+        addedAt: newEntryData.addedAt.toDate(),
+      };
+      set((state) => ({ entries: [newEntry, ...state.entries] }));
+    } catch (error) {
+      console.error("Error adding entry: ", error);
+    }
+  },
+
+  deleteEntry: async (entryId) => {
+    try {
+      await deleteDoc(doc(db, 'entries', entryId));
+      set((state) => ({
+        entries: state.entries.filter((entry) => entry.id !== entryId),
+      }));
+    } catch (error) {
+      console.error("Error deleting entry: ", error);
+    }
+  },
+
+  addTab: async (tab) => {
+    try {
+        const newTabData = { ...tab, color: '#C0C0C0' };
+        const docRef = await addDoc(collection(db, 'tabs'), newTabData);
+        const newTab: Tab = { id: docRef.id, ...tab };
         set((state) => ({
           tabs: [...state.tabs, newTab],
-          colors: {
-            ...state.colors,
-            [newTabId]: '#C0C0C0', // Default color for new tabs
-          },
+          colors: { ...state.colors, [newTab.id]: newTabData.color },
         }));
-        return newTabId;
-      },
-      deleteTab: (tabId) => {
-        set((state) => ({
-          tabs: state.tabs.filter((tab) => tab.id !== tabId),
-          entries: state.entries.filter((entry) => entry.tabId !== tabId),
-        }));
-      },
-      setTabColor: (tabId, color) => {
-        set((state) => ({
-          colors: {
-            ...state.colors,
-            [tabId]: color,
-          },
-        }));
-      },
-    }),
-    {
-      name: 'entry-storage', // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
+        return newTab.id;
+    } catch (error) {
+        console.error("Error adding tab: ", error);
     }
-  )
-);
+  },
+
+  deleteTab: async (tabId) => {
+    try {
+      // Note: This is a simple delete. For a real app, you'd want a transaction
+      // to delete all entries associated with this tab as well.
+      await deleteDoc(doc(db, 'tabs', tabId));
+      set((state) => ({
+        tabs: state.tabs.filter((tab) => tab.id !== tabId),
+        entries: state.entries.filter((entry) => entry.tabId !== tabId),
+      }));
+    } catch (error) {
+        console.error("Error deleting tab: ", error);
+    }
+  },
+
+  setTabColor: async (tabId, color) => {
+    try {
+        const tabRef = doc(db, 'tabs', tabId);
+        await updateDoc(tabRef, { color });
+        set((state) => ({
+          colors: { ...state.colors, [tabId]: color },
+        }));
+    } catch (error) {
+        console.error("Error updating tab color: ", error);
+    }
+  },
+}));

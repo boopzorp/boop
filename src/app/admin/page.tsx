@@ -15,40 +15,25 @@ import type { Tab } from '@/types';
 import { useEntryStore } from '@/store/entries';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const initialTabs: Tab[] = [
-  { id: 'book', label: 'Books', type: 'book' },
-  { id: 'movie', label: 'Movies', type: 'movie' },
-  { id: 'music', label: 'Music', type: 'music' },
-];
-
 export default function AdminPage() {
-  const { entries, tabs, addTab, colors, setTabColor } = useEntryStore();
+  const { entries, tabs, addTab, colors, setTabColor, fetchAllData, isLoaded } = useEntryStore();
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [isDetailViewOpen, setDetailViewOpen] = useState(false);
   
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
   
   const [isNewTabDialogOpen, setIsNewTabDialogOpen] = useState(false);
 
-  // Hydrate the store with initial tabs on mount if it's empty
   useEffect(() => {
-    if (useEntryStore.getState().tabs.length === 0) {
-      initialTabs.forEach(tab => {
-        useEntryStore.getState().addTab({ label: tab.label, type: tab.type });
-      });
-    }
-  }, []);
+    fetchAllData();
+  }, [fetchAllData]);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted && tabs.length > 0 && !activeTabId) {
+    if (isLoaded && tabs.length > 0 && !activeTabId) {
       setActiveTabId(tabs[0].id);
     }
-  }, [isMounted, tabs, activeTabId]);
+  }, [isLoaded, tabs, activeTabId]);
+
 
   const handleColorChange = (tabId: string, color: string) => {
     setTabColor(tabId, color);
@@ -67,12 +52,17 @@ export default function AdminPage() {
   };
 
   const handleAddTab = (newTab: {label: string, type: EntryType}) => {
-    const newTabId = addTab(newTab);
-    setActiveTabId(newTabId); // Switch to the new tab
+    addTab(newTab).then(newTabId => {
+        if(newTabId) setActiveTabId(newTabId); // Switch to the new tab
+    });
     setIsNewTabDialogOpen(false);
   };
 
   const activeTab = tabs.find(t => t.id === activeTabId);
+
+  if (!isLoaded) {
+    return <div className="flex h-screen w-full items-center justify-center">Loading The Logs...</div>
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -109,7 +99,7 @@ export default function AdminPage() {
         </div>
         
         <div className="w-full max-w-7xl">
-            {isMounted && activeTabId && (
+            {activeTabId && (
                 <>
                     <TabSelector 
                         tabs={tabs} 

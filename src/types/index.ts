@@ -1,3 +1,4 @@
+
 export type EntryType = "book" | "movie" | "music" | "blog" | "anime" | "manga" | "tv";
 
 export type Block = {

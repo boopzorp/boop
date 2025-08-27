@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -20,22 +21,28 @@ import { useEntryStore } from '@/store/entries';
 
 export default function EditorPage() {
   const router = useRouter();
-  const { tabs, addEntry } = useEntryStore();
+  const { tabs, addEntry, fetchAllData, isLoaded } = useEntryStore();
   
   const [title, setTitle] = useState('');
   const [creator, setCreator] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [selectedTabId, setSelectedTabId] = useState<string>(tabs.length > 0 ? tabs[0].id : '');
+  const [selectedTabId, setSelectedTabId] = useState<string | undefined>(undefined);
   const [blocks, setBlocks] = useState<Block[]>([
     { id: '1', type: 'paragraph', content: '' },
   ]);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (tabs.length > 0 && !selectedTabId) {
+    if (!isLoaded) {
+      fetchAllData();
+    }
+  }, [isLoaded, fetchAllData]);
+
+  useEffect(() => {
+    if (isLoaded && tabs.length > 0 && !selectedTabId) {
       setSelectedTabId(tabs[0].id);
     }
-  }, [tabs, selectedTabId]);
+  }, [isLoaded, tabs, selectedTabId]);
 
   const handleSave = () => {
     const selectedTab = tabs.find(t => t.id === selectedTabId);
@@ -121,6 +128,10 @@ export default function EditorPage() {
   };
 
   const activeTab = tabs.find(t => t.id === selectedTabId);
+
+  if (!isLoaded) {
+    return <div className="flex h-screen w-full items-center justify-center">Loading Editor...</div>
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col">
