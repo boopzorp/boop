@@ -1,16 +1,13 @@
 "use client";
 
 import React, { useRef, useEffect } from 'react';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, Image as ImageIcon, Pilcrow } from 'lucide-react';
+import Image from 'next/image';
 import { Textarea } from './ui/textarea';
-import Balancer from 'react-wrap-balancer';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { cn } from '@/lib/utils';
-
-type Block = {
-  id: string;
-  type: string;
-  content: string;
-};
+import type { Block } from '@/types';
 
 type BlockEditorProps = {
   title: string;
@@ -40,17 +37,21 @@ export function BlockEditor({ title, onTitleChange, blocks, onBlocksChange }: Bl
     onBlocksChange(newBlocks);
   };
 
+  const addBlock = (type: 'paragraph' | 'image', index: number) => {
+    const newBlock: Block = { id: `${Date.now()}`, type, content: '' };
+    const newBlocks = [
+      ...blocks.slice(0, index + 1),
+      newBlock,
+      ...blocks.slice(index + 1)
+    ];
+    onBlocksChange(newBlocks);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, id: string) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       const currentIndex = blocks.findIndex(block => block.id === id);
-      const newBlock = { id: `${Date.now()}`, type: 'paragraph', content: '' };
-      const newBlocks = [
-        ...blocks.slice(0, currentIndex + 1),
-        newBlock,
-        ...blocks.slice(currentIndex + 1)
-      ];
-      onBlocksChange(newBlocks);
+      addBlock('paragraph', currentIndex);
     } else if (e.key === 'Backspace' && blocks.find(b => b.id === id)?.content === '') {
         e.preventDefault();
         const newBlocks = blocks.filter(block => block.id !== id);
@@ -63,14 +64,13 @@ export function BlockEditor({ title, onTitleChange, blocks, onBlocksChange }: Bl
   
   useEffect(() => {
     const lastBlock = blocks[blocks.length - 1];
-    if (lastBlock) {
+    if (lastBlock?.type === 'paragraph') {
       const lastElement = document.getElementById(lastBlock.id);
       if (lastElement) {
         (lastElement as HTMLTextAreaElement).focus();
       }
     }
-  }, [blocks.length]);
-
+  }, [blocks]);
 
   return (
     <div className="space-y-4">
@@ -83,19 +83,45 @@ export function BlockEditor({ title, onTitleChange, blocks, onBlocksChange }: Bl
       />
       
       <div className="space-y-2">
-        {blocks.map(block => (
-          <div key={block.id} className="group flex items-start gap-2">
+        {blocks.map((block, index) => (
+          <div key={block.id} className="group flex items-start gap-2 relative">
              <div className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab mt-2">
                 <GripVertical className="h-5 w-5 text-muted-foreground" />
              </div>
-            <AutoSizingTextarea
-              id={block.id}
-              placeholder="Tell your story..."
-              className="text-lg border-none focus-visible:ring-0 shadow-none p-0 min-h-[28px] bg-transparent"
-              value={block.content}
-              onChange={e => handleBlockChange(block.id, e.target.value)}
-              onKeyDown={e => handleKeyDown(e, block.id)}
-            />
+            {block.type === 'paragraph' ? (
+              <AutoSizingTextarea
+                id={block.id}
+                placeholder="Tell your story..."
+                className="text-lg border-none focus-visible:ring-0 shadow-none p-0 min-h-[28px] bg-transparent w-full"
+                value={block.content}
+                onChange={e => handleBlockChange(block.id, e.target.value)}
+                onKeyDown={e => handleKeyDown(e, block.id)}
+              />
+            ) : (
+               <div className="w-full p-4 border rounded-lg flex flex-col gap-2">
+                {block.content ? (
+                  <Image src={block.content} alt="User uploaded content" width={800} height={400} className="rounded-md object-cover" />
+                ) : null}
+                <Input 
+                  id={block.id}
+                  type="url"
+                  placeholder="Enter image URL..."
+                  value={block.content}
+                  onChange={(e) => handleBlockChange(block.id, e.target.value)}
+                  className="bg-transparent"
+                />
+               </div>
+            )}
+             <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 -top-4">
+                <div className="flex items-center gap-1 bg-secondary p-1 rounded-md">
+                    <Button variant="ghost" size="sm" onClick={() => addBlock('paragraph', index)}>
+                        <Pilcrow className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => addBlock('image', index)}>
+                        <ImageIcon className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
           </div>
         ))}
       </div>

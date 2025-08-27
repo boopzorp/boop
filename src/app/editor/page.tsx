@@ -10,10 +10,14 @@ import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { GenerateOutputSchema } from '@/ai/flows/schemas';
 import { Logo } from '@/components/logo';
+import type { Block, EntryType } from '@/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 export default function EditorPage() {
   const [title, setTitle] = useState('');
-  const [blocks, setBlocks] = useState<{ id: string; type: string; content: string }[]>([
+  const [category, setCategory] = useState<EntryType>('book');
+  const [blocks, setBlocks] = useState<Block[]>([
     { id: '1', type: 'paragraph', content: '' },
   ]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -22,7 +26,7 @@ export default function EditorPage() {
   const handleSave = () => {
     // Here you would typically save the content to a database.
     // For now, we'll just log it to the console.
-    console.log({ title, blocks });
+    console.log({ title, category, blocks });
     toast({
       title: 'Entry Saved!',
       description: 'Your journal entry has been saved to the console.',
@@ -64,7 +68,7 @@ export default function EditorPage() {
     <div className="flex min-h-screen w-full flex-col">
       <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/admin" className="flex items-center gap-2">
             <Logo />
           </Link>
         </div>
@@ -73,7 +77,7 @@ export default function EditorPage() {
             <Wand2 className="mr-2 h-4 w-4" />
             {isGenerating ? 'Generating...' : 'Generate with AI'}
           </Button>
-          <Link href="/">
+          <Link href="/admin">
             <Button variant="ghost">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Shelf
@@ -84,6 +88,19 @@ export default function EditorPage() {
       </header>
       <main className="flex-1 flex flex-col items-center justify-center pt-24">
         <div className="w-full max-w-4xl mx-auto p-8 space-y-6">
+          <div className="w-1/3">
+            <Label htmlFor="category">Category</Label>
+            <Select value={category} onValueChange={(value: EntryType) => setCategory(value)}>
+                <SelectTrigger id="category">
+                    <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="book">Book</SelectItem>
+                    <SelectItem value="movie">Movie</SelectItem>
+                    <SelectItem value="music">Music</SelectItem>
+                </SelectContent>
+            </Select>
+          </div>
           <BlockEditor title={title} onTitleChange={setTitle} blocks={blocks} onBlocksChange={setBlocks} />
         </div>
       </main>
