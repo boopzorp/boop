@@ -1,70 +1,42 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import type { Entry } from '@/types';
 import { mockEntries } from '@/data/mock-data';
-import { Shelf } from '@/components/shelf';
-import { PageHeader } from '@/components/page-header';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { InteractiveShelf } from '@/components/interactive-shelf';
+import { EntryDetail } from '@/components/entry-detail';
+import { Logo } from '@/components/icons';
 
 export default function Home() {
-  const [entries, setEntries] = useState<Entry[]>(mockEntries);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [entries] = useState<Entry[]>(mockEntries);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const [isDetailViewOpen, setDetailViewOpen] = useState(false);
 
-  const filteredEntries = useMemo(() => {
-    if (!searchQuery) return entries;
-    return entries.filter((entry) =>
-      entry.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [entries, searchQuery]);
+  const handleSelectEntry = (entry: Entry) => {
+    setSelectedEntry(entry);
+    setDetailViewOpen(true);
+  };
 
-  const books = useMemo(
-    () => filteredEntries.filter((e) => e.type === 'book'),
-    [filteredEntries]
-  );
-  const movies = useMemo(
-    () => filteredEntries.filter((e) => e.type === 'movie'),
-    [filteredEntries]
-  );
-  const music = useMemo(
-    () => filteredEntries.filter((e) => e.type === 'music'),
-    [filteredEntries]
-  );
-
-  const handleAddEntry = (newEntry: Omit<Entry, 'id' | 'addedAt'>) => {
-    setEntries((prevEntries) => [
-      {
-        ...newEntry,
-        id: Date.now().toString(),
-        addedAt: new Date(),
-        imageUrl: `https://picsum.photos/seed/${Date.now()}/400/600`,
-      },
-      ...prevEntries,
-    ]);
+  const handleCloseDetail = () => {
+    setDetailViewOpen(false);
+    // Allow animation to complete before clearing the entry
+    setTimeout(() => {
+      setSelectedEntry(null);
+    }, 300);
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <PageHeader
-        onSearchChange={(e) => setSearchQuery(e.target.value)}
-        onAddEntry={handleAddEntry}
-      />
-      <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-8">
-        <div className="space-y-12">
-          <Shelf
-            title="Books"
-            items={books}
-          />
-          <Shelf
-            title="Movies"
-            items={movies}
-          />
-          <Shelf
-            title="Music Collection"
-            items={music}
-          />
+    <div className="flex min-h-screen w-full flex-col bg-[#f5f1e8] text-[#2d2d2d]">
+      <header className="fixed top-0 left-0 z-20 p-4">
+        <div className="flex items-center gap-2">
+          <Logo className="h-8 w-8" />
+          <h1 className="text-2xl font-bold tracking-tight font-headline">Shelf Life</h1>
         </div>
+      </header>
+      <main className="flex-1 flex flex-col items-center justify-center pt-24">
+        <InteractiveShelf entries={entries} onSelectEntry={handleSelectEntry} />
       </main>
+      <EntryDetail entry={selectedEntry} isOpen={isDetailViewOpen} onClose={handleCloseDetail} />
     </div>
   );
 }
