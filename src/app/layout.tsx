@@ -1,10 +1,11 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { Inter, Anton, Caveat } from 'next/font/google';
+import { Inter, Anton, Caveat, Literata } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const literata = Literata({ subsets: ['latin'], variable: '--font-literata' });
 const anton = Anton({
   subsets: ['latin'],
   weight: '400',
@@ -17,8 +18,8 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: 'My Brain Dump',
-  description: 'A place to dump your thoughts on music, movies, and books.',
+  title: 'The Logs',
+  description: 'A personal log for your books, movies, music, and more.',
 };
 
 export default function RootLayout({
@@ -28,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn("font-sans antialiased", inter.variable, anton.variable, caveat.variable)}>
+      <body className={cn("font-sans antialiased", inter.variable, anton.variable, caveat.variable, literata.variable)}>
         {children}
         <Toaster />
       </body>

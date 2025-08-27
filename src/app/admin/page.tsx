@@ -78,10 +78,10 @@ export default function AdminPage() {
 
         <div className="w-full max-w-7xl text-center bg-secondary/50 p-8 rounded-lg">
             <h2 className="text-4xl font-bold font-anton tracking-wide text-foreground mb-2">
-                Hey there, partner in code! 🤖
+                Welcome to The Logs
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Welcome to my brain dump. This is where I stash all the good stuff—the books that blew my mind, the movies I can't stop thinking about, and the tunes that get me through the day. Feel free to poke around. Just... don't judge my questionable taste in 90s pop. 😉
+                This is a place to stash all the good stuff—the books that blew your mind, the movies you can't stop thinking about, and the tunes that get you through the day.
             </p>
         </div>
         
