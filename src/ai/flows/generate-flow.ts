@@ -9,15 +9,13 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import { GenerateOutputSchema } from './schemas';
 
 const GenerateInputSchema = z.object({
   title: z.string().describe('The title of the story to generate.'),
 });
 export type GenerateInput = z.infer<typeof GenerateInputSchema>;
 
-export const GenerateOutputSchema = z.object({
-  story: z.array(z.string()).describe('The generated story, split into paragraphs.'),
-});
 export type GenerateOutput = z.infer<typeof GenerateOutputSchema>;
 
 export async function generate(input: GenerateInput): Promise<GenerateOutput> {

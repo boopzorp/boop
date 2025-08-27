@@ -9,7 +9,7 @@ import { BlockEditor } from '@/components/block-editor';
 import { generate } from '@/ai/flows/generate-flow';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
-import { GenerateOutputSchema } from '@/ai/flows/generate-flow';
+import { GenerateOutputSchema } from '@/ai/flows/schemas';
 
 export default function EditorPage() {
   const [title, setTitle] = useState('');
