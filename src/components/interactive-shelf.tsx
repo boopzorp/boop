@@ -7,25 +7,32 @@ import { ShelfItem } from "./shelf-item";
 
 type InteractiveShelfProps = {
   entries: Entry[];
-  onSelectEntry: (entry: Entry) => void;
+  onOpenDetail: (entry: Entry) => void;
 };
 
-const SPINE_WIDTH = 35; // Corresponds to w-12 in tailwind
-const GAP = 6; // Corresponds to gap-1.5
-const COVER_WIDTH = 240; // Desired cover width
+const SPINE_WIDTH = 35; 
+const GAP = 6; 
+const COVER_WIDTH = 240; 
 
-export function InteractiveShelf({ entries, onSelectEntry }: InteractiveShelfProps) {
+export function InteractiveShelf({ entries, onOpenDetail }: InteractiveShelfProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selectedIndex = selectedId ? entries.findIndex(e => e.id === selectedId) : -1;
 
   const handleSelect = (entry: Entry) => {
-    const newSelectedId = selectedId === entry.id ? null : entry.id;
-    setSelectedId(newSelectedId);
-    if (newSelectedId) {
-      onSelectEntry(entry);
+    // If the clicked item is already selected, open the detail view.
+    if (selectedId === entry.id) {
+      onOpenDetail(entry);
+    } else {
+      // Otherwise, just select it to expand it.
+      setSelectedId(entry.id);
     }
   };
+  
+  const handleDeselect = () => {
+    setSelectedId(null);
+  };
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -60,6 +67,12 @@ export function InteractiveShelf({ entries, onSelectEntry }: InteractiveShelfPro
           variants={containerVariants}
           initial="hidden"
           animate="visible"
+          onClick={(e) => {
+            // Clicks directly on the shelf background should deselect.
+            if (e.target === e.currentTarget) {
+              handleDeselect();
+            }
+          }}
         >
           <div className="absolute flex items-end justify-center h-[350px]" style={{ gap: `${GAP}px` }}>
             {entries.filter(e => e.type === 'book').map((item, index) => {
@@ -72,6 +85,7 @@ export function InteractiveShelf({ entries, onSelectEntry }: InteractiveShelfPro
                     transform: calculateTransform(index),
                     zIndex: selectedIndex === index ? 10 : 1,
                   }}
+                  onClick={(e) => e.stopPropagation()} // Prevent clicks on items from bubbling up to the container
                 >
                   <ShelfItem
                     entry={item}

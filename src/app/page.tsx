@@ -15,7 +15,7 @@ export default function Home() {
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [isDetailViewOpen, setDetailViewOpen] = useState(false);
 
-  const handleSelectEntry = (entry: Entry) => {
+  const handleOpenDetail = (entry: Entry) => {
     setSelectedEntry(entry);
     setDetailViewOpen(true);
   };
@@ -43,7 +43,7 @@ export default function Home() {
         </Link>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center pt-24">
-        <InteractiveShelf entries={entries} onSelectEntry={handleSelectEntry} />
+        <InteractiveShelf entries={entries} onOpenDetail={handleOpenDetail} />
       </main>
       <EntryDetail entry={selectedEntry} isOpen={isDetailViewOpen} onClose={handleCloseDetail} />
     </div>
