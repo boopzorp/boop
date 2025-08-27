@@ -1,37 +1,30 @@
 'use server';
 
 import type { GoogleBookVolume } from '@/types';
-import { searchBooksByTitle } from '@/ai/flows/book-search-flow';
 
 export const searchBooks = async (query: string): Promise<GoogleBookVolume[]> => {
+  const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Missing Google Books API key');
+  }
+
   if (query.length < 3) {
     return [];
   }
 
   try {
-    const response = await searchBooksByTitle({ title: query });
-    
-    // Adapt the AI response to the GoogleBookVolume type
-    const books: GoogleBookVolume[] = response.results.map(book => ({
-      id: book.id,
-      volumeInfo: {
-        title: book.title,
-        authors: book.authors,
-        imageLinks: {
-          thumbnail: book.imageUrl,
-          smallThumbnail: book.imageUrl,
-        },
-        // Add empty fallbacks for other fields if needed
-        publisher: '',
-        publishedDate: '',
-        description: '',
-      },
-    }));
-    
-    return books;
+    const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${apiKey}&maxResults=10`);
+    if (!response.ok) {
+        console.error(`Google Books API error: ${response.status} ${response.statusText}`);
+        const errorBody = await response.json();
+        console.error('Error details:', errorBody);
+        return [];
+    }
+    const data = await response.json();
+    return (data.items || []) as GoogleBookVolume[];
   } catch (error) {
-    console.error('Gemini book search failed:', error);
-    // Return empty array or throw a custom error
+    console.error('Failed to fetch from Google Books API:', error);
     return [];
   }
 };
