@@ -35,3 +35,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Fix for TipTap editor text color */
+.tiptap p {
+  color: hsl(var(--foreground));
+}
