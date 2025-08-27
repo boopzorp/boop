@@ -9,7 +9,7 @@ export const mockEntries: Entry[] = [
     creator: 'Frank Herbert',
     notes: 'A masterpiece of science fiction. The world-building is incredible.',
     addedAt: new Date('2023-10-15'),
-    imageUrl: 'https://picsum.photos/seed/dune/400/600',
+    imageUrl: 'https://picsum.photos/seed/dune-cover/400/600',
   },
   {
     id: 'book-2',
@@ -18,7 +18,7 @@ export const mockEntries: Entry[] = [
     creator: 'Andy Weir',
     notes: 'A fun and engaging read with a lot of heart. Rocky is the best!',
     addedAt: new Date(),
-    imageUrl: 'https://picsum.photos/seed/hail-mary/400/600',
+    imageUrl: 'https://picsum.photos/seed/project-hail-mary-cover/400/600',
   },
   {
     id: 'book-3',
@@ -27,7 +27,7 @@ export const mockEntries: Entry[] = [
     creator: 'J.R.R. Tolkien',
     notes: 'A timeless adventure. Perfect for all ages.',
     addedAt: new Date('2024-01-20'),
-    imageUrl: 'https://picsum.photos/seed/hobbit/400/600',
+    imageUrl: 'https://picsum.photos/seed/the-hobbit-cover/400/600',
   },
   {
     id: 'book-4',
@@ -36,7 +36,7 @@ export const mockEntries: Entry[] = [
     creator: 'George Orwell',
     notes: 'A chilling dystopian novel that remains relevant today.',
     addedAt: new Date('2023-05-10'),
-    imageUrl: 'https://picsum.photos/seed/1984/400/600',
+    imageUrl: 'https://picsum.photos/seed/1984-book-cover/400/600',
   },
   {
     id: 'book-5',
@@ -45,7 +45,7 @@ export const mockEntries: Entry[] = [
     creator: 'Douglas Adams',
     notes: 'Hilariously funny and brilliantly inventive.',
     addedAt: new Date('2023-08-22'),
-    imageUrl: 'https://picsum.photos/seed/hitchhiker/400/600',
+    imageUrl: 'https://picsum.photos/seed/hitchhikers-guide-cover/400/600',
   },
   {
     id: 'book-6',
@@ -54,7 +54,7 @@ export const mockEntries: Entry[] = [
     creator: 'Harper Lee',
     notes: 'A powerful story about justice and innocence.',
     addedAt: new Date('2023-03-01'),
-    imageUrl: 'https://picsum.photos/seed/mockingbird/400/600',
+    imageUrl: 'https://picsum.photos/seed/mockingbird-cover/400/600',
   },
   {
     id: 'book-7',
@@ -63,7 +63,7 @@ export const mockEntries: Entry[] = [
     creator: 'J.D. Salinger',
     notes: 'A classic novel about teenage angst and alienation.',
     addedAt: new Date('2023-06-15'),
-    imageUrl: 'https://picsum.photos/seed/rye/400/600',
+    imageUrl: 'https://picsum.photos/seed/catcher-rye-cover/400/600',
   },
   {
     id: 'book-8',
@@ -72,7 +72,7 @@ export const mockEntries: Entry[] = [
     creator: 'Aldous Huxley',
     notes: 'A thought-provoking look at a future society.',
     addedAt: new Date(),
-    imageUrl: 'https://picsum.photos/seed/brave-new-world/400/600',
+    imageUrl: 'https://picsum.photos/seed/brave-new-world-cover/400/600',
   },
   {
     id: 'book-9',
@@ -81,7 +81,7 @@ export const mockEntries: Entry[] = [
     creator: 'Jane Austen',
     notes: 'A classic romance with witty characters.',
     addedAt: new Date('2023-04-12'),
-    imageUrl: 'https://picsum.photos/seed/pride-prejudice/400/600',
+    imageUrl: 'https://picsum.photos/seed/pride-prejudice-cover/400/600',
   },
   {
     id: 'book-10',
@@ -90,7 +90,7 @@ export const mockEntries: Entry[] = [
     creator: 'J.R.R. Tolkien',
     notes: 'An epic fantasy adventure that set the standard for the genre.',
     addedAt: new Date('2023-02-18'),
-    imageUrl: 'https://picsum.photos/seed/lotr/400/600',
+    imageUrl: 'https://picsum.photos/seed/lord-of-the-rings-cover/400/600',
   },
   {
     id: 'book-11',
@@ -99,7 +99,7 @@ export const mockEntries: Entry[] = [
     creator: 'Ray Bradbury',
     notes: 'A powerful story about censorship and the importance of knowledge.',
     addedAt: new Date('2023-07-30'),
-    imageUrl: 'https://picsum.photos/seed/fahrenheit-451/400/600',
+    imageUrl: 'https://picsum.photos/seed/fahrenheit-451-cover/400/600',
   },
   {
     id: 'book-12',
@@ -108,7 +108,7 @@ export const mockEntries: Entry[] = [
     creator: 'Herman Melville',
     notes: 'A grand tale of obsession and the sea.',
     addedAt: new Date('2023-11-11'),
-    imageUrl: 'https://picsum.photos/seed/moby-dick/400/600',
+    imageUrl: 'https://picsum.photos/seed/moby-dick-cover/400/600',
   },
   {
     id: 'book-13',
@@ -117,7 +117,7 @@ export const mockEntries: Entry[] = [
     creator: 'Leo Tolstoy',
     notes: 'A sweeping epic of Russian society during the Napoleonic Era.',
     addedAt: new Date('2024-02-05'),
-    imageUrl: 'https://picsum.photos/seed/war-peace/400/600',
+    imageUrl: 'https://picsum.photos/seed/war-and-peace-cover/400/600',
   },
   {
     id: 'book-14',
@@ -126,7 +126,7 @@ export const mockEntries: Entry[] = [
     creator: 'F. Scott Fitzgerald',
     notes: 'A poignant look at the American Dream.',
     addedAt: new Date('2023-12-25'),
-    imageUrl: 'https://picsum.photos/seed/gatsby/400/600',
+    imageUrl: 'https://picsum.photos/seed/great-gatsby-cover/400/600',
   },
   {
     id: 'book-15',
@@ -135,7 +135,7 @@ export const mockEntries: Entry[] = [
     creator: 'Miguel de Cervantes',
     notes: 'A humorous and touching story of a man who imagines himself a knight.',
     addedAt: new Date(),
-    imageUrl: 'https://picsum.photos/seed/quixote/400/600',
+    imageUrl: 'https://picsum.photos/seed/don-quixote-cover/400/600',
   },
   {
     id: 'book-16',
@@ -144,7 +144,7 @@ export const mockEntries: Entry[] = [
     creator: 'James Joyce',
     notes: 'A landmark work of modernist literature.',
     addedAt: new Date(),
-    imageUrl: 'https://picsum.photos/seed/ulysses/400/600',
+    imageUrl: 'https://picsum.photos/seed/ulysses-cover/400/600',
   },
   {
     id: 'book-17',
@@ -153,7 +153,7 @@ export const mockEntries: Entry[] = [
     creator: 'Homer',
     notes: 'An ancient Greek epic poem that is one of the cornerstones of Western literature.',
     addedAt: new Date('2023-01-10'),
-    imageUrl: 'https://picsum.photos/seed/odyssey/400/600',
+    imageUrl: 'https://picsum.photos/seed/odyssey-cover/400/600',
   },
   {
     id: 'book-18',
@@ -162,7 +162,7 @@ export const mockEntries: Entry[] = [
     creator: 'Fyodor Dostoevsky',
     notes: 'A psychological novel exploring the moral dilemmas of a young student.',
     addedAt: new Date('2023-10-02'),
-    imageUrl: 'https://picsum.photos/seed/crime-punishment/400/600',
+    imageUrl: 'https://picsum.photos/seed/crime-punishment-cover/400/600',
   },
   {
     id: 'book-19',
@@ -171,7 +171,7 @@ export const mockEntries: Entry[] = [
     creator: 'Dante Alighieri',
     notes: 'An epic poem describing a journey through Hell, Purgatory, and Paradise.',
     addedAt: new Date('2024-03-15'),
-    imageUrl: 'https://picsum.photos/seed/divine-comedy/400/600',
+    imageUrl: 'https://picsum.photos/seed/divine-comedy-cover/400/600',
   },
   {
     id: 'book-20',
@@ -180,7 +180,7 @@ export const mockEntries: Entry[] = [
     creator: 'Mary Shelley',
     notes: 'A classic Gothic novel that raises questions about science and creation.',
     addedAt: new Date('2023-09-20'),
-    imageUrl: 'https://picsum.photos/seed/frankenstein/400/600',
+    imageUrl: 'https://picsum.photos/seed/frankenstein-cover/400/600',
   },
   {
     id: 'book-21',
@@ -189,7 +189,7 @@ export const mockEntries: Entry[] = [
     creator: 'Lewis Carroll',
     notes: 'A whimsical and surreal journey into a fantastical world.',
     addedAt: new Date('2023-08-08'),
-    imageUrl: 'https://picsum.photos/seed/alice-wonderland/400/600',
+    imageUrl: 'https://picsum.photos/seed/alice-in-wonderland-cover/400/600',
   },
   {
     id: 'book-22',
@@ -198,7 +198,7 @@ export const mockEntries: Entry[] = [
     creator: 'Gabriel García Márquez',
     notes: 'A landmark novel of magical realism that tells the story of the Buendía family.',
     addedAt: new Date(),
-    imageUrl: 'https://picsum.photos/seed/solitude/400/600',
+    imageUrl: 'https://picsum.photos/seed/one-hundred-years-cover/400/600',
   },
   {
     id: 'book-23',
@@ -207,7 +207,7 @@ export const mockEntries: Entry[] = [
     creator: 'Fyodor Dostoevsky',
     notes: 'A passionate philosophical novel that delves into questions of God, free will, and morality.',
     addedAt: new Date('2024-01-01'),
-    imageUrl: 'https://picsum.photos/seed/karamazov/400/600',
+    imageUrl: 'https://picsum.photos/seed/karamazov-cover/400/600',
   },
   {
     id: 'book-24',
@@ -216,7 +216,7 @@ export const mockEntries: Entry[] = [
     creator: 'Emily Brontë',
     notes: 'A dark and passionate story of love and revenge on the Yorkshire moors.',
     addedAt: new Date('2023-11-28'),
-    imageUrl: 'https://picsum.photos/seed/wuthering-heights/400/600',
+    imageUrl: 'https://picsum.photos/seed/wuthering-heights-cover/400/600',
   },
   {
     id: 'book-25',
@@ -225,7 +225,7 @@ export const mockEntries: Entry[] = [
     creator: 'Charlotte Brontë',
     notes: 'A classic novel that follows the emotional and spiritual development of its titular character.',
     addedAt: new Date('2023-07-14'),
-    imageUrl: 'https://picsum.photos/seed/jane-eyre/400/600',
+    imageUrl: 'https://picsum.photos/seed/jane-eyre-cover/400/600',
   },
   {
     id: 'book-26',
@@ -234,7 +234,7 @@ export const mockEntries: Entry[] = [
     creator: 'Leo Tolstoy',
     notes: 'A complex novel in eight parts, with more than a dozen major characters.',
     addedAt: new Date(),
-    imageUrl: 'https://picsum.photos/seed/anna-karenina/400/600',
+    imageUrl: 'https://picsum.photos/seed/anna-karenina-cover/400/600',
   },
   // Movies
   {
@@ -244,7 +244,7 @@ export const mockEntries: Entry[] = [
     creator: 'Denis Villeneuve',
     notes: 'Visually stunning with a thought-provoking story. A worthy successor.',
     addedAt: new Date(),
-    imageUrl: 'https://picsum.photos/seed/blade-runner/600/400',
+    imageUrl: 'https://picsum.photos/seed/blade-runner-2049-poster/600/400',
   },
   {
     id: 'movie-2',
@@ -253,7 +253,7 @@ export const mockEntries: Entry[] = [
     creator: 'Christopher Nolan',
     notes: 'An epic journey through space and time. The score is amazing.',
     addedAt: new Date('2023-11-05'),
-    imageUrl: 'https://picsum.photos/seed/interstellar/600/400',
+    imageUrl: 'https://picsum.photos/seed/interstellar-poster/600/400',
   },
   // Music
   {
@@ -263,7 +263,7 @@ export const mockEntries: Entry[] = [
     creator: 'Daft Punk',
     notes: 'One of the greatest electronic albums of all time. Pure joy.',
     addedAt: new Date(),
-    imageUrl: 'https://picsum.photos/seed/discovery/400/400',
+    imageUrl: 'https://picsum.photos/seed/discovery-album-cover/400/400',
   },
   {
     id: 'music-2',
@@ -272,6 +272,6 @@ export const mockEntries: Entry[] = [
     creator: 'Daft Punk',
     notes: 'A modern classic. The production is flawless.',
     addedAt: new Date('2023-09-01'),
-    imageUrl: 'https://picsum.photos/seed/ram/400/400',
+    imageUrl: 'https://picsum.photos/seed/ram-album-cover/400/400',
   },
 ];
