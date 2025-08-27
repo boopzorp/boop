@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import type { Entry } from "@/types";
 import { ShelfItem } from "./shelf-item";
-import { ExpandedItem } from './expanded-item';
 
 type ShelfProps = {
   title: string;
@@ -12,15 +11,7 @@ type ShelfProps = {
 };
 
 export function Shelf({ title, items }: ShelfProps) {
-  const [selectedItem, setSelectedItem] = useState<Entry | null>(null);
-
-  const handleSelectItem = (item: Entry) => {
-    if (selectedItem && selectedItem.id === item.id) {
-      setSelectedItem(null); // Deselect if the same item is clicked again
-    } else {
-      setSelectedItem(item);
-    }
-  };
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -43,7 +34,12 @@ export function Shelf({ title, items }: ShelfProps) {
           animate="visible"
         >
           {items.map((item) => (
-            <ShelfItem key={item.id} entry={item} onSelect={handleSelectItem} />
+            <ShelfItem 
+              key={item.id} 
+              entry={item} 
+              isSelected={selectedId === item.id}
+              onSelect={() => setSelectedId(selectedId === item.id ? null : item.id)}
+            />
           ))}
           {items.length === 0 && (
             <p className="w-full text-center text-muted-foreground">This shelf is empty. Add something new!</p>
@@ -53,22 +49,6 @@ export function Shelf({ title, items }: ShelfProps) {
         <div className="absolute bottom-0 left-0 h-full w-2 -translate-x-1 rounded-l-md bg-primary/70" />
         <div className="absolute bottom-0 right-0 h-full w-2 translate-x-1 rounded-r-md bg-primary/70" />
       </div>
-      <AnimatePresence>
-        {selectedItem && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            <ExpandedItem 
-              item={selectedItem} 
-              onClose={() => setSelectedItem(null)} 
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
