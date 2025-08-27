@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/icons';
 import { ArrowLeft, Wand2 } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
 import { generate } from '@/ai/flows/generate-flow';
@@ -65,7 +64,6 @@ export default function EditorPage() {
       <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <Logo className="h-8 w-8" />
             <h1 className="text-2xl font-bold tracking-tight">My Brain Dump</h1>
           </Link>
         </div>
