@@ -8,7 +8,7 @@ export type Block = {
 
 export type Entry = {
   id: string;
-  tabId: string; // <-- New field to link to a tab
+  tabId: string;
   type: EntryType;
   title: string;
   creator: string; // Author, Director, Artist
@@ -23,3 +23,26 @@ export type Tab = {
   label: string;
   type: EntryType;
 };
+
+// Spotify API Types
+export interface SpotifyArtist {
+  name: string;
+}
+
+export interface SpotifyImage {
+  url: string;
+  height: number;
+  width: number;
+}
+
+export interface SpotifyAlbum {
+  images: SpotifyImage[];
+  name: string;
+}
+
+export interface SpotifyTrack {
+  id: string;
+  name: string;
+  artists: SpotifyArtist[];
+  album: SpotifyAlbum;
+}

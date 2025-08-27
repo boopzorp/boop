@@ -10,9 +10,10 @@ import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { GenerateOutputSchema } from '@/ai/flows/schemas';
 import { Logo } from '@/components/logo';
-import type { Block, Tab } from '@/types';
+import type { Block, Tab, SpotifyTrack } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { SpotifySearch } from '@/components/spotify-search';
 
 const initialTabs: Tab[] = [
   { id: 'book', label: 'Books', type: 'book' },
@@ -22,6 +23,8 @@ const initialTabs: Tab[] = [
 
 export default function EditorPage() {
   const [title, setTitle] = useState('');
+  const [creator, setCreator] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [selectedTabId, setSelectedTabId] = useState<string>('book');
   const [blocks, setBlocks] = useState<Block[]>([
     { id: '1', type: 'paragraph', content: '' },
@@ -29,15 +32,18 @@ export default function EditorPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   
-  // In a real app, tabs would be fetched from a database.
-  // For now, we'll use a hardcoded list that matches the admin page.
   const [tabs, setTabs] = useState<Tab[]>(initialTabs);
 
   const handleSave = () => {
-    // Here you would typically save the content to a database.
-    // For now, we'll just log it to the console.
     const selectedTab = tabs.find(t => t.id === selectedTabId);
-    console.log({ title, tabId: selectedTabId, type: selectedTab?.type, blocks });
+    console.log({ 
+      title, 
+      creator,
+      imageUrl,
+      tabId: selectedTabId, 
+      type: selectedTab?.type, 
+      blocks 
+    });
     toast({
       title: 'Entry Saved!',
       description: 'Your journal entry has been saved to the console.',
@@ -74,6 +80,23 @@ export default function EditorPage() {
       setIsGenerating(false);
     }
   };
+
+  const handleTrackSelect = (track: SpotifyTrack) => {
+    setTitle(track.name);
+    setCreator(track.artists.map(a => a.name).join(', '));
+    if (track.album.images.length > 0) {
+      setImageUrl(track.album.images[0].url);
+      const newBlocks = blocks.map(b => b); // Create a new array
+      if (newBlocks.length === 0 || newBlocks[0].type !== 'image') {
+        newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: track.album.images[0].url });
+      } else {
+        newBlocks[0] = { ...newBlocks[0], content: track.album.images[0].url };
+      }
+      setBlocks(newBlocks);
+    }
+  };
+
+  const activeTab = tabs.find(t => t.id === selectedTabId);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -112,6 +135,14 @@ export default function EditorPage() {
                 </SelectContent>
             </Select>
           </div>
+
+          {activeTab?.type === 'music' && (
+            <div className="space-y-4">
+              <Label>Search Spotify</Label>
+              <SpotifySearch onTrackSelect={handleTrackSelect} />
+            </div>
+          )}
+
           <BlockEditor title={title} onTitleChange={setTitle} blocks={blocks} onBlocksChange={setBlocks} />
         </div>
       </main>
