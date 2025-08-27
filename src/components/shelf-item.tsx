@@ -119,6 +119,25 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
               data-ai-hint={`${type} cover`}
             />
           </motion.div>
+        ) : type === 'anime' ? (
+             <motion.div
+                key="spine-image"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, transition: { duration: 0.05 } }}
+                className={cn(
+                    "absolute inset-0 overflow-hidden",
+                    styles.spineShadow
+                )}
+            >
+                <Image 
+                    src={entry.imageUrl} 
+                    alt={`${title} spine`}
+                    width={styles.coverWidth}
+                    height={styles.itemHeight}
+                    className="h-full w-auto object-cover -translate-x-1/2 left-1/2 relative"
+                />
+            </motion.div>
         ) : (
           <motion.div
             key="spine"
