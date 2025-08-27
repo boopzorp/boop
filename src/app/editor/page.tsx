@@ -9,6 +9,7 @@ import { generate } from '@/ai/flows/generate-flow';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { GenerateOutputSchema } from '@/ai/flows/schemas';
+import { Logo } from '@/components/logo';
 
 export default function EditorPage() {
   const [title, setTitle] = useState('');
@@ -64,7 +65,7 @@ export default function EditorPage() {
       <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">My Brain Dump</h1>
+            <Logo />
           </Link>
         </div>
         <div className="flex items-center gap-4">

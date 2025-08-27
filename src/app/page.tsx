@@ -9,6 +9,7 @@ import { EntryDetail } from '@/components/entry-detail';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { TabSelector } from '@/components/tab-selector';
+import { Logo } from '@/components/logo';
 
 export default function Home() {
   const [entries] = useState<Entry[]>(mockEntries);
@@ -35,7 +36,7 @@ export default function Home() {
     <div className="flex min-h-screen w-full flex-col">
       <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight">My Brain Dump</h1>
+          <Logo />
         </div>
         <Link href="/editor">
           <Button>
