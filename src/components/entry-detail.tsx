@@ -21,7 +21,7 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -29,7 +29,7 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="relative bg-[#f5f1e8] w-full max-w-4xl h-[90vh] rounded-lg shadow-2xl p-8 flex gap-8"
+            className="relative bg-background border w-full max-w-4xl h-[90vh] rounded-lg shadow-2xl p-8 flex gap-8"
             onClick={(e) => e.stopPropagation()}
           >
             <Button
@@ -54,8 +54,8 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
             </div>
 
             <ScrollArea className="w-2/3 h-full">
-              <div className="prose prose-lg pr-4">
-                <h1 className="font-headline font-bold text-4xl mb-2">{entry.title}</h1>
+              <div className="prose prose-lg pr-4 prose-invert">
+                <h1 className="font-bold text-4xl mb-2 text-foreground">{entry.title}</h1>
                 <h2 className="text-xl text-muted-foreground font-normal mb-6">{entry.creator}</h2>
                 <p className='whitespace-pre-wrap'>{entry.notes}</p>
               </div>

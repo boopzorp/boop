@@ -33,11 +33,11 @@ export default function Home() {
   const types: EntryType[] = ['book', 'movie', 'music'];
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-[#f5f1e8] text-[#2d2d2d]">
+    <div className="flex min-h-screen w-full flex-col">
       <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Logo className="h-8 w-8" />
-          <h1 className="text-2xl font-bold tracking-tight font-headline">Shelf Life</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Shelf Life</h1>
         </div>
         <Link href="/editor">
           <Button>
@@ -49,7 +49,7 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center pt-24 space-y-8">
         <div className="w-full max-w-7xl">
           <TabSelector types={types} activeType={activeType} onTypeChange={setActiveType} />
-          <div className="bg-white/60 p-4 rounded-b-lg rounded-tr-lg shadow-lg">
+          <div className="bg-secondary/30 p-4 rounded-b-lg rounded-tr-lg shadow-lg">
             <InteractiveShelf 
               entries={entries.filter(e => e.type === activeType)} 
               type={activeType} 

@@ -61,12 +61,12 @@ export default function EditorPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-[#F0F0F0]">
-      <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center bg-white/80 backdrop-blur-sm border-b">
+    <div className="flex min-h-screen w-full flex-col">
+      <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Logo className="h-8 w-8" />
-            <h1 className="text-2xl font-bold tracking-tight font-headline">Shelf Life</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Shelf Life</h1>
           </Link>
         </div>
         <div className="flex items-center gap-4">

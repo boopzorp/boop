@@ -17,10 +17,10 @@ export function TabSelector({ types, activeType, onTypeChange }: TabSelectorProp
           key={type}
           onClick={() => onTypeChange(type)}
           className={cn(
-            "px-6 py-2 rounded-t-lg text-lg font-headline font-semibold transition-all duration-200 ease-in-out transform -mb-px relative",
+            "px-6 py-2 rounded-t-lg text-lg font-semibold transition-all duration-200 ease-in-out transform -mb-px relative",
             {
-              "bg-white/60 text-primary z-10 shadow-lg": activeType === type,
-              "bg-gray-300/50 hover:bg-gray-300/80 text-gray-600": activeType !== type,
+              "bg-secondary/30 text-foreground z-10 shadow-lg": activeType === type,
+              "bg-secondary/10 hover:bg-secondary/20 text-muted-foreground": activeType !== type,
             }
           )}
           style={{

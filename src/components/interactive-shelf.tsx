@@ -124,7 +124,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
               </motion.div>
           </div>
         </div>
-        <div className="h-4 w-11/12 max-w-6xl bg-[#a47e62] rounded-sm shadow-lg" style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }} />
+        <div className="h-4 w-11/12 max-w-6xl bg-secondary rounded-sm shadow-lg" style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }} />
     </div>
   );
 }
