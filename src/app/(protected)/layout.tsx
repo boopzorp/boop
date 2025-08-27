@@ -2,20 +2,21 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { app } from '@/lib/firebase/config';
-import { Logo } from '@/components/logo'; // Assuming you have a Logo component
+import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 
 const auth = getAuth(app);
 
-export default function AdminLayout({
+export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,15 +50,20 @@ export default function AdminLayout({
   }
 
   if (!user) {
-    return null; // or a login redirect component
+    return null; // Redirecting...
   }
+
+  // Don't show sign out on editor pages for a cleaner UI
+  const showSignOut = pathname === '/admin';
 
   return (
     <div className="relative min-h-screen">
       {children}
-      <div className="fixed bottom-4 right-4 z-50">
-          <Button onClick={handleSignOut} variant="secondary">Sign Out</Button>
-      </div>
+      {showSignOut && (
+         <div className="fixed bottom-4 right-4 z-50">
+            <Button onClick={handleSignOut} variant="secondary">Sign Out</Button>
+        </div>
+      )}
     </div>
     );
 }

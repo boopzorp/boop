@@ -25,14 +25,16 @@ export default function AdminPage() {
   const [isNewTabDialogOpen, setIsNewTabDialogOpen] = useState(false);
 
   useEffect(() => {
-    fetchAllData();
-  }, [fetchAllData]);
+    if (!isLoaded) {
+      fetchAllData();
+    }
+  }, [isLoaded, fetchAllData]);
 
   useEffect(() => {
     if (isLoaded && tabs.length > 0 && !activeTabId) {
       setActiveTabId(tabs[0].id);
     } else if (isLoaded && tabs.length === 0) {
-      setActiveTabId(null); // Ensure activeTabId is null if no tabs
+      setActiveTabId(null); 
     }
   }, [isLoaded, tabs, activeTabId]);
 
@@ -110,30 +112,30 @@ export default function AdminPage() {
                 onAddTab={() => setIsNewTabDialogOpen(true)}
             />
             <AnimatePresence mode="wait">
-                {activeTab ? (
-                    <motion.div 
-                        key={activeTabId}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="p-4 rounded-b-lg rounded-tr-lg shadow-lg"
-                        style={{ 
-                            backgroundColor: `${colors[activeTabId!] || '#cccccc'}33`, // 33 for ~20% opacity
-                            transition: 'background-color 0.5s ease-in-out',
-                        }} 
-                    >
-                        <InteractiveShelf 
-                            entries={entries.filter(e => e.tabId === activeTabId)} 
-                            type={activeTab.type} 
-                            onOpenDetail={handleOpenDetail} 
-                        />
-                    </motion.div>
-                ) : (
-                    <div className="p-8 rounded-b-lg rounded-tr-lg shadow-lg bg-secondary/30 text-center text-muted-foreground">
-                        <p>No tabs yet. Click the '+' button in the tab bar to create your first one!</p>
-                    </div>
-                )}
+              <motion.div 
+                  key={activeTabId || 'empty'}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg"
+                  style={{ 
+                      backgroundColor: activeTab ? `${colors[activeTabId!] || '#cccccc'}33` : '#f0f0f033',
+                      transition: 'background-color 0.5s ease-in-out',
+                  }} 
+              >
+                  {activeTab ? (
+                      <InteractiveShelf 
+                          entries={entries.filter(e => e.tabId === activeTabId)} 
+                          type={activeTab.type} 
+                          onOpenDetail={handleOpenDetail} 
+                      />
+                  ) : (
+                      <div className="h-[400px] flex items-center justify-center text-center text-muted-foreground">
+                          <p>No tabs yet. Click the '+' button in the tab bar to create your first one!</p>
+                      </div>
+                  )}
+              </motion.div>
             </AnimatePresence>
         </div>
       </main>

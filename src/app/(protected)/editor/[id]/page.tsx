@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
@@ -19,17 +19,19 @@ import { MangaSearch } from '@/components/manga-search';
 import { OMDBSearch } from '@/components/omdb-search';
 import { useEntryStore } from '@/store/entries';
 
-export default function EditorPage() {
+export default function EditEntryPage() {
   const router = useRouter();
-  const { tabs, addEntry, fetchAllData, isLoaded } = useEntryStore();
+  const params = useParams();
+  const entryId = params.id as string;
+
+  const { tabs, updateEntry, fetchEntryById, fetchAllData, isLoaded } = useEntryStore();
   
+  const [entry, setEntry] = useState<Entry | null>(null);
   const [title, setTitle] = useState('');
   const [creator, setCreator] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [selectedTabId, setSelectedTabId] = useState<string | undefined>(undefined);
-  const [blocks, setBlocks] = useState<Block[]>([
-    { id: '1', type: 'paragraph', content: '' },
-  ]);
+  const [blocks, setBlocks] = useState<Block[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -39,12 +41,30 @@ export default function EditorPage() {
   }, [isLoaded, fetchAllData]);
 
   useEffect(() => {
-    if (isLoaded && tabs.length > 0 && !selectedTabId) {
-      setSelectedTabId(tabs[0].id);
+    if (entryId && isLoaded) {
+      fetchEntryById(entryId).then(fetchedEntry => {
+        if (fetchedEntry) {
+          setEntry(fetchedEntry);
+          setTitle(fetchedEntry.title);
+          setCreator(fetchedEntry.creator);
+          setImageUrl(fetchedEntry.imageUrl);
+          setSelectedTabId(fetchedEntry.tabId);
+          setBlocks(fetchedEntry.content || [{ id: '1', type: 'paragraph', content: fetchedEntry.notes || '' }]);
+        } else {
+          toast({
+            title: 'Entry not found',
+            description: "Could not find the entry you're looking for.",
+            variant: 'destructive',
+          });
+          router.push('/admin');
+        }
+      });
     }
-  }, [isLoaded, tabs, selectedTabId]);
+  }, [isLoaded, entryId, fetchEntryById, router, toast]);
 
   const handleSave = () => {
+    if (!entry) return;
+
     const selectedTab = tabs.find(t => t.id === selectedTabId);
     if (!selectedTab) {
       toast({
@@ -57,7 +77,7 @@ export default function EditorPage() {
 
     const firstImage = blocks.find(b => b.type === 'image')?.content;
 
-    const newEntry: Omit<Entry, 'id' | 'addedAt'> = {
+    const updatedEntry: Partial<Omit<Entry, 'id' | 'addedAt'>> = {
       title,
       creator,
       imageUrl: imageUrl || firstImage || `https://picsum.photos/400/600`,
@@ -67,16 +87,16 @@ export default function EditorPage() {
       content: blocks,
     };
 
-    addEntry(newEntry);
+    updateEntry(entryId, updatedEntry);
 
     toast({
-      title: 'Entry Published!',
-      description: 'Your journal entry has been published.',
+      title: 'Entry Updated!',
+      description: 'Your journal entry has been saved.',
     });
     
     router.push('/admin');
   };
-
+  
   const setEntryImage = (url: string) => {
     setImageUrl(url);
     const newBlocks = blocks.filter(b => b.type !== 'image');
@@ -110,7 +130,7 @@ export default function EditorPage() {
       setEntryImage(anime.images.jpg.large_image_url);
     }
   };
-
+  
   const handleMangaSelect = (manga: JikanManga) => {
     setTitle(manga.title);
     setCreator(manga.authors.map(a => a.name).join(', '));
@@ -121,7 +141,7 @@ export default function EditorPage() {
 
   const handleMovieSelect = (movie: OMDBSearchResult) => {
     setTitle(movie.Title);
-    setCreator(movie.Year); // Basic search doesn't provide director, user can edit
+    setCreator(movie.Year);
     if (movie.Poster && movie.Poster !== 'N/A') {
       setEntryImage(movie.Poster);
     }
@@ -129,13 +149,13 @@ export default function EditorPage() {
 
   const activeTab = tabs.find(t => t.id === selectedTabId);
 
-  if (!isLoaded) {
+  if (!isLoaded || !entry) {
     return <div className="flex h-screen w-full items-center justify-center">Loading Editor...</div>
   }
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <header className="fixed top-0 left-0 z-20 p-4 w-full flex flex-wrap justify-between items-center bg-background/80 backdrop-blur-sm border-b">
+       <header className="fixed top-0 left-0 z-20 p-4 w-full flex flex-wrap justify-between items-center bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-2">
           <Link href="/admin" className="flex items-center gap-2">
             <Logo />
@@ -148,7 +168,7 @@ export default function EditorPage() {
               <span className="hidden md:inline">Back to Shelf</span>
             </Button>
           </Link>
-          <Button onClick={handleSave}>Publish</Button>
+          <Button onClick={handleSave}>Save Changes</Button>
         </div>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center pt-32 md:pt-24">
