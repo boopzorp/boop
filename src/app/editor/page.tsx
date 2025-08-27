@@ -8,11 +8,12 @@ import { ArrowLeft } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
-import type { Block, Tab, SpotifyTrack, Entry, GoogleBookVolume } from '@/types';
+import type { Block, Tab, SpotifyTrack, Entry, GoogleBookVolume, JikanAnime } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { SpotifySearch } from '@/components/spotify-search';
 import { GoogleBooksSearch } from '@/components/google-books-search';
+import { JikanSearch } from '@/components/jikan-search';
 import { useEntryStore } from '@/store/entries';
 
 export default function EditorPage() {
@@ -95,6 +96,14 @@ export default function EditorPage() {
     }
   };
 
+  const handleAnimeSelect = (anime: JikanAnime) => {
+    setTitle(anime.title);
+    setCreator(anime.studios.map(s => s.name).join(', '));
+    if (anime.images.jpg.large_image_url) {
+      setEntryImage(anime.images.jpg.large_image_url);
+    }
+  };
+
   const activeTab = tabs.find(t => t.id === selectedTabId);
 
   return (
@@ -142,6 +151,13 @@ export default function EditorPage() {
             <div className="space-y-4">
               <Label>Search Google Books</Label>
               <GoogleBooksSearch onBookSelect={handleBookSelect} />
+            </div>
+          )}
+
+          {activeTab?.type === 'anime' && (
+            <div className="space-y-4">
+              <Label>Search MyAnimeList</Label>
+              <JikanSearch onAnimeSelect={handleAnimeSelect} />
             </div>
           )}
 

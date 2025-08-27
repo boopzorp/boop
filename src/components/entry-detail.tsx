@@ -15,15 +15,16 @@ type EntryDetailProps = {
 
 function renderContent(entry: Entry) {
   if (entry.content && entry.content.length > 0) {
+    // We filter out the first image block if its content is the same as the main imageUrl,
+    // to avoid displaying the main cover image twice.
+    const contentBlocks = entry.content.filter((block, index) => {
+        return !(index === 0 && block.type === 'image' && block.content === entry.imageUrl);
+    });
+
     return (
       <div className="space-y-4">
-        {entry.content.map(block => {
+        {contentBlocks.map(block => {
           if (block.type === 'image' && block.content) {
-            // Note: The main image is already displayed on the left,
-            // so we might not need to render the first image block here.
-            // This is just an example of how to render all content blocks.
-            // We'll skip the first image to avoid duplication.
-            if (block.content === entry.imageUrl) return null;
             return (
               <div key={block.id} className="my-4">
                 <Image
@@ -55,6 +56,7 @@ export function EntryDetail({ entry, isOpen, onClose }: EntryDetailProps) {
         case 'music':
             return { width: 400, height: 400 };
         case 'movie':
+        case 'anime':
             return { width: 400, height: 560 };
         case 'blog':
         case 'book':

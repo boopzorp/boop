@@ -1,4 +1,4 @@
-export type EntryType = "book" | "movie" | "music" | "blog";
+export type EntryType = "book" | "movie" | "music" | "blog" | "anime";
 
 export type Block = {
   id: string;
@@ -65,4 +65,26 @@ export interface VolumeInfo {
 export interface GoogleBookVolume {
   id: string;
   volumeInfo: VolumeInfo;
+}
+
+// Jikan API Types
+export interface JikanImage {
+  image_url: string;
+  small_image_url: string;
+  large_image_url: string;
+}
+
+export interface JikanStudio {
+  mal_id: number;
+  name: string;
+}
+
+export interface JikanAnime {
+  mal_id: number;
+  title: string;
+  images: {
+    jpg: JikanImage;
+    webp: JikanImage;
+  };
+  studios: JikanStudio[];
 }
