@@ -7,7 +7,7 @@ import type { GoogleBookVolume } from '@/types';
 interface AnnasArchiveBook {
     title: string;
     author: string;
-    imgUrl: string;
+    cover_url: string;
 }
 
 
@@ -23,11 +23,11 @@ export const searchBooks = async (query: string): Promise<GoogleBookVolume[]> =>
   }
 
   try {
-    const response = await fetch(`https://annas-archive.p.rapidapi.com/findBook?q=${encodeURIComponent(query)}`, {
+    const response = await fetch(`https://annas-archive-api.p.rapidapi.com/search?q=${encodeURIComponent(query)}&limit=10`, {
         method: 'GET',
         headers: {
             'X-RapidAPI-Key': apiKey,
-            'X-RapidAPI-Host': 'annas-archive.p.rapidapi.com'
+            'X-RapidAPI-Host': 'annas-archive-api.p.rapidapi.com'
         }
     });
     
@@ -44,19 +44,20 @@ export const searchBooks = async (query: string): Promise<GoogleBookVolume[]> =>
 
     const data = await response.json();
     
-    if (!data.books || data.books.length === 0) {
+    // The response is an array of objects
+    if (!data || data.length === 0) {
         return [];
     }
     
     // Adapt the response to the GoogleBookVolume structure our component expects
-    return data.books.map((book: AnnasArchiveBook, index: number) => ({
+    return data.map((book: AnnasArchiveBook, index: number) => ({
       id: `${book.title}-${index}`, // Create a pseudo-id
       volumeInfo: {
         title: book.title,
         authors: book.author ? book.author.split(', ') : ['Unknown Author'],
         imageLinks: {
-          thumbnail: book.imgUrl,
-          smallThumbnail: book.imgUrl,
+          thumbnail: book.cover_url,
+          smallThumbnail: book.cover_url,
         },
         // Add dummy data for other fields to match the type
         publisher: '',

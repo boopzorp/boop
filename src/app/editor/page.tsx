@@ -92,9 +92,7 @@ export default function EditorPage() {
     setTitle(book.volumeInfo.title);
     setCreator(book.volumeInfo.authors?.join(', ') || 'Unknown Author');
     if (book.volumeInfo.imageLinks?.thumbnail) {
-      // Use a higher resolution version of the image if available
-      const coverUrl = book.volumeInfo.imageLinks.thumbnail.replace('&zoom=1', '&zoom=0');
-      setEntryImage(coverUrl);
+      setEntryImage(book.volumeInfo.imageLinks.thumbnail);
     }
   };
 
