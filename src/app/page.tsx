@@ -12,6 +12,7 @@ import { TabSelector } from '@/components/tab-selector';
 import { Logo } from '@/components/logo';
 import { NewTabDialog } from '@/components/new-tab-dialog';
 import type { Tab } from '@/types';
+import { Sparkles } from 'lucide-react';
 
 const initialTabs: Tab[] = [
   { id: 'book', label: 'Books', type: 'book' },
@@ -74,7 +75,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center">
+      <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-2">
           <Logo />
         </div>
@@ -85,7 +86,17 @@ export default function Home() {
           </Button>
         </Link>
       </header>
-      <main className="flex-1 flex flex-col items-center justify-center pt-24 space-y-8">
+      <main className="flex-1 flex flex-col items-center pt-24 space-y-8 px-4">
+
+        <div className="w-full max-w-7xl text-center bg-secondary/50 p-8 rounded-lg">
+            <h2 className="text-4xl font-bold font-anton tracking-wide text-foreground mb-2">
+                Hey there, partner in code! 🤖
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Welcome to my brain dump. This is where I stash all the good stuff—the books that blew my mind, the movies I can't stop thinking about, and the tunes that get me through the day. Feel free to poke around. Just... don't judge my questionable taste in 90s pop. 😉
+            </p>
+        </div>
+        
         <div className="w-full max-w-7xl">
           <TabSelector 
             tabs={tabs} 
