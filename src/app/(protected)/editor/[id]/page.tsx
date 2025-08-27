@@ -18,9 +18,9 @@ import { JikanSearch } from '@/components/jikan-search';
 import { MangaSearch } from '@/components/manga-search';
 import { OMDBSearch } from '@/components/omdb-search';
 import { useEntryStore } from '@/store/entries';
-import { generateHTML } from '@tiap-tap/html';
+import { generateHTML } from '@tiptap/html';
 import { editorExtensions } from '@/components/block-editor/extensions';
-import type { JSONContent } from '@tiap-tap/react';
+import type { JSONContent } from '@tiptap/react';
 
 const defaultBlockContent: JSONContent = {
   type: 'doc',
