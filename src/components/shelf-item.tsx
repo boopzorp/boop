@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Entry } from "@/types";
+import type { Entry, EntryType } from "@/types";
+import { cn } from '@/lib/utils';
 
 type ShelfItemProps = {
   entry: Entry;
@@ -10,12 +11,44 @@ type ShelfItemProps = {
   onOpenDetail: (entry: Entry) => void;
 };
 
-const SPINE_WIDTH = 40;
-const ITEM_HEIGHT = 350;
-const COVER_WIDTH = 250;
+const typeStyles: Record<EntryType, {
+    spineWidth: number,
+    itemHeight: number,
+    coverWidth: number,
+    textVertical: boolean,
+    spineBg: string,
+    spineShadow: string
+}> = {
+    book: {
+        spineWidth: 40,
+        itemHeight: 350,
+        coverWidth: 250,
+        textVertical: true,
+        spineBg: 'bg-[#FDFBF6]',
+        spineShadow: 'shadow-[inset_2px_0_5px_rgba(0,0,0,0.1),_inset_-1px_0_2px_rgba(255,255,255,0.3)]'
+    },
+    movie: {
+        spineWidth: 24,
+        itemHeight: 320,
+        coverWidth: 200,
+        textVertical: false,
+        spineBg: 'bg-blue-900/80',
+        spineShadow: 'shadow-[inset_1px_0_3px_rgba(255,255,255,0.2),_inset_-1px_0_3px_rgba(0,0,0,0.4)]'
+    },
+    music: {
+        spineWidth: 15,
+        itemHeight: 220,
+        coverWidth: 220,
+        textVertical: true,
+        spineBg: 'bg-gray-800',
+        spineShadow: 'shadow-[inset_1px_0_2px_rgba(255,255,255,0.2),_inset_-1px_0_2px_rgba(0,0,0,0.5)]'
+    }
+}
+
 
 export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
-  const { title } = entry;
+  const { title, type } = entry;
+  const styles = typeStyles[type];
   
   const itemVariants = {
     initial: {
@@ -37,8 +70,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
     <motion.div
       className="group relative flex-shrink-0 cursor-pointer"
       style={{ 
-        width: isSelected ? `${COVER_WIDTH}px` : `${SPINE_WIDTH}px`, 
-        height: `${ITEM_HEIGHT}px`
+        width: isSelected ? `${styles.coverWidth}px` : `${styles.spineWidth}px`, 
+        height: `${styles.itemHeight}px`
       }}
       variants={itemVariants}
       initial="initial"
@@ -59,10 +92,12 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             <Image
               src={entry.imageUrl}
               alt={`Cover for ${title}`}
-              width={COVER_WIDTH}
-              height={ITEM_HEIGHT}
-              className="rounded-md object-cover shadow-2xl w-full h-full"
-              data-ai-hint="book cover"
+              width={styles.coverWidth}
+              height={styles.itemHeight}
+              className={cn("rounded-md object-cover shadow-2xl w-full h-full", {
+                'border-2 border-white/20': type === 'movie' || type === 'music'
+              })}
+              data-ai-hint={`${type} cover`}
             />
           </motion.div>
         ) : (
@@ -71,19 +106,27 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.05 } }}
-            className="absolute inset-0 flex items-center justify-center p-1 bg-[#FDFBF6] shadow-[inset_2px_0_5px_rgba(0,0,0,0.1),_inset_-1px_0_2px_rgba(255,255,255,0.3)]"
+            className={cn(
+                "absolute inset-0 flex items-center justify-center p-1", 
+                styles.spineBg, 
+                styles.spineShadow
+            )}
           >
             <span
-              className="font-headline text-sm font-bold text-center text-[#333333]"
+              className={cn("font-headline text-sm font-bold text-center", {
+                'text-[#333333]': type === 'book',
+                'text-white/90': type === 'movie' || type === 'music'
+              })}
               style={{
-                writingMode: 'vertical-rl',
-                textOrientation: 'mixed',
-                transform: 'rotate(180deg)',
+                writingMode: styles.textVertical ? 'vertical-rl' : 'horizontal-tb',
+                textOrientation: styles.textVertical ? 'mixed' : undefined,
+                transform: styles.textVertical ? 'rotate(180deg)' : 'rotate(0deg)',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
                 maxHeight: '100%',
-                padding: '8px 0',
+                maxWidth: '100%',
+                padding: styles.textVertical ? '8px 0' : '0 4px',
               }}
             >
               {title}

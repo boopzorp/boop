@@ -2,28 +2,55 @@
 
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import type { Entry } from "@/types";
+import type { Entry, EntryType } from "@/types";
 import { ShelfItem } from "./shelf-item";
-import { cn } from '@/lib/utils';
 
 type InteractiveShelfProps = {
   entries: Entry[];
+  type: EntryType;
   onOpenDetail: (entry: Entry) => void;
 };
 
-const SPINE_WIDTH = 40; 
-const GAP = 8; 
-const COVER_WIDTH = 250; 
+const getSpineWidth = (type: EntryType) => {
+  switch (type) {
+    case 'book':
+      return 40;
+    case 'movie':
+      return 24;
+    case 'music':
+      return 15;
+    default:
+      return 40;
+  }
+};
 
-export function InteractiveShelf({ entries, onOpenDetail }: InteractiveShelfProps) {
+const getCoverWidth = (type: EntryType) => {
+    switch (type) {
+      case 'book':
+        return 250;
+      case 'movie':
+        return 200;
+      case 'music':
+        return 220;
+      default:
+        return 250;
+    }
+  };
+
+export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShelfProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const selectedIndex = selectedId ? entries.findIndex(e => e.id === selectedId) : -1;
+  
+  const SPINE_WIDTH = getSpineWidth(type);
+  const COVER_WIDTH = getCoverWidth(type);
+  const GAP = 8;
+  
+  const filteredEntries = entries.filter(e => e.type === type);
+  const selectedIndex = selectedId ? filteredEntries.findIndex(e => e.id === selectedId) : -1;
 
   const handleSelect = (entry: Entry) => {
     if (selectedId === entry.id) {
-      onOpenDetail(entry);
+        onOpenDetail(entry);
     } else {
       setSelectedId(entry.id);
     }
@@ -32,7 +59,7 @@ export function InteractiveShelf({ entries, onOpenDetail }: InteractiveShelfProp
   const handleDeselect = () => {
     setSelectedId(null);
   };
-
+  
   const calculateTransform = (index: number) => {
     if (selectedIndex === -1) return 'translateX(0px)';
 
@@ -47,11 +74,11 @@ export function InteractiveShelf({ entries, onOpenDetail }: InteractiveShelfProp
     return 'translateX(0px)';
   };
   
-  const totalWidth = entries.length * (SPINE_WIDTH + GAP) + (selectedIndex !== -1 ? COVER_WIDTH - SPINE_WIDTH : 0);
+  const totalWidth = filteredEntries.length * (SPINE_WIDTH + GAP) + (selectedIndex !== -1 ? COVER_WIDTH - SPINE_WIDTH : 0);
 
   return (
     <div 
-      className="w-full flex flex-col items-center justify-center flex-1"
+      className="w-full flex flex-col items-center justify-center"
       onClick={handleDeselect}
     >
         <div 
@@ -71,7 +98,7 @@ export function InteractiveShelf({ entries, onOpenDetail }: InteractiveShelfProp
                 animate={{ width: totalWidth }}
                 transition={{ type: 'spring', stiffness: 400, damping: 40 }}
               >
-                {entries.filter(e => e.type === 'book').map((item, index) => {
+                {filteredEntries.map((item, index) => {
                   return (
                     <motion.div
                       key={item.id}

@@ -9,6 +9,7 @@ import { EntryDetail } from '@/components/entry-detail';
 import { Logo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function Home() {
   const [entries] = useState<Entry[]>(mockEntries);
@@ -42,8 +43,21 @@ export default function Home() {
           </Button>
         </Link>
       </header>
-      <main className="flex-1 flex flex-col items-center justify-center">
-        <InteractiveShelf entries={entries} onOpenDetail={handleOpenDetail} />
+      <main className="flex-1 flex flex-col items-center justify-center pt-24 space-y-8">
+        <div className='w-full max-w-7xl'>
+          <h2 className="text-3xl font-bold font-headline px-12 mb-4">Books</h2>
+          <InteractiveShelf entries={entries} type="book" onOpenDetail={handleOpenDetail} />
+        </div>
+        <Separator className="my-8" />
+        <div className='w-full max-w-7xl'>
+          <h2 className="text-3xl font-bold font-headline px-12 mb-4">Movies</h2>
+          <InteractiveShelf entries={entries} type="movie" onOpenDetail={handleOpenDetail} />
+        </div>
+        <Separator className="my-8" />
+        <div className='w-full max-w-7xl'>
+          <h2 className="text-3xl font-bold font-headline px-12 mb-4">Music</h2>
+          <InteractiveShelf entries={entries} type="music" onOpenDetail={handleOpenDetail} />
+        </div>
       </main>
       <EntryDetail entry={selectedEntry} isOpen={isDetailViewOpen} onClose={handleCloseDetail} />
     </div>
