@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Tab } from "@/types";
 import { cn } from "@/lib/utils";
 import { ColorPalette } from "./color-palette";
@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Settings2, Plus, Trash2, MoreHorizontal } from 'lucide-react';
 import { ConfirmationDialog } from './confirmation-dialog';
 import { useEntryStore } from '@/store/entries';
+import { motion } from 'framer-motion';
 
 type TabSelectorProps = {
   tabs: Tab[];
@@ -60,30 +61,36 @@ export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorCha
   
   return (
     <div className="flex justify-between items-end px-1">
-      <div className="flex -space-x-2">
+      <div className="relative flex border-b">
         {visibleTabs.map((tab) => (
-          <button
+           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              "px-6 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ease-in-out relative bottom-[-1px] border border-b-0",
+              "relative z-10 px-6 py-2 text-sm font-medium transition-colors duration-200 ease-in-out",
               {
-                "z-10": activeTabId === tab.id,
-                "text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary": activeTabId !== tab.id,
+                "text-black/90": activeTabId === tab.id,
+                "text-muted-foreground hover:text-foreground": activeTabId !== tab.id,
               }
             )}
-            style={{
-              backgroundColor: activeTabId === tab.id ? colors[tab.id] : undefined,
-              borderColor: activeTabId === tab.id ? colors[tab.id] : 'transparent',
-            }}
           >
-            <span className={cn("capitalize", { 'text-black/80 font-semibold': activeTabId === tab.id })}>{tab.label}</span>
+            {activeTabId === tab.id && (
+                <motion.div
+                    layoutId="activeTabPill"
+                    className="absolute inset-0 z-0 rounded-t-lg"
+                    style={{
+                        backgroundColor: colors[tab.id] || '#cccccc',
+                    }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+            )}
+            <span className="relative z-20 capitalize">{tab.label}</span>
           </button>
         ))}
         {totalPages > 1 && (
              <button
              onClick={handleNextPage}
-             className="px-3 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ease-in-out relative bottom-[-1px] border border-b-0 text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary"
+             className="px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out text-muted-foreground hover:text-foreground"
              >
                  <MoreHorizontal className="h-4 w-4" />
              </button>
@@ -91,7 +98,7 @@ export function TabSelector({ tabs, activeTabId, onTabChange, colors, onColorCha
         {showCustomize && (
             <button
             onClick={onAddTab}
-            className="px-3 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ease-in-out relative bottom-[-1px] border border-b-0 text-muted-foreground bg-secondary/50 border-transparent hover:bg-secondary"
+            className="px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out text-muted-foreground hover:text-foreground"
             >
                 <Plus className="h-4 w-4" />
             </button>
