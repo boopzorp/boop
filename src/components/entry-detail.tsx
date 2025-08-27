@@ -6,11 +6,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, Pencil } from 'lucide-react';
-import type { Entry } from "@/types";
+import type { Entry, Block } from "@/types";
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { useEntryStore } from '@/store/entries';
 import { ConfirmationDialog } from './confirmation-dialog';
+import { generateHTML } from '@tiptap/html';
+import { editorExtensions } from './block-editor/extensions';
 
 type EntryDetailProps = {
   entry: Entry | null;
@@ -19,9 +21,14 @@ type EntryDetailProps = {
   showDelete?: boolean;
 };
 
+// Helper to check if content is a valid TipTap JSON
+const isValidJSONContent = (content: any): boolean => {
+  return content && typeof content === 'object' && content.type === 'doc';
+};
+
 function renderContent(entry: Entry) {
   if (entry.content && entry.content.length > 0) {
-    // We filter out the first image block if its content is the same as the main imageUrl,
+    // Filter out the first image block if its content is the same as the main imageUrl,
     // to avoid displaying the main cover image twice.
     const contentBlocks = entry.content.filter((block, index) => {
         return !(index === 0 && block.type === 'image' && block.content === entry.imageUrl);
@@ -30,7 +37,7 @@ function renderContent(entry: Entry) {
     return (
       <div className="space-y-4">
         {contentBlocks.map(block => {
-          if (block.type === 'image' && block.content) {
+          if (block.type === 'image' && typeof block.content === 'string') {
             return (
               <div key={block.id} className="my-4">
                 <Image
@@ -38,13 +45,20 @@ function renderContent(entry: Entry) {
                   alt="Entry content image"
                   width={600}
                   height={400}
-                  className="rounded-md object-cover"
+                  className="rounded-md object-cover w-full max-h-96"
                 />
               </div>
             );
           }
           if (block.type === 'paragraph') {
-            return <p key={block.id} className="whitespace-pre-wrap">{block.content}</p>;
+            if (isValidJSONContent(block.content)) {
+                const html = generateHTML(block.content as any, editorExtensions);
+                return <div key={block.id} className="prose prose-lg prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />;
+            }
+            // Fallback for old string content
+            if (typeof block.content === 'string') {
+                return <p key={block.id} className="whitespace-pre-wrap">{block.content}</p>;
+            }
           }
           return null;
         })}
@@ -52,8 +66,9 @@ function renderContent(entry: Entry) {
     );
   }
   // Fallback to notes if content is not available
-  return <p className='whitespace-pre-wrap'>{entry.notes}</p>;
+  return <div className="prose prose-lg prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
 }
+
 
 export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: EntryDetailProps) {
   const { deleteEntry } = useEntryStore();
@@ -142,7 +157,7 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: Entr
               </div>
 
               <ScrollArea className="w-full md:w-2/3 h-full">
-                <div className="prose prose-lg pr-4 prose-invert">
+                <div className="pr-4">
                   <h1 className="font-bold text-3xl md:text-4xl mb-2 text-foreground">{entry.title}</h1>
                   <h2 className="text-lg md:text-xl text-muted-foreground font-normal mb-6">{entry.creator}</h2>
                   {renderContent(entry)}

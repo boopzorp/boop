@@ -18,6 +18,20 @@ import { JikanSearch } from '@/components/jikan-search';
 import { MangaSearch } from '@/components/manga-search';
 import { OMDBSearch } from '@/components/omdb-search';
 import { useEntryStore } from '@/store/entries';
+import { generateHTML } from '@tiptap/html';
+import { editorExtensions } from '@/components/block-editor/extensions';
+import type { JSONContent } from '@tiptap/react';
+
+const defaultBlockContent: JSONContent = {
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+      content: [],
+    },
+  ],
+};
+
 
 export default function EditorPage() {
   const router = useRouter();
@@ -28,7 +42,7 @@ export default function EditorPage() {
   const [imageUrl, setImageUrl] = useState('');
   const [selectedTabId, setSelectedTabId] = useState<string | undefined>(undefined);
   const [blocks, setBlocks] = useState<Block[]>([
-    { id: '1', type: 'paragraph', content: '' },
+    { id: '1', type: 'paragraph', content: defaultBlockContent },
   ]);
   const { toast } = useToast();
 
@@ -56,6 +70,10 @@ export default function EditorPage() {
     }
 
     const firstImage = blocks.find(b => b.type === 'image')?.content;
+    const plainTextNotes = blocks
+      .filter(b => b.type === 'paragraph' && typeof b.content === 'object' && b.content !== null)
+      .map(b => generateHTML(b.content as any, editorExtensions))
+      .join('\n\n');
 
     const newEntry: Omit<Entry, 'id' | 'addedAt'> = {
       title,
@@ -63,7 +81,7 @@ export default function EditorPage() {
       imageUrl: imageUrl || firstImage || `https://picsum.photos/400/600`,
       tabId: selectedTabId!,
       type: selectedTab.type,
-      notes: blocks.filter(b => b.type === 'paragraph').map(b => b.content).join('\n\n'),
+      notes: plainTextNotes,
       content: blocks,
     };
 
@@ -79,12 +97,12 @@ export default function EditorPage() {
 
   const setEntryImage = (url: string) => {
     setImageUrl(url);
-    const newBlocks = blocks.filter(b => b.type !== 'image');
-    newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: url });
-    if (newBlocks.length > 1 && newBlocks[1].type === 'paragraph' && newBlocks[1].content === '') {
-      newBlocks.splice(1, 1);
+    const hasImageBlock = blocks.some(b => b.type === 'image');
+    if (!hasImageBlock) {
+      const newBlocks = [...blocks];
+      newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: url });
+      setBlocks(newBlocks);
     }
-    setBlocks(newBlocks);
   };
 
   const handleTrackSelect = (track: SpotifyTrack) => {

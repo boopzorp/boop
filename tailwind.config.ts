@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -96,5 +97,9 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require('framer-motion')],
+  plugins: [
+    require('tailwindcss-animate'), 
+    require('framer-motion'),
+    require('@tailwindcss/typography')
+],
 } satisfies Config;

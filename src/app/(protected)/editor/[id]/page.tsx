@@ -18,6 +18,8 @@ import { JikanSearch } from '@/components/jikan-search';
 import { MangaSearch } from '@/components/manga-search';
 import { OMDBSearch } from '@/components/omdb-search';
 import { useEntryStore } from '@/store/entries';
+import { generateHTML } from '@tiptap/html';
+import { editorExtensions } from '@/components/block-editor/extensions';
 
 export default function EditEntryPage() {
   const router = useRouter();
@@ -49,7 +51,11 @@ export default function EditEntryPage() {
           setCreator(fetchedEntry.creator);
           setImageUrl(fetchedEntry.imageUrl);
           setSelectedTabId(fetchedEntry.tabId);
-          setBlocks(fetchedEntry.content || [{ id: '1', type: 'paragraph', content: fetchedEntry.notes || '' }]);
+          // Ensure content is always an array and notes are handled
+          const initialBlocks = fetchedEntry.content?.length
+            ? fetchedEntry.content
+            : [{ id: '1', type: 'paragraph', content: fetchedEntry.notes || '' }];
+          setBlocks(initialBlocks);
         } else {
           toast({
             title: 'Entry not found',
@@ -76,6 +82,11 @@ export default function EditEntryPage() {
     }
 
     const firstImage = blocks.find(b => b.type === 'image')?.content;
+    const plainTextNotes = blocks
+      .filter(b => b.type === 'paragraph' && typeof b.content === 'object' && b.content !== null)
+      .map(b => generateHTML(b.content as any, editorExtensions))
+      .join('\n\n');
+
 
     const updatedEntry: Partial<Omit<Entry, 'id' | 'addedAt'>> = {
       title,
@@ -83,7 +94,7 @@ export default function EditEntryPage() {
       imageUrl: imageUrl || firstImage || `https://picsum.photos/400/600`,
       tabId: selectedTabId,
       type: selectedTab.type,
-      notes: blocks.filter(b => b.type === 'paragraph').map(b => b.content).join('\n\n'),
+      notes: plainTextNotes, // You might want a better plain text conversion here
       content: blocks,
     };
 
@@ -99,13 +110,14 @@ export default function EditEntryPage() {
   
   const setEntryImage = (url: string) => {
     setImageUrl(url);
-    const newBlocks = blocks.filter(b => b.type !== 'image');
-    newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: url });
-    if (newBlocks.length > 1 && newBlocks[1].type === 'paragraph' && newBlocks[1].content === '') {
-      newBlocks.splice(1, 1);
+    const hasImageBlock = blocks.some(b => b.type === 'image');
+    if (!hasImageBlock) {
+      const newBlocks = [...blocks];
+      newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: url });
+      setBlocks(newBlocks);
     }
-    setBlocks(newBlocks);
   };
+
 
   const handleTrackSelect = (track: SpotifyTrack) => {
     setTitle(track.name);

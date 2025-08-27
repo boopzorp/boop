@@ -1,10 +1,12 @@
 
+import type { JSONContent } from '@tiptap/react';
+
 export type EntryType = "book" | "movie" | "music" | "blog" | "anime" | "manga" | "tv";
 
 export type Block = {
   id: string;
   type: 'paragraph' | 'image';
-  content: string;
+  content: JSONContent | string;
 };
 
 export type Entry = {
