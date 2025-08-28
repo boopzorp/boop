@@ -77,13 +77,12 @@ export default function EditEntryPage() {
 
     let finalImageUrl = imageUrl;
     if (selectedTab.type === 'apps' && creator) {
-      try {
-        // Ensure creator is a valid URL before attempting to use it.
-        const url = new URL(creator.startsWith('http') ? creator : `https://${creator}`);
-        finalImageUrl = `https://favicone.com/${url.hostname}`;
-      } catch (error) {
-        finalImageUrl = ''; // Invalid URL
-      }
+        try {
+            const url = new URL(creator.startsWith('http') ? creator : `https://${creator}`);
+            finalImageUrl = `https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url.origin}&size=128`;
+        } catch (error) {
+            finalImageUrl = ''; // Invalid URL
+        }
     }
     
     const updatedEntry: Partial<Omit<Entry, 'id' | 'addedAt'>> = {
@@ -152,7 +151,7 @@ export default function EditEntryPage() {
     if (urlValue) {
         try {
             const url = new URL(urlValue.startsWith('http') ? urlValue : `https://${urlValue}`);
-            setImageUrl(`https://favicone.com/${url.hostname}`);
+            setImageUrl(`https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url.origin}&size=128`);
         } catch (error) {
             // Invalid URL, clear image
             setImageUrl('');
