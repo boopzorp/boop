@@ -187,15 +187,15 @@ export const useEntryStore = create<EntryState>((set, get) => ({
     try {
       const tabRef = doc(db, 'tabs', tabId);
       
-      // Sanitize the canvasImages array to ensure it contains only plain objects
+      // Sanitize the canvasImages array to ensure it contains only plain, valid objects for Firestore.
       const sanitizedImages = canvasImages.map(img => ({
-        id: img.id,
-        url: img.url,
-        x: img.x,
-        y: img.y,
-        width: img.width,
-        height: img.height,
-        rotation: img.rotation
+        id: img.id || '',
+        url: img.url || '',
+        x: img.x ?? 0,
+        y: img.y ?? 0,
+        width: img.width ?? 200,
+        height: img.height ?? 200,
+        rotation: img.rotation ?? 0
       }));
       
       await updateDoc(tabRef, { canvasImages: sanitizedImages });
