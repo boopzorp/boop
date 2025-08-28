@@ -155,7 +155,7 @@ export default function AdminPage() {
                   {activeTab ? (
                       <div className={cn("relative", {
                         'z-10': !isCanvasEditMode,
-                        'z-0': isCanvasEditMode,
+                        'z-0 pointer-events-none': isCanvasEditMode,
                       })}>
                         <InteractiveShelf 
                             entries={entries.filter(e => e.tabId === activeTabId)} 

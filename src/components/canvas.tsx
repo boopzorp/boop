@@ -22,6 +22,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProp
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  // Sync with external changes (e.g., switching tabs)
   useEffect(() => {
     setImages(initialImages);
   }, [initialImages]);
@@ -101,7 +102,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProp
     <div 
       ref={canvasRef}
       className="absolute inset-0 w-full h-full overflow-hidden"
-      onClick={() => setSelectedImageId(null)}
+      onClick={() => isEditMode && setSelectedImageId(null)}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
     >
