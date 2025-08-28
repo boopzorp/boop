@@ -78,9 +78,9 @@ export default function EditEntryPage() {
     let finalImageUrl = imageUrl;
     if (selectedTab.type === 'apps' && creator) {
       try {
+        // Ensure creator is a valid URL before attempting to use it.
         const url = new URL(creator.startsWith('http') ? creator : `https://${creator}`);
-        const domain = url.hostname;
-        finalImageUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+        finalImageUrl = `https://favicone.com/${url.hostname}`;
       } catch (error) {
         finalImageUrl = ''; // Invalid URL
       }
@@ -152,8 +152,7 @@ export default function EditEntryPage() {
     if (urlValue) {
         try {
             const url = new URL(urlValue.startsWith('http') ? urlValue : `https://${urlValue}`);
-            const domain = url.hostname;
-            setImageUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
+            setImageUrl(`https://favicone.com/${url.hostname}`);
         } catch (error) {
             // Invalid URL, clear image
             setImageUrl('');
