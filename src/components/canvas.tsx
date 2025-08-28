@@ -24,6 +24,7 @@ function generateId() {
 
 export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: CanvasProps) {
   const [images, setImages] = useState<CanvasImage[]>(initialImages);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -31,6 +32,10 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
   useEffect(() => {
     setImages(initialImages);
   }, [initialImages]);
+
+  const handleItemUpdate = (updatedItem: CanvasImage) => {
+    setImages(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
+  };
   
   const handleDeleteImage = (id: string) => {
     setImages(prev => prev.filter(item => item.id !== id));
@@ -127,18 +132,26 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
       window.removeEventListener('paste', handlePaste);
     };
   }, [handlePaste]);
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // If we click the canvas itself and not an item on it, deselect.
+    if (e.target === canvasRef.current) {
+      setSelectedItemId(null);
+    }
+  };
   
   return (
     <div 
       ref={canvasRef}
       className="absolute inset-0 w-full h-full overflow-hidden"
+      onClick={handleCanvasClick}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
     >
       {isEditMode && (
         <div 
           className={cn(
-              "absolute inset-0 z-20 flex items-center justify-center text-center p-4 rounded-lg pointer-events-none",
+              "absolute inset-0 z-0 flex items-center justify-center text-center p-4 rounded-lg pointer-events-none",
               "border-2 border-dashed border-primary/50 bg-primary/10",
               { "opacity-0": images.length > 0 && !isUploading }
           )}
@@ -163,6 +176,9 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
               key={item.id}
               item={item}
               isEditMode={isEditMode}
+              isSelected={selectedItemId === item.id}
+              onSelect={() => setSelectedItemId(item.id)}
+              onUpdate={handleItemUpdate}
               onDelete={handleDeleteImage}
             />
         ))}
@@ -170,7 +186,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
 
 
       {isEditMode && (
-        <div className="absolute bottom-4 right-4 z-20">
+        <div className="absolute bottom-4 right-4 z-30">
           <Button onClick={() => onSave(images)}>Save Canvas</Button>
         </div>
       )}
