@@ -1,6 +1,6 @@
 
 import { create } from 'zustand';
-import type { Entry, Tab, EntryType, Block, CanvasImage } from '@/types';
+import type { Entry, Tab, EntryType, CanvasImage } from '@/types';
 import { 
   collection, 
   getDocs, 
@@ -9,7 +9,8 @@ import {
   doc, 
   updateDoc,
   getDoc,
-  Timestamp
+  Timestamp,
+  writeBatch
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 
@@ -26,48 +27,34 @@ interface EntryState {
   addTab: (tab: { label: string; type: EntryType }) => Promise<string | undefined>;
   deleteTab: (tabId: string) => Promise<void>;
   setTabColor: (tabId: string, color: string) => Promise<void>;
-  updateTabCanvas: (tabId: string, imageUrls: string[]) => Promise<void>;
-}
-
-function generateId() {
-    return Math.random().toString(36).substr(2, 9);
+  updateTabCanvas: (tabId: string, images: CanvasImage[]) => Promise<void>;
 }
 
 const fetchTabs = async (): Promise<{ tabs: Tab[], colors: Record<string, string> }> => {
-  const tabsCollection = collection(db, 'tabs');
-  const tabSnapshot = await getDocs(tabsCollection);
+  const tabsCollectionRef = collection(db, 'tabs');
+  const tabSnapshot = await getDocs(tabsCollectionRef);
   const tabs: Tab[] = [];
   const colors: Record<string, string> = {};
-  tabSnapshot.forEach((doc) => {
-    const data = doc.data();
-    const positions = [
-        { x: 50, y: 50, rotation: -5 },
-        { x: 250, y: 100, rotation: 3 },
-        { x: 450, y: 80, rotation: -2 },
-        { x: 100, y: 280, rotation: 6 },
-        { x: 350, y: 300, rotation: -4 },
-    ];
-    const canvasImages = (data.canvasImages || []).map((url: string, index: number) => {
-        const position = positions[index % positions.length];
-        return {
-            id: generateId(),
-            url,
-            x: position.x,
-            y: position.y,
-            width: 200,
-            height: 200,
-            rotation: position.rotation,
-        }
-    })
+
+  for (const tabDoc of tabSnapshot.docs) {
+    const tabData = tabDoc.data();
+    
+    // Fetch canvas images from the subcollection
+    const canvasImagesCollectionRef = collection(db, 'tabs', tabDoc.id, 'canvasImages');
+    const canvasImagesSnapshot = await getDocs(canvasImagesCollectionRef);
+    const canvasImages: CanvasImage[] = canvasImagesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as CanvasImage));
 
     tabs.push({ 
-        id: doc.id, 
-        label: data.label, 
-        type: data.type,
+        id: tabDoc.id, 
+        label: tabData.label, 
+        type: tabData.type,
         canvasImages: canvasImages,
     });
-    colors[doc.id] = data.color || '#C0C0C0';
-  });
+    colors[tabDoc.id] = tabData.color || '#C0C0C0';
+  }
   return { tabs, colors };
 };
 
@@ -168,7 +155,7 @@ export const useEntryStore = create<EntryState>((set, get) => ({
 
   addTab: async (tab) => {
     try {
-        const newTabData = { ...tab, color: '#C0C0C0', canvasImages: [] };
+        const newTabData = { ...tab, color: '#C0C0C0' };
         const docRef = await addDoc(collection(db, 'tabs'), newTabData);
         const newTab: Tab = { id: docRef.id, ...tab, canvasImages: [] };
         set((state) => ({
@@ -207,14 +194,33 @@ export const useEntryStore = create<EntryState>((set, get) => ({
     }
   },
 
-  updateTabCanvas: async (tabId, imageUrls) => {
+  updateTabCanvas: async (tabId, images) => {
     try {
-      const tabRef = doc(db, 'tabs', tabId);
-      await updateDoc(tabRef, { canvasImages: imageUrls });
-      
-      // Manually refetch tabs to reload the new hardcoded positions
-      const { tabs, colors } = await fetchTabs();
-      set({ tabs, colors });
+      const batch = writeBatch(db);
+      const canvasImagesCollectionRef = collection(db, 'tabs', tabId, 'canvasImages');
+
+      // 1. Delete all existing images in the subcollection
+      const existingImagesSnapshot = await getDocs(canvasImagesCollectionRef);
+      existingImagesSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      // 2. Add all the new images
+      images.forEach((image) => {
+        const { id, ...imageData } = image; // Exclude local ID from Firestore doc
+        const newImageRef = doc(canvasImagesCollectionRef, id); // Use local ID as doc ID
+        batch.set(newImageRef, imageData);
+      });
+
+      // 3. Commit the batch
+      await batch.commit();
+
+      // Update local state to reflect the changes
+      set((state) => ({
+        tabs: state.tabs.map(tab => 
+          tab.id === tabId ? { ...tab, canvasImages: images } : tab
+        ),
+      }));
 
     } catch (error) {
       console.error("Error updating tab canvas: ", error);
