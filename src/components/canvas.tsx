@@ -6,10 +6,12 @@ import type { CanvasImage } from '@/types';
 import { CanvasItem } from './canvas-item';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { uploadImageFromString } from '@/lib/firebase/storage';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Image as ImageIcon, RotateCw, Trash2 } from 'lucide-react';
+import { Slider } from './ui/slider';
+import { Label } from './ui/label';
 
 type CanvasProps = {
   images: CanvasImage[];
@@ -30,8 +32,18 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
   const { toast } = useToast();
 
   useEffect(() => {
-    setImages(initialImages);
-  }, [initialImages]);
+    // Only update from props if not in edit mode to avoid overwriting changes
+    if (!isEditMode) {
+      setImages(initialImages);
+    }
+  }, [initialImages, isEditMode]);
+  
+  // Deselect item if edit mode is turned off
+  useEffect(() => {
+    if (!isEditMode) {
+      setSelectedItemId(null);
+    }
+  }, [isEditMode]);
 
   const handleItemUpdate = (updatedItem: CanvasImage) => {
     setImages(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
@@ -39,6 +51,9 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
   
   const handleDeleteImage = (id: string) => {
     setImages(prev => prev.filter(item => item.id !== id));
+    if (selectedItemId === id) {
+      setSelectedItemId(null);
+    }
   };
 
   const addImageToCanvas = useCallback(async (dataUrl: string) => {
@@ -53,7 +68,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
     setIsUploading(true);
     try {
         const imageName = `canvas-image-${Date.now()}-${generateId()}`;
-        const imagePath = `tabs/${tabId}/${imageName}`;
+        const imagePath = `tabs/${tabId}/canvas/${imageName}`;
         const downloadURL = await uploadImageFromString(dataUrl, imagePath);
 
         const positions = [
@@ -134,10 +149,25 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
   }, [handlePaste]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // If we click the canvas itself and not an item on it, deselect.
-    if (e.target === canvasRef.current) {
+    if (e.target === canvasRef.current && isEditMode) {
       setSelectedItemId(null);
     }
+  };
+
+  const selectedImage = images.find(img => img.id === selectedItemId);
+
+  const handleSizeChange = (newSize: number[]) => {
+    if (!selectedImage) return;
+    const newWidth = newSize[0];
+    // Maintain aspect ratio
+    const aspectRatio = selectedImage.height / selectedImage.width;
+    const newHeight = newWidth * aspectRatio;
+    handleItemUpdate({ ...selectedImage, width: newWidth, height: newHeight });
+  };
+  
+  const handleRotationChange = (newRotation: number[]) => {
+    if (!selectedImage) return;
+    handleItemUpdate({ ...selectedImage, rotation: newRotation[0] });
   };
   
   return (
@@ -178,12 +208,57 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
               isEditMode={isEditMode}
               isSelected={selectedItemId === item.id}
               onSelect={() => setSelectedItemId(item.id)}
-              onUpdate={handleItemUpdate}
-              onDelete={handleDeleteImage}
             />
         ))}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {isEditMode && selectedImage && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-background p-3 rounded-lg shadow-lg border w-full max-w-sm"
+          >
+            <div className="grid gap-4">
+               <div className="space-y-2">
+                 <Label htmlFor="size-slider" className="flex items-center gap-2 text-sm">
+                   <ImageIcon className="h-4 w-4" /> Size
+                 </Label>
+                 <Slider
+                   id="size-slider"
+                   min={50}
+                   max={800}
+                   step={10}
+                   value={[selectedImage.width]}
+                   onValueChange={handleSizeChange}
+                 />
+               </div>
+               <div className="space-y-2">
+                 <Label htmlFor="rotation-slider" className="flex items-center gap-2 text-sm">
+                   <RotateCw className="h-4 w-4" /> Rotation
+                 </Label>
+                 <Slider
+                   id="rotation-slider"
+                   min={-180}
+                   max={180}
+                   step={1}
+                   value={[selectedImage.rotation]}
+                   onValueChange={handleRotationChange}
+                 />
+               </div>
+               <Button 
+                variant="destructive" 
+                size="sm" 
+                onClick={() => handleDeleteImage(selectedImage.id)}
+               >
+                 <Trash2 className="mr-2 h-4 w-4" />
+                 Delete Image
+               </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {isEditMode && (
         <div className="absolute bottom-4 right-4 z-30">
