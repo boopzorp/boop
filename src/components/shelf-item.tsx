@@ -75,6 +75,14 @@ const typeStyles: Record<EntryType, {
         textVertical: false,
         spineBg: 'bg-primary',
         spineShadow: 'shadow-[inset_1px_0_2px_rgba(255,255,255,0.2),_inset_-1px_0_2px_rgba(0,0,0,0.5)]'
+    },
+    apps: {
+        spineWidth: 100,
+        itemHeight: 100,
+        coverWidth: 100,
+        textVertical: false,
+        spineBg: 'bg-transparent',
+        spineShadow: ''
     }
 }
 
@@ -86,10 +94,12 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   const itemVariants = {
     initial: {
       y: 0,
+      scale: 1,
       transition: { type: "spring", stiffness: 300, damping: 20 },
     },
     hover: {
       y: -15,
+      scale: 1.05,
       transition: { type: "spring", stiffness: 300, damping: 20 },
     },
   };
@@ -99,7 +109,44 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
     onOpenDetail(entry);
   };
   
-  const showCover = isSelected || type === 'music' || type === 'blog';
+  const showCover = isSelected || type === 'music' || type === 'blog' || type === 'apps';
+
+  if (type === 'apps') {
+    return (
+        <motion.div
+            className="group relative flex-shrink-0 cursor-pointer flex flex-col items-center gap-2"
+            style={{ 
+                width: `${styles.coverWidth}px`, 
+            }}
+            variants={itemVariants}
+            initial="initial"
+            whileHover="hover"
+            transition={{ type: 'spring', stiffness: 400, damping: 40 }}
+            onClick={handleCoverClick}
+        >
+            <div className="w-full relative shadow-lg" style={{ aspectRatio: '1 / 1' }}>
+                <div
+                    className="absolute inset-0 bg-secondary"
+                    style={{
+                        clipPath: 'path("M0,20 C0,5 5,0 20,0 L80,0 C95,0 100,5 100,20 L100,80 C100,95 95,100 80,100 L20,100 C5,100 0,95 0,80Z")'
+                    }}
+                 />
+                <Image
+                    src={entry.imageUrl}
+                    alt={`Icon for ${title}`}
+                    width={styles.coverWidth}
+                    height={styles.itemHeight}
+                    className="absolute inset-0 w-full h-full object-cover p-2"
+                    style={{
+                        clipPath: 'path("M0,20 C0,5 5,0 20,0 L80,0 C95,0 100,5 100,20 L100,80 C100,95 95,100 80,100 L20,100 C5,100 0,95 0,80Z")'
+                    }}
+                    data-ai-hint="app icon"
+                />
+            </div>
+            <p className="text-xs font-semibold text-center truncate w-full">{title}</p>
+        </motion.div>
+    )
+  }
 
   if (type === 'blog') {
     return (

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -71,6 +72,7 @@ export function NewTabDialog({ isOpen, onOpenChange, onAddTab }: NewTabDialogPro
                     <SelectItem value="anime">Anime (Medium Spine)</SelectItem>
                     <SelectItem value="music">Music (Thin Spine)</SelectItem>
                     <SelectItem value="blog">Blog (Landscape)</SelectItem>
+                    <SelectItem value="apps">Apps (macOS Icon)</SelectItem>
                 </SelectContent>
             </Select>
           </div>

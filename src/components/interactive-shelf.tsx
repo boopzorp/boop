@@ -24,6 +24,8 @@ const getSpineWidth = (type: EntryType) => {
     case 'music':
     case 'blog':
       return 220;
+    case 'apps':
+        return 100;
     default:
       return 40;
   }
@@ -42,6 +44,8 @@ const getCoverWidth = (type: EntryType) => {
         return 220;
       case 'blog':
         return 320;
+      case 'apps':
+        return 100;
       default:
         return 250;
     }
@@ -93,6 +97,34 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
           </div>
         </div>
       </div>
+    );
+  }
+
+  if (type === 'apps') {
+    return (
+        <div className="absolute top-0 left-0 h-full w-full">
+            <div className="relative w-full h-full flex items-center">
+                <div className="w-full flex items-end justify-start px-12">
+                    <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-8 gap-y-4">
+                        {filteredEntries.map((item) => (
+                            <motion.div
+                                key={item.id}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onOpenDetail(item);
+                                }}
+                            >
+                                <ShelfItem
+                                    entry={item}
+                                    isSelected={false}
+                                    onOpenDetail={onOpenDetail}
+                                />
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
     );
   }
 

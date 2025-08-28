@@ -1,7 +1,7 @@
 
 import type { JSONContent } from '@tiptap/react';
 
-export type EntryType = "book" | "movie" | "music" | "blog" | "anime" | "manga" | "tv";
+export type EntryType = "book" | "movie" | "music" | "blog" | "anime" | "manga" | "tv" | "apps";
 
 export type Block = {
   id: string;
@@ -14,7 +14,7 @@ export type Entry = {
   tabId: string;
   type: EntryType;
   title: string;
-  creator: string; // Author, Director, Artist
+  creator: string; // Author, Director, Artist, or URL for apps
   notes: string;
   content?: Block[];
   addedAt: Date;
@@ -44,7 +44,7 @@ export interface SpotifyArtist {
 }
 
 export interface SpotifyImage {
-  url: string;
+  url:string;
   height: number;
   width: number;
 }

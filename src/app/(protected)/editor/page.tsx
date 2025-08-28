@@ -115,6 +115,22 @@ export default function EditorPage() {
     }
   };
 
+  const handleAppUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setCreator(url); // Store the full URL in the creator field
+    if (url) {
+        try {
+            const domain = new URL(url).hostname;
+            setImageUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
+        } catch (error) {
+            // Invalid URL, clear image
+            setImageUrl('');
+        }
+    } else {
+        setImageUrl('');
+    }
+  };
+
   const activeTab = tabs.find(t => t.id === selectedTabId);
 
   if (!isLoaded) {
@@ -228,6 +244,32 @@ export default function EditorPage() {
                     </div>
                     )}
                 </div>
+              </div>
+            )}
+            {activeTab?.type === 'apps' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="app-url">App URL</Label>
+                    <Input
+                      id="app-url"
+                      placeholder="https://example.com"
+                      value={creator}
+                      onChange={handleAppUrlChange}
+                    />
+                </div>
+                {imageUrl && (
+                <div className="mt-4">
+                    <Label>Icon Preview</Label>
+                    <div className="mt-2 relative w-24 h-24 rounded-lg overflow-hidden border p-2 bg-secondary">
+                        <Image
+                        src={imageUrl}
+                        alt="Icon preview"
+                        fill
+                        className="object-contain"
+                        />
+                    </div>
+                </div>
+                )}
               </div>
             )}
             <BlockEditor content={content} onChange={setContent} />
