@@ -61,7 +61,7 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center backdrop-blur-sm p-4"
             onClick={onClose}
           >
              <Button
@@ -78,43 +78,46 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="relative bg-background border w-full max-w-4xl h-[90vh] rounded-lg shadow-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8"
+              className="relative bg-background border w-full max-w-4xl h-full md:h-[90vh] rounded-lg shadow-2xl flex flex-col md:flex-row gap-6 md:gap-8 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
+              <ScrollArea className="w-full h-full md:flex-shrink-0">
+                <div className="p-6 md:p-8">
 
-              <div className="w-full md:w-1/3 flex-shrink-0">
-                <Image
-                  src={entry.imageUrl}
-                  alt={`Cover for ${entry.title}`}
-                  width={imageDimensions.width}
-                  height={imageDimensions.height}
-                  className="rounded-md object-cover shadow-lg w-full h-auto max-h-[40vh] md:max-h-full"
-                  data-ai-hint={`${entry.type} cover`}
-                />
-                {showDelete && (
-                  <div className="flex items-center gap-2 mt-4">
-                    <Link href={`/editor/${entry.id}`} className="w-full">
-                      <Button variant="outline" className="w-full">
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit Entry
-                      </Button>
-                    </Link>
-                    <Button 
-                        variant="destructive" 
-                        onClick={() => setDeleteAlertOpen(true)}
-                      >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <div className="w-full md:w-auto md:float-left md:mr-8 md:mb-4 max-w-xs mx-auto">
+                    <Image
+                      src={entry.imageUrl}
+                      alt={`Cover for ${entry.title}`}
+                      width={imageDimensions.width}
+                      height={imageDimensions.height}
+                      className="rounded-md object-cover shadow-lg w-full h-auto"
+                      data-ai-hint={`${entry.type} cover`}
+                    />
+                    {showDelete && (
+                      <div className="flex items-center gap-2 mt-4">
+                        <Link href={`/editor/${entry.id}`} className="w-full">
+                          <Button variant="outline" className="w-full">
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit Entry
+                          </Button>
+                        </Link>
+                        <Button 
+                            variant="destructive" 
+                            onClick={() => setDeleteAlertOpen(true)}
+                          >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                  
+                  <div className="mt-6 md:mt-0">
+                    <h1 className="font-bold text-3xl md:text-4xl mb-2 text-foreground">{entry.title}</h1>
+                    <h2 className="text-lg md:text-xl text-muted-foreground font-normal">{entry.creator}</h2>
+                    <p className="text-sm text-muted-foreground mb-4">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
+                    {renderContent(entry)}
+                  </div>
 
-              <ScrollArea className="w-full md:w-2/3 h-full">
-                <div className="pr-4">
-                  <h1 className="font-bold text-3xl md:text-4xl mb-2 text-foreground">{entry.title}</h1>
-                  <h2 className="text-lg md:text-xl text-muted-foreground font-normal">{entry.creator}</h2>
-                  <p className="text-sm text-muted-foreground mb-4">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
-                  {renderContent(entry)}
                 </div>
               </ScrollArea>
             </motion.div>
