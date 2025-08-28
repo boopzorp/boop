@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, Pencil } from 'lucide-react';
-import type { Entry, Block } from "@/types";
+import type { Entry } from "@/types";
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { useEntryStore } from '@/store/entries';
@@ -14,10 +14,15 @@ import { ConfirmationDialog } from './confirmation-dialog';
 
 function renderContent(entry: Entry) {
   // Always render from the 'notes' field which contains the rich HTML content
-  return <div className="prose prose-lg dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
+  return <div className="prose prose-lg dark:prose-invert max-w-none prose-p:text-foreground" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
 }
 
-export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: EntryDetailProps) {
+export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
+    entry: Entry | null;
+    isOpen: boolean;
+    onClose: () => void;
+    showDelete?: boolean;
+}) {
   const { deleteEntry } = useEntryStore();
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
   
