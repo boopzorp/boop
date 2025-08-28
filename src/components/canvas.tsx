@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Image as ImageIcon, RotateCw, Trash2 } from 'lucide-react';
 import { Slider } from './ui/slider';
 import { Label } from './ui/label';
+import { doc, collection } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 
 type CanvasProps = {
   images: CanvasImage[];
@@ -19,10 +21,6 @@ type CanvasProps = {
   onSave: (images: CanvasImage[]) => void;
   tabId: string | null | undefined;
 };
-
-function generateId() {
-  return Math.random().toString(36).substr(2, 9);
-}
 
 export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: CanvasProps) {
   const [images, setImages] = useState<CanvasImage[]>(initialImages);
@@ -67,7 +65,8 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
     }
     setIsUploading(true);
     try {
-        const imageName = `canvas-image-${Date.now()}-${generateId()}`;
+        const newId = doc(collection(db, 'tmp')).id;
+        const imageName = `canvas-image-${Date.now()}-${newId}`;
         const imagePath = `tabs/${tabId}/canvas/${imageName}`;
         const downloadURL = await uploadImageFromString(dataUrl, imagePath);
 
@@ -81,7 +80,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
         const position = positions[images.length % positions.length];
         
         const newImage: CanvasImage = {
-          id: generateId(),
+          id: newId,
           url: downloadURL,
           x: position.x,
           y: position.y,
@@ -169,11 +168,24 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
     if (!selectedImage) return;
     handleItemUpdate({ ...selectedImage, rotation: newRotation[0] });
   };
+
+  // Determine the required size of the canvas
+  const canvasBounds = images.reduce((acc, image) => {
+    const right = image.x + image.width;
+    const bottom = image.y + image.height;
+    if (right > acc.width) acc.width = right;
+    if (bottom > acc.height) acc.height = bottom;
+    return acc;
+  }, { width: 500, height: 500 }); // Minimum size
   
   return (
     <div 
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full overflow-hidden"
+      className="absolute top-0 left-0"
+      style={{
+        width: `${canvasBounds.width}px`,
+        height: `${canvasBounds.height}px`,
+      }}
       onClick={handleCanvasClick}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
@@ -208,6 +220,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
               isEditMode={isEditMode}
               isSelected={selectedItemId === item.id}
               onSelect={() => setSelectedItemId(item.id)}
+              onUpdate={handleItemUpdate}
             />
         ))}
       </AnimatePresence>
@@ -218,7 +231,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-background p-3 rounded-lg shadow-lg border w-full max-w-sm"
+            className="fixed top-28 left-1/2 -translate-x-1/2 z-30 bg-background p-3 rounded-lg shadow-lg border w-full max-w-sm"
           >
             <div className="grid gap-4">
                <div className="space-y-2">
@@ -261,7 +274,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave, tabId }: Can
       </AnimatePresence>
 
       {isEditMode && (
-        <div className="absolute bottom-4 right-4 z-30">
+        <div className="fixed bottom-4 right-4 z-30">
           <Button onClick={() => onSave(images)}>Save Canvas</Button>
         </div>
       )}

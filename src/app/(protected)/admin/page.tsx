@@ -142,7 +142,7 @@ export default function AdminPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg min-h-[400px] md:min-h-[500px] relative"
+                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg min-h-[400px] md:min-h-[500px] relative overflow-auto"
                   style={{ 
                       backgroundColor: activeTab ? `${colors[activeTabId!] || '#cccccc'}33` : '#f0f0f033',
                       transition: 'background-color 0.5s ease-in-out',
@@ -168,7 +168,7 @@ export default function AdminPage() {
                         />
                       </div>
                   ) : (
-                      <div className="h-[400px] flex items-center justify-center text-center text-muted-foreground">
+                      <div className="h-full flex items-center justify-center text-center text-muted-foreground">
                           <p>No tabs yet. Click the '+' button in the tab bar to create your first one!</p>
                       </div>
                   )}
