@@ -3,6 +3,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Underline from '@tiptap/extension-underline';
+import TextStyle from '@tiptap/extension-text-style';
+import { FontSize } from './font-size';
 
 export const editorExtensions = [
   StarterKit.configure({
@@ -17,10 +19,11 @@ export const editorExtensions = [
   }),
   Underline,
   Image.configure({
-    // Allow images to have alt and title attributes, which we use for captions
     allowBase64: true,
     HTMLAttributes: {
       class: 'rounded-md object-cover w-full max-h-96',
     },
   }),
+  TextStyle,
+  FontSize,
 ];

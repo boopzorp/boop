@@ -7,13 +7,14 @@ import { editorExtensions } from './block-editor/extensions';
 import { useCallback, useState } from 'react';
 import {
   Bold, Italic, Underline, Link as LinkIcon, Pilcrow,
-  Heading1, Heading2, Heading3, Heading4, List, ListOrdered, Image as ImageIcon, Minus, Quote
+  Heading1, Heading2, Heading3, Heading4, List, ListOrdered, Image as ImageIcon, Minus, Quote, CaseSensitive
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
 import { AddImageDialog } from './add-image-dialog';
 import { LinkDialog } from './link-dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 type BlockEditorProps = {
   content: string;
@@ -47,6 +48,19 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
     setIsLinkDialogOpen(false);
   }, [editor]);
 
+  const handleFontSizeChange = (value: string) => {
+    if (value === 'default') {
+      editor?.chain().focus().unsetFontSize().run();
+    } else {
+      editor?.chain().focus().setFontSize(value).run();
+    }
+  };
+
+  const getActiveFontSize = () => {
+    const attrs = editor?.getAttributes('textStyle');
+    return attrs?.fontSize || 'default';
+  };
+
   if (!editor) {
     return null;
   }
@@ -74,6 +88,23 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
           variant="ghost" size="sm" onClick={() => editor.chain().focus().setParagraph().run()}
           className={cn({ 'bg-accent': editor.isActive('paragraph') })}
         > <Pilcrow className="h-4 w-4" /> </Button>
+        
+        <div className="w-24">
+            <Select value={getActiveFontSize()} onValueChange={handleFontSizeChange}>
+                <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Font Size" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="default">Default</SelectItem>
+                    <SelectItem value="12px">12px</SelectItem>
+                    <SelectItem value="14px">14px</SelectItem>
+                    <SelectItem value="18px">18px</SelectItem>
+                    <SelectItem value="24px">24px</SelectItem>
+                    <SelectItem value="30px">30px</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
+
         <Separator orientation="vertical" className="h-6 mx-2" />
         <Button
           variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleBold().run()}
