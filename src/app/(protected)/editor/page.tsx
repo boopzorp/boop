@@ -59,7 +59,7 @@ export default function EditorPage() {
     if (selectedTab.type === 'apps' && creator) {
         try {
             const url = new URL(creator.startsWith('http') ? creator : `https://${creator}`);
-            finalImageUrl = `https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url.origin}&size=128`;
+            finalImageUrl = `https://icons.duckduckgo.com/ip3/${url.hostname}.ico`;
         } catch (error) {
             finalImageUrl = ''; // Invalid URL
         }
@@ -131,7 +131,7 @@ export default function EditorPage() {
     if (urlValue) {
         try {
             const url = new URL(urlValue.startsWith('http') ? urlValue : `https://${urlValue}`);
-            setImageUrl(`https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${url.origin}&size=128`);
+            setImageUrl(`https://icons.duckduckgo.com/ip3/${url.hostname}.ico`);
         } catch (error) {
             // Invalid URL, clear image
             setImageUrl('');
