@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import type { Editor } from '@tiptap/core';
 import { editorExtensions } from './block-editor/extensions';
 import { useCallback } from 'react';
@@ -12,12 +12,6 @@ import {
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
-  DialogFooter, DialogClose
-} from './ui/dialog';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
 
 type BlockEditorProps = {
   content: string;
@@ -107,7 +101,7 @@ export function BlockEditor({ content, onChange }: BlockEditorProps) {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[200px] p-4',
+        class: 'max-w-none focus:outline-none min-h-[200px] p-4 text-foreground',
       },
     },
   });
@@ -115,7 +109,7 @@ export function BlockEditor({ content, onChange }: BlockEditorProps) {
   return (
     <div className="w-full border rounded-md shadow-sm">
       <EditorToolbar editor={editor} />
-      <EditorContent editor={editor} />
+      <EditorContent editor={editor} className="tiptap" />
     </div>
   );
 }

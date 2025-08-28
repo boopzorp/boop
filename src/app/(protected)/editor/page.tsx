@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -206,6 +207,16 @@ export default function EditorPage() {
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                 />
+                {imageUrl && (
+                  <div className="mt-4 relative aspect-video w-full max-w-md rounded-md overflow-hidden">
+                    <Image
+                      src={imageUrl}
+                      alt="Cover image preview"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
               </div>
             )}
             <BlockEditor content={content} onChange={setContent} />

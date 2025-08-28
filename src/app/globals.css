@@ -38,44 +38,61 @@
 
 /* TipTap editor styling */
 .tiptap {
-  > * + * {
-    margin-top: 0.75em;
-  }
+  color: hsl(var(--foreground));
+}
 
-  ul,
-  ol {
-    padding: 0 1rem;
-  }
+.tiptap > * + * {
+  margin-top: 0.75em;
+}
+
+.tiptap ul,
+.tiptap ol {
+  padding: 0 1rem;
+}
   
-  ul {
-    list-style-type: disc;
-  }
+.tiptap ul {
+  list-style-type: disc;
+}
 
-  ol {
-    list-style-type: decimal;
-  }
+.tiptap ol {
+  list-style-type: decimal;
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    line-height: 1.1;
-  }
+.tiptap h1, .tiptap h2, .tiptap h3, .tiptap h4, .tiptap h5, .tiptap h6 {
+  line-height: 1.1;
+  color: hsl(var(--foreground));
+}
 
-  img {
-    max-width: 100%;
-    height: auto;
-  }
+.tiptap h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+}
+.tiptap h2 {
+    font-size: 2em;
+    font-weight: 700;
+}
+.tiptap h3 {
+    font-size: 1.75em;
+    font-weight: 700;
+}
 
-  blockquote {
-    padding-left: 1rem;
-    border-left: 2px solid;
-  }
 
-  hr {
-    border-top: 2px solid;
-    margin: 1rem 0;
-  }
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+}
 
-  a {
-    color: hsl(var(--primary));
-    text-decoration: underline;
-  }
+.tiptap blockquote {
+  padding-left: 1rem;
+  border-left: 2px solid;
+}
+
+.tiptap hr {
+  border-top: 2px solid;
+  margin: 1rem 0;
+}
+
+.tiptap a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
 }
