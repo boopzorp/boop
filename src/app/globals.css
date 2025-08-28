@@ -46,10 +46,6 @@
   margin-top: 0.75em;
 }
 
-.tiptap p, .tiptap ul, .tiptap ol, .tiptap li, .tiptap blockquote, .tiptap span {
-  color: hsl(var(--foreground));
-}
-
 .tiptap ul,
 .tiptap ol {
   padding: 0 1rem;
@@ -65,7 +61,6 @@
 
 .tiptap h1, .tiptap h2, .tiptap h3, .tiptap h4, .tiptap h5, .tiptap h6 {
   line-height: 1.1;
-  color: hsl(var(--foreground));
 }
 
 .tiptap h1 {
