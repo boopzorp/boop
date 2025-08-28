@@ -15,6 +15,7 @@ import type { Tab } from '@/types';
 import { useEntryStore } from '@/store/entries';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas } from '@/components/canvas';
+import { cn } from '@/lib/utils';
 
 export default function AdminPage() {
   const { entries, tabs, addTab, colors, setTabColor, fetchAllData, isLoaded, updateTabCanvas } = useEntryStore();
@@ -138,7 +139,7 @@ export default function AdminPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg min-h-[500px]"
+                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg min-h-[500px] relative"
                   style={{ 
                       backgroundColor: activeTab ? `${colors[activeTabId!] || '#cccccc'}33` : '#f0f0f033',
                       transition: 'background-color 0.5s ease-in-out',
@@ -152,7 +153,10 @@ export default function AdminPage() {
                     />
                   )}
                   {activeTab ? (
-                      <div className="relative z-10">
+                      <div className={cn("relative", {
+                        'z-10': !isCanvasEditMode,
+                        'z-0': isCanvasEditMode,
+                      })}>
                         <InteractiveShelf 
                             entries={entries.filter(e => e.tabId === activeTabId)} 
                             type={activeTab.type} 
