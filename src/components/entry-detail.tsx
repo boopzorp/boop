@@ -115,7 +115,9 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
               <ScrollArea className="w-full md:w-2/3 h-full">
                 <div className="p-8 md:p-12">
                   <h1 className="font-bold text-3xl md:text-4xl mb-2 text-foreground">{entry.title}</h1>
-                  <h2 className="text-lg md:text-xl text-muted-foreground font-normal">{entry.creator}</h2>
+                  {entry.creator && (
+                    <h2 className="text-lg md:text-xl text-muted-foreground font-normal">{entry.creator}</h2>
+                  )}
                   <p className="text-sm text-muted-foreground mb-6 pb-6 border-b">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
                   <div className="mt-6">
                     {renderContent(entry)}

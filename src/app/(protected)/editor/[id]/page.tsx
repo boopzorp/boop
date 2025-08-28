@@ -218,25 +218,36 @@ export default function EditEntryPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-             {activeTab?.type === 'blog' && (
-              <div className="space-y-2">
-                <Label htmlFor="cover-image">Cover Image URL</Label>
-                <Input
-                  id="cover-image"
-                  placeholder="https://..."
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                />
-                {imageUrl && (
-                  <div className="mt-4 relative aspect-video w-full max-w-md rounded-md overflow-hidden">
-                    <Image
-                      src={imageUrl}
-                      alt="Cover image preview"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
+            {activeTab?.type === 'blog' && (
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="creator">Author / Creator</Label>
+                        <Input
+                        id="creator"
+                        placeholder="e.g. Jane Doe"
+                        value={creator}
+                        onChange={(e) => setCreator(e.target.value)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="cover-image">Cover Image URL</Label>
+                        <Input
+                        id="cover-image"
+                        placeholder="https://..."
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        />
+                        {imageUrl && (
+                        <div className="mt-4 relative aspect-video w-full max-w-md rounded-md overflow-hidden">
+                            <Image
+                            src={imageUrl}
+                            alt="Cover image preview"
+                            fill
+                            className="object-cover"
+                            />
+                        </div>
+                        )}
+                    </div>
               </div>
             )}
             {isContentLoaded ? (
