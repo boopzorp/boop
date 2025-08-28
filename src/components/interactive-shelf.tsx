@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { Entry, EntryType } from "@/types";
 import { ShelfItem } from "./shelf-item";
@@ -15,11 +15,15 @@ type InteractiveShelfProps = {
 const getSpineWidth = (type: EntryType) => {
   switch (type) {
     case 'book':
+    case 'manga':
       return 40;
     case 'movie':
+    case 'tv':
+    case 'anime':
       return 24;
     case 'music':
-      return 220; // Cover width for grid
+    case 'blog':
+      return 220;
     default:
       return 40;
   }
@@ -28,11 +32,16 @@ const getSpineWidth = (type: EntryType) => {
 const getCoverWidth = (type: EntryType) => {
     switch (type) {
       case 'book':
+      case 'manga':
         return 250;
       case 'movie':
+      case 'tv':
+      case 'anime':
         return 200;
       case 'music':
         return 220;
+      case 'blog':
+        return 320;
       default:
         return 250;
     }
@@ -40,24 +49,22 @@ const getCoverWidth = (type: EntryType) => {
 
 export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShelfProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   const SPINE_WIDTH = getSpineWidth(type);
   const COVER_WIDTH = getCoverWidth(type);
-  const GAP = 16; // Increased gap for grid
+  const GAP = 16;
   
   const filteredEntries = entries.filter(e => e.type === type);
   const selectedIndex = selectedId ? filteredEntries.findIndex(e => e.id === selectedId) : -1;
 
-  if (type === 'music') {
+  if (type === 'music' || type === 'blog') {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center">
+      <div className="absolute top-0 left-0 h-full w-full">
         <div 
           className="relative w-full h-full flex items-center justify-center"
           style={{ perspective: '1000px' }}
         >
           <div
-            ref={scrollContainerRef}
             className="w-full h-full flex items-end justify-start px-12"
           >
             <div
@@ -71,16 +78,13 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
                     e.stopPropagation();
                     onOpenDetail(item);
                   }}
-                  initial={{ rotateY: 0, y: 0, scale: 1 }}
-                  whileHover={{ y: -15, scale: 1.05, rotateY: 0 }}
+                  initial={{ y: 0, scale: 1 }}
+                  whileHover={{ y: -15, scale: 1.05 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                  style={{
-                    transform: `rotateZ(${(index % 2 === 0 ? 1 : -1) * (2 + (item.id.charCodeAt(5) % 3))}deg)`,
-                  }}
                 >
                   <ShelfItem
                     entry={item}
-                    isSelected={false} // For music, isSelected is handled by onOpenDetail
+                    isSelected={false}
                     onOpenDetail={onOpenDetail}
                   />
                 </motion.div>
@@ -122,14 +126,13 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
 
   return (
     <div 
-      className="w-full h-full flex flex-col items-center justify-center"
+      className="absolute top-0 left-0 h-full"
       onClick={handleDeselect}
     >
         <div 
-          className="relative w-full h-full flex items-center justify-center"
+          className="relative w-full h-full flex items-center"
         >
           <div 
-            ref={scrollContainerRef}
             className="w-full h-full flex items-end justify-start px-12"
           >
               <motion.div
@@ -143,6 +146,8 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
                     <motion.div
                       key={item.id}
                       layout
+                      initial={{ y: 0 }}
+                      whileHover={{ y: -15 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 40 }}
                       style={{
                         transform: calculateTransform(index),
