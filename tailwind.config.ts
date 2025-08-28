@@ -22,7 +22,7 @@ export default {
             '--tw-prose-body': 'hsl(var(--foreground))',
             '--tw-prose-headings': 'hsl(var(--foreground))',
             '--tw-prose-lead': 'hsl(var(--foreground))',
-            '--tw-prose-links': theme('colors.primary.DEFAULT'),
+            '--tw-prose-links': 'hsl(var(--primary))',
             '--tw-prose-bold': 'hsl(var(--foreground))',
             '--tw-prose-counters': 'hsl(var(--muted-foreground))',
             '--tw-prose-bullets': 'hsl(var(--foreground))',
