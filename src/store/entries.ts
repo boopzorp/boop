@@ -186,10 +186,23 @@ export const useEntryStore = create<EntryState>((set, get) => ({
   updateTabCanvas: async (tabId, canvasImages) => {
     try {
       const tabRef = doc(db, 'tabs', tabId);
-      await updateDoc(tabRef, { canvasImages });
+      
+      // Sanitize the canvasImages array to ensure it contains only plain objects
+      const sanitizedImages = canvasImages.map(img => ({
+        id: img.id,
+        url: img.url,
+        x: img.x,
+        y: img.y,
+        width: img.width,
+        height: img.height,
+        rotation: img.rotation
+      }));
+      
+      await updateDoc(tabRef, { canvasImages: sanitizedImages });
+
       set((state) => ({
         tabs: state.tabs.map((tab) =>
-          tab.id === tabId ? { ...tab, canvasImages } : tab
+          tab.id === tabId ? { ...tab, canvasImages: sanitizedImages } : tab
         ),
       }));
     } catch (error) {
