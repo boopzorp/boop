@@ -45,6 +45,10 @@
   margin-top: 0.75em;
 }
 
+.tiptap p {
+  color: hsl(var(--foreground));
+}
+
 .tiptap ul,
 .tiptap ol {
   padding: 0 1rem;
@@ -95,4 +99,16 @@
 .tiptap a {
   color: hsl(var(--primary));
   text-decoration: underline;
+}
+
+/* Style for image captions in TipTap */
+.tiptap figure {
+  margin: 1rem 0;
+}
+
+.tiptap figcaption {
+  text-align: center;
+  font-size: 0.9rem;
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.5rem;
 }
