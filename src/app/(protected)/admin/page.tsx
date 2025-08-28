@@ -3,26 +3,28 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import type { Entry, EntryType } from '@/types';
+import type { Entry, EntryType, CanvasImage } from '@/types';
 import { InteractiveShelf } from '@/components/interactive-shelf';
 import { EntryDetail } from '@/components/entry-detail';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Pencil } from 'lucide-react';
 import { TabSelector } from '@/components/tab-selector';
 import { Logo } from '@/components/logo';
 import { NewTabDialog } from '@/components/new-tab-dialog';
 import type { Tab } from '@/types';
 import { useEntryStore } from '@/store/entries';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Canvas } from '@/components/canvas';
 
 export default function AdminPage() {
-  const { entries, tabs, addTab, colors, setTabColor, fetchAllData, isLoaded } = useEntryStore();
+  const { entries, tabs, addTab, colors, setTabColor, fetchAllData, isLoaded, updateTabCanvas } = useEntryStore();
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [isDetailViewOpen, setDetailViewOpen] = useState(false);
   
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   
   const [isNewTabDialogOpen, setIsNewTabDialogOpen] = useState(false);
+  const [isCanvasEditMode, setCanvasEditMode] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -61,6 +63,13 @@ export default function AdminPage() {
     });
     setIsNewTabDialogOpen(false);
   };
+  
+  const handleCanvasSave = (images: CanvasImage[]) => {
+    if (activeTabId) {
+      updateTabCanvas(activeTabId, images);
+    }
+    setCanvasEditMode(false);
+  };
 
   const activeTab = tabs.find(t => t.id === activeTabId);
 
@@ -74,12 +83,20 @@ export default function AdminPage() {
         <div className="flex items-center gap-2">
           <Logo />
         </div>
-        <Link href="/editor">
-          <Button>
-            <PlusCircle />
-            New Entry
-          </Button>
-        </Link>
+        <div className="flex items-center gap-4">
+           {activeTab && (
+            <Button variant="outline" onClick={() => setCanvasEditMode(!isCanvasEditMode)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              {isCanvasEditMode ? 'Close Canvas Edit' : 'Edit Canvas'}
+            </Button>
+          )}
+          <Link href="/editor">
+            <Button>
+              <PlusCircle />
+              New Entry
+            </Button>
+          </Link>
+        </div>
       </header>
       <main className="flex-1 flex flex-col items-center pt-24 space-y-8 px-4">
 
@@ -102,11 +119,14 @@ export default function AdminPage() {
             </motion.p>
         </div>
         
-        <div className="w-full max-w-7xl">
+        <div className="w-full max-w-7xl relative">
             <TabSelector 
                 tabs={tabs} 
                 activeTabId={activeTabId!} 
-                onTabChange={setActiveTabId}
+                onTabChange={(tabId) => {
+                  setCanvasEditMode(false);
+                  setActiveTabId(tabId);
+                }}
                 colors={colors}
                 onColorChange={handleColorChange}
                 onAddTab={() => setIsNewTabDialogOpen(true)}
@@ -118,18 +138,27 @@ export default function AdminPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg"
+                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg min-h-[500px]"
                   style={{ 
                       backgroundColor: activeTab ? `${colors[activeTabId!] || '#cccccc'}33` : '#f0f0f033',
                       transition: 'background-color 0.5s ease-in-out',
                   }} 
               >
+                  {activeTab && (
+                    <Canvas 
+                      images={activeTab.canvasImages || []} 
+                      isEditMode={isCanvasEditMode}
+                      onSave={handleCanvasSave}
+                    />
+                  )}
                   {activeTab ? (
-                      <InteractiveShelf 
-                          entries={entries.filter(e => e.tabId === activeTabId)} 
-                          type={activeTab.type} 
-                          onOpenDetail={handleOpenDetail} 
-                      />
+                      <div className="relative z-10">
+                        <InteractiveShelf 
+                            entries={entries.filter(e => e.tabId === activeTabId)} 
+                            type={activeTab.type} 
+                            onOpenDetail={handleOpenDetail} 
+                        />
+                      </div>
                   ) : (
                       <div className="h-[400px] flex items-center justify-center text-center text-muted-foreground">
                           <p>No tabs yet. Click the '+' button in the tab bar to create your first one!</p>
