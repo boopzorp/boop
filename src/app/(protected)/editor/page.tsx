@@ -9,29 +9,16 @@ import { ArrowLeft } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
-import type { Block, Tab, SpotifyTrack, Entry, GoogleBookVolume, JikanAnime, JikanManga, OMDBSearchResult } from '@/types';
+import type { SpotifyTrack, Entry, GoogleBookVolume, JikanAnime, JikanManga, OMDBSearchResult } from '@/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { SpotifySearch } from '@/components/spotify-search';
 import { BookSearch } from '@/components/book-search';
 import { JikanSearch } from '@/components/jikan-search';
 import { MangaSearch } from '@/components/manga-search';
 import { OMDBSearch } from '@/components/omdb-search';
 import { useEntryStore } from '@/store/entries';
-import { generateHTML } from '@tiptap/html';
-import { editorExtensions } from '@/components/block-editor/extensions';
-import type { JSONContent } from '@tiptap/react';
-
-const defaultBlockContent: JSONContent = {
-  type: 'doc',
-  content: [
-    {
-      type: 'paragraph',
-      content: [],
-    },
-  ],
-};
-
 
 export default function EditorPage() {
   const router = useRouter();
@@ -41,9 +28,7 @@ export default function EditorPage() {
   const [creator, setCreator] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [selectedTabId, setSelectedTabId] = useState<string | undefined>(undefined);
-  const [blocks, setBlocks] = useState<Block[]>([
-    { id: '1', type: 'paragraph', content: defaultBlockContent },
-  ]);
+  const [content, setContent] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -69,20 +54,14 @@ export default function EditorPage() {
       return;
     }
 
-    const firstImage = blocks.find(b => b.type === 'image')?.content as string | undefined;
-    const plainTextNotes = blocks
-      .filter(b => b.type === 'paragraph' && typeof b.content === 'object' && b.content !== null)
-      .map(b => generateHTML(b.content as any, editorExtensions))
-      .join('');
-
     const newEntry: Omit<Entry, 'id' | 'addedAt'> = {
       title,
       creator,
-      imageUrl: imageUrl || firstImage || `https://picsum.photos/400/600`,
+      imageUrl: imageUrl || `https://picsum.photos/400/600`,
       tabId: selectedTabId!,
       type: selectedTab.type,
-      notes: plainTextNotes,
-      content: blocks,
+      notes: content, // Save rich text HTML to 'notes' field
+      content: [], // Deprecate old block content
     };
 
     addEntry(newEntry);
@@ -95,30 +74,11 @@ export default function EditorPage() {
     router.push('/admin');
   };
 
-  const setEntryImage = (url: string) => {
-    setImageUrl(url);
-    const hasImageBlock = blocks.some(b => b.type === 'image');
-    if (!hasImageBlock) {
-      const newBlocks = [...blocks];
-      newBlocks.unshift({ id: `${Date.now()}`, type: 'image', content: url });
-      setBlocks(newBlocks);
-    } else {
-      // If there's already an image block, update the first one
-      const newBlocks = [...blocks];
-      const firstImageIndex = newBlocks.findIndex(b => b.type === 'image');
-      if (firstImageIndex !== -1) {
-        newBlocks[firstImageIndex] = { ...newBlocks[firstImageIndex], content: url };
-        setBlocks(newBlocks);
-      }
-    }
-  };
-
-
   const handleTrackSelect = (track: SpotifyTrack) => {
     setTitle(track.name);
     setCreator(track.artists.map(a => a.name).join(', '));
     if (track.album.images.length > 0) {
-      setEntryImage(track.album.images[0].url);
+      setImageUrl(track.album.images[0].url);
     }
   };
 
@@ -126,7 +86,7 @@ export default function EditorPage() {
     setTitle(book.volumeInfo.title);
     setCreator(book.volumeInfo.authors?.join(', ') || 'Unknown Author');
     if (book.volumeInfo.imageLinks?.thumbnail) {
-      setEntryImage(book.volumeInfo.imageLinks.thumbnail);
+      setImageUrl(book.volumeInfo.imageLinks.thumbnail);
     }
   };
 
@@ -134,7 +94,7 @@ export default function EditorPage() {
     setTitle(anime.title);
     setCreator(anime.studios.map(s => s.name).join(', '));
     if (anime.images.jpg.large_image_url) {
-      setEntryImage(anime.images.jpg.large_image_url);
+      setImageUrl(anime.images.jpg.large_image_url);
     }
   };
 
@@ -142,15 +102,15 @@ export default function EditorPage() {
     setTitle(manga.title);
     setCreator(manga.authors.map(a => a.name).join(', '));
     if (manga.images.jpg.large_image_url) {
-      setEntryImage(manga.images.jpg.large_image_url);
+      setImageUrl(manga.images.jpg.large_image_url);
     }
   };
 
   const handleMovieSelect = (movie: OMDBSearchResult) => {
     setTitle(movie.Title);
-    setCreator(movie.Year); // Basic search doesn't provide director, user can edit
+    setCreator(movie.Year);
     if (movie.Poster && movie.Poster !== 'N/A') {
-      setEntryImage(movie.Poster);
+      setImageUrl(movie.Poster);
     }
   };
 
@@ -228,8 +188,28 @@ export default function EditorPage() {
               <MangaSearch onMangaSelect={handleMangaSelect} />
             </div>
           )}
-
-          <BlockEditor title={title} onTitleChange={setTitle} blocks={blocks} onBlocksChange={setBlocks} />
+          
+          <div className="space-y-4">
+            <Input
+              id="title"
+              placeholder="Entry Title..."
+              className="text-3xl md:text-5xl font-bold border-none focus-visible:ring-0 shadow-none p-0 h-auto bg-transparent"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+             {activeTab?.type === 'blog' && (
+              <div className="space-y-2">
+                <Label htmlFor="cover-image">Cover Image URL</Label>
+                <Input
+                  id="cover-image"
+                  placeholder="https://..."
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                />
+              </div>
+            )}
+            <BlockEditor content={content} onChange={setContent} />
+          </div>
         </div>
       </main>
     </div>

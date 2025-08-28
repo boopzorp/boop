@@ -1,44 +1,50 @@
 
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
-import { Node } from '@tiptap/core';
+import Image from '@tiptap/extension-image';
+import Underline from '@tiptap/extension-underline';
+import { mergeAttributes, Node } from '@tiptap/core';
 
-// Custom node to represent non-editable image blocks within the editor
-const ImagePlaceholder = Node.create({
-  name: 'imagePlaceholder',
-  group: 'block',
-  atom: true,
+// Custom Image node to include a caption (figcaption)
+const CustomImage = Image.extend({
   addAttributes() {
     return {
-      blockId: {
+      ...this.parent?.(),
+      alt: {
         default: null,
       },
     };
   },
-  parseHTML() {
-    return [{ tag: 'div[data-type="image-placeholder"]' }];
-  },
+  
   renderHTML({ HTMLAttributes }) {
-    // This node doesn't render anything itself, it's just a placeholder in the document
-    return ['div', { ...HTMLAttributes, 'data-type': 'image-placeholder', contenteditable: 'false' }];
+    return [
+      'figure',
+      { class: 'my-4' },
+      [
+        'img',
+        mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
+            class: 'rounded-md object-cover w-full max-h-96'
+        }),
+      ],
+      ['figcaption', {class: 'text-center text-sm text-muted-foreground mt-2'}, HTMLAttributes.alt || ''],
+    ];
   },
 });
 
 
 export const editorExtensions = [
   StarterKit.configure({
-    // Disable starter kit features we'll handle manually or don't need
-    heading: false,
-    horizontalRule: false,
-    listItem: false,
-    bulletList: false,
-    orderedList: false,
-    blockquote: false,
+    // Disable features that we want to control more granularly if needed
+    heading: {
+      levels: [1, 2, 3],
+    },
     codeBlock: false,
+    blockquote: false,
   }),
   Link.configure({
     openOnClick: false,
     autolink: true,
   }),
-  ImagePlaceholder, // We don't render images in the editor, just hold a place for them
+  Underline,
+  CustomImage,
 ];

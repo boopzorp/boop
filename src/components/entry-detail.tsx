@@ -11,64 +11,11 @@ import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { useEntryStore } from '@/store/entries';
 import { ConfirmationDialog } from './confirmation-dialog';
-import { generateHTML } from '@tiptap/html';
-import { editorExtensions } from './block-editor/extensions';
-
-type EntryDetailProps = {
-  entry: Entry | null;
-  isOpen: boolean;
-  onClose: () => void;
-  showDelete?: boolean;
-};
-
-// Helper to check if content is a valid TipTap JSON
-const isValidJSONContent = (content: any): boolean => {
-  return content && typeof content === 'object' && content.type === 'doc';
-};
 
 function renderContent(entry: Entry) {
-  if (entry.content && entry.content.length > 0) {
-    // Filter out the first image block if its content is the same as the main imageUrl,
-    // to avoid displaying the main cover image twice.
-    const contentBlocks = entry.content.filter((block, index) => {
-        return !(index === 0 && block.type === 'image' && block.content === entry.imageUrl);
-    });
-
-    return (
-      <div className="space-y-4">
-        {contentBlocks.map(block => {
-          if (block.type === 'image' && typeof block.content === 'string') {
-            return (
-              <div key={block.id} className="my-4">
-                <Image
-                  src={block.content}
-                  alt="Entry content image"
-                  width={600}
-                  height={400}
-                  className="rounded-md object-cover w-full max-h-96"
-                />
-              </div>
-            );
-          }
-          if (block.type === 'paragraph') {
-            if (isValidJSONContent(block.content)) {
-                const html = generateHTML(block.content as any, editorExtensions);
-                return <div key={block.id} className="prose prose-lg prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />;
-            }
-            // Fallback for old string content
-            if (typeof block.content === 'string') {
-                return <p key={block.id} className="whitespace-pre-wrap">{block.content}</p>;
-            }
-          }
-          return null;
-        })}
-      </div>
-    );
-  }
-  // Fallback to notes if content is not available
-  return <div className="prose prose-lg prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
+  // Always render from the 'notes' field which contains the rich HTML content
+  return <div className="prose prose-lg dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
 }
-
 
 export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: EntryDetailProps) {
   const { deleteEntry } = useEntryStore();
