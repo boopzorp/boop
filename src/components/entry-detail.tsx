@@ -11,6 +11,7 @@ import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { useEntryStore } from '@/store/entries';
 import { ConfirmationDialog } from './confirmation-dialog';
+import { format } from 'date-fns';
 
 function renderContent(entry: Entry) {
   // Always render from the 'notes' field which contains the rich HTML content
@@ -111,7 +112,8 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
               <ScrollArea className="w-full md:w-2/3 h-full">
                 <div className="pr-4">
                   <h1 className="font-bold text-3xl md:text-4xl mb-2 text-foreground">{entry.title}</h1>
-                  <h2 className="text-lg md:text-xl text-muted-foreground font-normal mb-6">{entry.creator}</h2>
+                  <h2 className="text-lg md:text-xl text-muted-foreground font-normal">{entry.creator}</h2>
+                  <p className="text-sm text-muted-foreground mb-4">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
                   {renderContent(entry)}
                 </div>
               </ScrollArea>
