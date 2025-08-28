@@ -27,6 +27,7 @@ export function CanvasItem({ item, isEditMode, onUpdate, onDelete, onSelect, isS
 
   const handleRotate = (event: MouseEvent | TouchEvent | PointerEvent) => {
     event.preventDefault();
+    event.stopPropagation();
     const imageRef = (event.target as HTMLElement)?.closest('.canvas-item-wrapper');
     if (!imageRef) return;
     
@@ -56,10 +57,11 @@ export function CanvasItem({ item, isEditMode, onUpdate, onDelete, onSelect, isS
   
   const handleResize = (event: MouseEvent | TouchEvent | PointerEvent) => {
     event.preventDefault();
+    event.stopPropagation();
     const imageRef = (event.target as HTMLElement)?.closest('.canvas-item-wrapper');
     if (!imageRef) return;
     
-    const { left, top, width, height } = imageRef.getBoundingClientRect();
+    const { left, top } = imageRef.getBoundingClientRect();
 
     const moveHandler = (moveEvent: MouseEvent | TouchEvent) => {
       const clientX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
@@ -93,15 +95,18 @@ export function CanvasItem({ item, isEditMode, onUpdate, onDelete, onSelect, isS
         top: item.y,
         width: item.width,
         height: item.height,
-        rotate: item.rotation,
         zIndex: isSelected ? 10 : 1,
       }}
+      animate={{ rotate: item.rotation }}
       drag={isEditMode}
       dragControls={controls}
       onDragEnd={(event, info: PanInfo) => {
         onUpdate({ ...item, x: item.x + info.offset.x, y: item.y + info.offset.y });
       }}
-      onTap={() => onSelect(item.id)}
+      onTap={(e) => {
+        e.stopPropagation();
+        onSelect(item.id);
+      }}
     >
       <div className={cn("relative w-full h-full transition-all duration-200", {
         'ring-2 ring-primary ring-offset-2 ring-offset-background rounded-sm': isSelected && isEditMode,
