@@ -58,7 +58,8 @@ export default function EditorPage() {
     let finalImageUrl = imageUrl;
     if (selectedTab.type === 'apps' && creator) {
       try {
-        const domain = new URL(creator).hostname;
+        const url = new URL(creator.startsWith('http') ? creator : `https://${creator}`);
+        const domain = url.hostname;
         finalImageUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
       } catch (error) {
         finalImageUrl = ''; // Invalid URL
@@ -126,11 +127,12 @@ export default function EditorPage() {
   };
 
   const handleAppUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value;
-    setCreator(url); // Store the full URL in the creator field
-    if (url) {
+    const urlValue = e.target.value;
+    setCreator(urlValue); // Store the full URL in the creator field
+    if (urlValue) {
         try {
-            const domain = new URL(url).hostname;
+            const url = new URL(urlValue.startsWith('http') ? urlValue : `https://${urlValue}`);
+            const domain = url.hostname;
             setImageUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
         } catch (error) {
             // Invalid URL, clear image
