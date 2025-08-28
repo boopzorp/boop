@@ -195,6 +195,10 @@ export const useEntryStore = create<EntryState>((set, get) => ({
   },
 
   updateTabCanvas: async (tabId, images) => {
+    if (!tabId) {
+      console.error("Cannot update canvas without a valid tabId.");
+      return;
+    }
     try {
       const batch = writeBatch(db);
       const canvasImagesCollectionRef = collection(db, 'tabs', tabId, 'canvasImages');
@@ -205,15 +209,17 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         batch.delete(doc.ref);
       });
 
-      // 2. Add all the new images, ensuring each has a valid ID
-      const updatedImagesWithIds = images.map(image => {
+      // 2. Add all the new images
+      const finalImagesForState: CanvasImage[] = [];
+      images.forEach(image => {
         const { id, ...imageData } = image;
-        // If the image doesn't have an ID, it's a new one. Generate a ref with a new ID.
-        // If it has an ID, it's an existing one. Use that ID.
-        const imageRef = id ? doc(canvasImagesCollectionRef, id) : doc(canvasImagesCollectionRef); // Let Firestore generate ID
+        // If image has a valid ID, use it. Otherwise, create a new doc ref to generate one.
+        const imageRef = id ? doc(canvasImagesCollectionRef, id) : doc(canvasImagesCollectionRef);
+        
+        // CRITICAL FIX: The data we set must be the plain object. 
+        // We use the new ID for our local state update.
         batch.set(imageRef, imageData);
-        // Return the image data with the new/existing ID for the local state update
-        return { ...imageData, id: imageRef.id };
+        finalImagesForState.push({ ...imageData, id: imageRef.id });
       });
 
       // 3. Commit the batch
@@ -222,7 +228,7 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       // Update local state to reflect the changes
       set((state) => ({
         tabs: state.tabs.map(tab => 
-          tab.id === tabId ? { ...tab, canvasImages: updatedImagesWithIds } : tab
+          tab.id === tabId ? { ...tab, canvasImages: finalImagesForState } : tab
         ),
       }));
 
