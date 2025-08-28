@@ -67,7 +67,10 @@ export default function AdminPage() {
   
   const handleCanvasSave = (images: CanvasImage[]) => {
     if (activeTabId) {
-      updateTabCanvas(activeTabId, images.map(img => img.url));
+      const cleanImages = images.map(({ id, url, x, y, width, height, rotation }) => ({
+        id, url, x, y, width, height, rotation
+      }));
+      updateTabCanvas(activeTabId, cleanImages);
     }
     setCanvasEditMode(false);
   };
@@ -150,6 +153,7 @@ export default function AdminPage() {
                       images={activeTab.canvasImages || []} 
                       isEditMode={isCanvasEditMode}
                       onSave={handleCanvasSave}
+                      tabId={activeTabId}
                     />
                   )}
                   {activeTab ? (
