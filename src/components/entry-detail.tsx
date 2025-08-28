@@ -81,8 +81,55 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
               className="relative bg-background border w-full max-w-4xl h-full md:h-[90vh] rounded-lg shadow-2xl flex flex-col md:flex-row overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Image Column */}
-              <div className="w-full md:w-1/3 flex-shrink-0 bg-secondary/30 flex flex-col items-center justify-center p-6 border-b md:border-b-0 md:border-r">
+              {/* Mobile Layout: Header is fixed, content scrolls */}
+              <div className="flex md:hidden flex-col h-full">
+                {/* Fixed Header Part */}
+                <div className="flex-shrink-0 p-6 border-b">
+                   <div className="w-full max-w-[200px] mx-auto">
+                        <Image
+                          src={entry.imageUrl}
+                          alt={`Cover for ${entry.title}`}
+                          width={imageDimensions.width}
+                          height={imageDimensions.height}
+                          className="rounded-md object-cover shadow-lg w-full h-auto"
+                          data-ai-hint={`${entry.type} cover`}
+                        />
+                    </div>
+                    {showDelete && (
+                      <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto">
+                        <Link href={`/editor/${entry.id}`} className="w-full">
+                          <Button variant="outline" className="w-full">
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                          </Button>
+                        </Link>
+                        <Button 
+                            variant="destructive" 
+                            size="icon"
+                            onClick={() => setDeleteAlertOpen(true)}
+                          >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    <div className="text-center mt-4">
+                        <h1 className="font-bold text-2xl text-foreground">{entry.title}</h1>
+                        {entry.creator && (
+                            <h2 className="text-md text-muted-foreground font-normal">{entry.creator}</h2>
+                        )}
+                        <p className="text-sm text-muted-foreground">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
+                    </div>
+                </div>
+                 {/* Scrollable Content Part */}
+                <ScrollArea className="flex-grow h-0">
+                    <div className="p-6">
+                        {renderContent(entry)}
+                    </div>
+                </ScrollArea>
+              </div>
+
+              {/* Desktop Layout */}
+              <div className="hidden md:flex w-1/3 flex-shrink-0 bg-secondary/30 flex-col items-center justify-center p-6 border-b md:border-b-0 md:border-r">
                 <div className="w-full max-w-[250px] mx-auto">
                     <Image
                       src={entry.imageUrl}
@@ -102,7 +149,8 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
                       </Button>
                     </Link>
                     <Button 
-                        variant="destructive" 
+                        variant="destructive"
+                        size="icon"
                         onClick={() => setDeleteAlertOpen(true)}
                       >
                       <Trash2 className="h-4 w-4" />
@@ -110,9 +158,7 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
                   </div>
                 )}
               </div>
-
-              {/* Content Column */}
-              <ScrollArea className="w-full md:w-2/3 h-full">
+              <ScrollArea className="hidden md:block w-full md:w-2/3 h-full">
                 <div className="p-8 md:p-12">
                   <h1 className="font-bold text-3xl md:text-4xl mb-2 text-foreground">{entry.title}</h1>
                   {entry.creator && (
