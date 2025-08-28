@@ -136,7 +136,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                     alt={`Icon for ${title}`}
                     width={styles.coverWidth}
                     height={styles.itemHeight}
-                    className="absolute inset-0 w-full h-full object-cover p-2"
+                    className="absolute inset-0 w-full h-full object-contain p-2"
                     style={{
                         clipPath: 'path("M0,20 C0,5 5,0 20,0 L80,0 C95,0 100,5 100,20 L100,80 C100,95 95,100 80,100 L20,100 C5,100 0,95 0,80Z")'
                     }}

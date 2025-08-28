@@ -55,10 +55,20 @@ export default function EditorPage() {
       return;
     }
 
+    let finalImageUrl = imageUrl;
+    if (selectedTab.type === 'apps' && creator) {
+      try {
+        const domain = new URL(creator).hostname;
+        finalImageUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+      } catch (error) {
+        finalImageUrl = ''; // Invalid URL
+      }
+    }
+
     const newEntry: Omit<Entry, 'id' | 'addedAt'> = {
       title,
       creator,
-      imageUrl: imageUrl || `https://picsum.photos/400/600`,
+      imageUrl: finalImageUrl || `https://picsum.photos/400/600`,
       tabId: selectedTabId!,
       type: selectedTab.type,
       notes: content, // Save rich text HTML to 'notes' field
