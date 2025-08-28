@@ -13,6 +13,7 @@ import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
 import { AddImageDialog } from './add-image-dialog';
+import { LinkDialog } from './link-dialog';
 
 type BlockEditorProps = {
   content: string;
@@ -21,6 +22,8 @@ type BlockEditorProps = {
 
 const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [currentLink, setCurrentLink] = useState('');
 
   const addImage = useCallback((url: string, alt: string) => {
     if (url) {
@@ -29,16 +32,19 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
     setIsImageDialogOpen(false);
   }, [editor]);
 
-  const setLink = useCallback(() => {
-    const previousUrl = editor?.getAttributes('link').href;
-    const url = window.prompt('URL', previousUrl);
+  const openLinkDialog = useCallback(() => {
+    const url = editor?.getAttributes('link').href || '';
+    setCurrentLink(url);
+    setIsLinkDialogOpen(true);
+  }, [editor]);
 
-    if (url === null) return;
-    if (url === '') {
+  const handleSetLink = useCallback((url: string) => {
+    if (url) {
+      editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    } else {
       editor?.chain().focus().extendMarkRange('link').unsetLink().run();
-      return;
     }
-    editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    setIsLinkDialogOpen(false);
   }, [editor]);
 
   if (!editor) {
@@ -81,7 +87,7 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
           variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleUnderline().run()}
           className={cn({ 'bg-accent': editor.isActive('underline') })}
         > <Underline className="h-4 w-4" /> </Button>
-        <Button variant="ghost" size="sm" onClick={setLink}>
+        <Button variant="ghost" size="sm" onClick={openLinkDialog}>
           <LinkIcon className={cn("h-4 w-4", { 'text-primary': editor.isActive('link') })} />
         </Button>
         <Separator orientation="vertical" className="h-6 mx-2" />
@@ -109,6 +115,12 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
         onOpenChange={setIsImageDialogOpen}
         onAddImage={addImage}
       />
+      <LinkDialog
+        isOpen={isLinkDialogOpen}
+        onOpenChange={setIsLinkDialogOpen}
+        initialUrl={currentLink}
+        onSetLink={handleSetLink}
+       />
     </>
   );
 };
