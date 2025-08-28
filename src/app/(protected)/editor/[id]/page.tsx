@@ -33,6 +33,7 @@ export default function EditEntryPage() {
   const [imageUrl, setImageUrl] = useState('');
   const [selectedTabId, setSelectedTabId] = useState<string | undefined>(undefined);
   const [content, setContent] = useState('');
+  const [isContentLoaded, setIsContentLoaded] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function EditEntryPage() {
           setImageUrl(fetchedEntry.imageUrl);
           setSelectedTabId(fetchedEntry.tabId);
           setContent(fetchedEntry.notes || ''); // notes field now stores the HTML content
+          setIsContentLoaded(true); // Signal that content is loaded
         } else {
           toast({
             title: 'Entry not found',
@@ -135,7 +137,7 @@ export default function EditEntryPage() {
 
   const activeTab = tabs.find(t => t.id === selectedTabId);
 
-  if (!isLoaded) {
+  if (!isLoaded || !isContentLoaded) {
     return <div className="flex h-screen w-full items-center justify-center">Loading Editor...</div>
   }
 
@@ -237,7 +239,11 @@ export default function EditEntryPage() {
                 )}
               </div>
             )}
-            <BlockEditor content={content} onChange={setContent} />
+            {isContentLoaded ? (
+              <BlockEditor content={content} onChange={setContent} />
+            ) : (
+              <div>Loading content...</div>
+            )}
           </div>
         </div>
       </main>
