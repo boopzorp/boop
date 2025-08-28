@@ -205,11 +205,15 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         batch.delete(doc.ref);
       });
 
-      // 2. Add all the new images
-      images.forEach((image) => {
-        const { id, ...imageData } = image; // Exclude local ID from Firestore doc
-        const newImageRef = doc(canvasImagesCollectionRef, id); // Use local ID as doc ID
-        batch.set(newImageRef, imageData);
+      // 2. Add all the new images, ensuring each has a valid ID
+      const updatedImagesWithIds = images.map(image => {
+        const { id, ...imageData } = image;
+        // If the image doesn't have an ID, it's a new one. Generate a ref with a new ID.
+        // If it has an ID, it's an existing one. Use that ID.
+        const imageRef = id ? doc(canvasImagesCollectionRef, id) : doc(canvasImagesCollectionRef); // Let Firestore generate ID
+        batch.set(imageRef, imageData);
+        // Return the image data with the new/existing ID for the local state update
+        return { ...imageData, id: imageRef.id };
       });
 
       // 3. Commit the batch
@@ -218,7 +222,7 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       // Update local state to reflect the changes
       set((state) => ({
         tabs: state.tabs.map(tab => 
-          tab.id === tabId ? { ...tab, canvasImages: images } : tab
+          tab.id === tabId ? { ...tab, canvasImages: updatedImagesWithIds } : tab
         ),
       }));
 
