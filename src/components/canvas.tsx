@@ -38,7 +38,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProp
     setSelectedImageId(id);
   };
 
-  const addImageToCanvas = (url: string) => {
+  const addImageToCanvas = useCallback((url: string) => {
     const newImage: CanvasImage = {
       id: generateId(),
       url,
@@ -49,7 +49,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProp
       rotation: 0,
     };
     setImages(prev => [...prev, newImage]);
-  };
+  }, []);
   
   const handlePaste = useCallback((event: ClipboardEvent) => {
     if (!isEditMode) return;
@@ -69,7 +69,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProp
         }
       }
     }
-  }, [isEditMode]);
+  }, [isEditMode, addImageToCanvas]);
 
   const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -88,7 +88,7 @@ export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProp
         }
       }
     }
-  }, [isEditMode]);
+  }, [isEditMode, addImageToCanvas]);
 
   useEffect(() => {
     window.addEventListener('paste', handlePaste);
