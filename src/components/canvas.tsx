@@ -6,6 +6,7 @@ import type { CanvasImage } from '@/types';
 import { CanvasItem } from './canvas-item';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import { AnimatePresence } from 'framer-motion';
 
 type CanvasProps = {
   images: CanvasImage[];
@@ -19,38 +20,38 @@ function generateId() {
 
 export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProps) {
   const [images, setImages] = useState<CanvasImage[]>(initialImages);
-  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Sync with external changes (e.g., switching tabs)
   useEffect(() => {
     setImages(initialImages);
   }, [initialImages]);
-
-  const handleUpdateImage = (updatedItem: CanvasImage) => {
-    setImages(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
-  };
   
   const handleDeleteImage = (id: string) => {
     setImages(prev => prev.filter(item => item.id !== id));
   };
 
-  const handleSelectImage = (id: string) => {
-    setSelectedImageId(id);
-  };
-
   const addImageToCanvas = useCallback((url: string) => {
+    // Hardcoded positions for simplicity, as per user request
+    const positions = [
+      { x: 50, y: 50, rotation: -5 },
+      { x: 250, y: 100, rotation: 3 },
+      { x: 450, y: 80, rotation: -2 },
+      { x: 100, y: 280, rotation: 6 },
+      { x: 350, y: 300, rotation: -4 },
+    ];
+    const position = positions[images.length % positions.length];
+    
     const newImage: CanvasImage = {
       id: generateId(),
       url,
-      x: 100,
-      y: 100,
+      x: position.x,
+      y: position.y,
       width: 200,
       height: 200,
-      rotation: 0,
+      rotation: position.rotation,
     };
     setImages(prev => [...prev, newImage]);
-  }, []);
+  }, [images.length]);
   
   const handlePaste = useCallback((event: ClipboardEvent) => {
     if (!isEditMode) return;
@@ -102,7 +103,6 @@ export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProp
     <div 
       ref={canvasRef}
       className="absolute inset-0 w-full h-full overflow-hidden"
-      onClick={() => isEditMode && setSelectedImageId(null)}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
     >
@@ -121,18 +121,17 @@ export function Canvas({ images: initialImages, isEditMode, onSave }: CanvasProp
         </div>
       )}
 
-      {images.map(item => (
-        <div key={item.id} onClick={(e) => e.stopPropagation()}>
+      <AnimatePresence>
+        {images.map(item => (
             <CanvasItem
+              key={item.id}
               item={item}
               isEditMode={isEditMode}
-              onUpdate={handleUpdateImage}
               onDelete={handleDeleteImage}
-              onSelect={handleSelectImage}
-              isSelected={selectedImageId === item.id}
             />
-        </div>
-      ))}
+        ))}
+      </AnimatePresence>
+
 
       {isEditMode && (
         <div className="absolute bottom-4 right-4 z-20">

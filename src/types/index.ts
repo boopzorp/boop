@@ -35,7 +35,7 @@ export type Tab = {
   id: string;
   label: string;
   type: EntryType;
-  canvasImages?: CanvasImage[];
+  canvasImages?: CanvasImage[]; // This is for local state
 };
 
 // Spotify API Types

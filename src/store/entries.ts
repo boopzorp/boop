@@ -26,7 +26,11 @@ interface EntryState {
   addTab: (tab: { label: string; type: EntryType }) => Promise<string | undefined>;
   deleteTab: (tabId: string) => Promise<void>;
   setTabColor: (tabId: string, color: string) => Promise<void>;
-  updateTabCanvas: (tabId: string, canvasImages: CanvasImage[]) => Promise<void>;
+  updateTabCanvas: (tabId: string, imageUrls: string[]) => Promise<void>;
+}
+
+function generateId() {
+    return Math.random().toString(36).substr(2, 9);
 }
 
 const fetchTabs = async (): Promise<{ tabs: Tab[], colors: Record<string, string> }> => {
@@ -36,11 +40,31 @@ const fetchTabs = async (): Promise<{ tabs: Tab[], colors: Record<string, string
   const colors: Record<string, string> = {};
   tabSnapshot.forEach((doc) => {
     const data = doc.data();
+    const positions = [
+        { x: 50, y: 50, rotation: -5 },
+        { x: 250, y: 100, rotation: 3 },
+        { x: 450, y: 80, rotation: -2 },
+        { x: 100, y: 280, rotation: 6 },
+        { x: 350, y: 300, rotation: -4 },
+    ];
+    const canvasImages = (data.canvasImages || []).map((url: string, index: number) => {
+        const position = positions[index % positions.length];
+        return {
+            id: generateId(),
+            url,
+            x: position.x,
+            y: position.y,
+            width: 200,
+            height: 200,
+            rotation: position.rotation,
+        }
+    })
+
     tabs.push({ 
         id: doc.id, 
         label: data.label, 
         type: data.type,
-        canvasImages: data.canvasImages || [],
+        canvasImages: canvasImages,
     });
     colors[doc.id] = data.color || '#C0C0C0';
   });
@@ -183,21 +207,15 @@ export const useEntryStore = create<EntryState>((set, get) => ({
     }
   },
 
-  updateTabCanvas: async (tabId, canvasImages) => {
+  updateTabCanvas: async (tabId, imageUrls) => {
     try {
       const tabRef = doc(db, 'tabs', tabId);
+      await updateDoc(tabRef, { canvasImages: imageUrls });
       
-      // Forcefully sanitize the data to ensure it's a plain array of simple objects.
-      // This strips any undefined values or non-serializable properties.
-      const sanitizedImages = JSON.parse(JSON.stringify(canvasImages));
-      
-      await updateDoc(tabRef, { canvasImages: sanitizedImages });
+      // Manually refetch tabs to reload the new hardcoded positions
+      const { tabs, colors } = await fetchTabs();
+      set({ tabs, colors });
 
-      set((state) => ({
-        tabs: state.tabs.map((tab) =>
-          tab.id === tabId ? { ...tab, canvasImages: sanitizedImages } : tab
-        ),
-      }));
     } catch (error) {
       console.error("Error updating tab canvas: ", error);
     }
