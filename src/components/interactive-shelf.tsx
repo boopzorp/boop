@@ -71,7 +71,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
           <div
             className="w-full h-full flex items-end justify-start px-12"
           >
-            <div
+            <motion.div
               className="flex items-end gap-4"
               style={{ height: '350px' }}
             >
@@ -82,8 +82,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
                     e.stopPropagation();
                     onOpenDetail(item);
                   }}
-                  initial={{ y: 0, scale: 1 }}
-                  whileHover={{ y: -15, scale: 1.05 }}
+                  whileHover={{ y: -15 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 >
                   <ShelfItem
@@ -93,7 +92,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
                   />
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -102,10 +101,10 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
 
   if (type === 'apps') {
     return (
-        <div className="absolute top-0 left-0 h-full w-full">
+        <div className="absolute inset-0 h-full w-full">
             <div className="relative w-full h-full flex items-center">
-                <div className="w-full flex items-end justify-start px-12">
-                    <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-8 gap-y-4">
+                <div className="w-full flex items-center justify-center px-12">
+                    <div className="flex items-center justify-center gap-6">
                         {filteredEntries.map((item) => (
                             <motion.div
                                 key={item.id}
@@ -113,6 +112,8 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
                                     e.stopPropagation();
                                     onOpenDetail(item);
                                 }}
+                                whileHover={{ y: -15, scale: 1.1 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                             >
                                 <ShelfItem
                                     entry={item}
@@ -178,7 +179,6 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
                     <motion.div
                       key={item.id}
                       layout
-                      initial={{ y: 0 }}
                       whileHover={{ y: -15 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 40 }}
                       style={{

@@ -91,19 +91,6 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   const { title, type } = entry;
   const styles = typeStyles[type];
   
-  const itemVariants = {
-    initial: {
-      y: 0,
-      scale: 1,
-      transition: { type: "spring", stiffness: 300, damping: 20 },
-    },
-    hover: {
-      y: -15,
-      scale: 1.05,
-      transition: { type: "spring", stiffness: 300, damping: 20 },
-    },
-  };
-
   const handleCoverClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onOpenDetail(entry);
@@ -113,38 +100,28 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
 
   if (type === 'apps') {
     return (
-        <motion.div
+        <div
             className="group relative flex-shrink-0 cursor-pointer flex flex-col items-center gap-2"
             style={{ 
                 width: `${styles.coverWidth}px`, 
             }}
-            variants={itemVariants}
-            initial="initial"
-            whileHover="hover"
-            transition={{ type: 'spring', stiffness: 400, damping: 40 }}
             onClick={handleCoverClick}
         >
-            <div className="w-full relative shadow-lg" style={{ aspectRatio: '1 / 1' }}>
+            <div className="w-full relative drop-shadow-lg transition-transform duration-200 group-hover:drop-shadow-xl" style={{ aspectRatio: '1 / 1' }}>
                 <div
-                    className="absolute inset-0 bg-secondary"
-                    style={{
-                        clipPath: 'path("M0,20 C0,5 5,0 20,0 L80,0 C95,0 100,5 100,20 L100,80 C100,95 95,100 80,100 L20,100 C5,100 0,95 0,80Z")'
-                    }}
+                    className="absolute inset-0 bg-secondary rounded-[22.5%]"
                  />
                 <Image
                     src={entry.imageUrl}
                     alt={`Icon for ${title}`}
                     width={styles.coverWidth}
                     height={styles.itemHeight}
-                    className="absolute inset-0 w-full h-full object-contain p-2"
-                    style={{
-                        clipPath: 'path("M0,20 C0,5 5,0 20,0 L80,0 C95,0 100,5 100,20 L100,80 C100,95 95,100 80,100 L20,100 C5,100 0,95 0,80Z")'
-                    }}
+                    className="absolute inset-0 w-full h-full object-contain p-2 rounded-[22.5%]"
                     data-ai-hint="app icon"
                 />
             </div>
             <p className="text-xs font-semibold text-center truncate w-full">{title}</p>
-        </motion.div>
+        </div>
     )
   }
 
@@ -156,9 +133,6 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 width: `${styles.coverWidth}px`, 
                 height: `${styles.itemHeight}px`,
             }}
-            variants={itemVariants}
-            initial="initial"
-            whileHover="hover"
             transition={{ type: 'spring', stiffness: 400, damping: 40 }}
             onClick={handleCoverClick}
         >
@@ -186,9 +160,6 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 width: `${styles.coverWidth}px`, 
                 height: `${styles.itemHeight}px`
             }}
-            variants={itemVariants}
-            initial="initial"
-            whileHover="hover"
             animate={isSelected ? "hover" : "initial"}
             transition={{ type: 'spring', stiffness: 400, damping: 40 }}
             onClick={handleCoverClick}
@@ -228,9 +199,6 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
         width: showCover ? `${styles.coverWidth}px` : `${styles.spineWidth}px`, 
         height: `${styles.itemHeight}px`
       }}
-      variants={itemVariants}
-      initial="initial"
-      whileHover="hover"
       animate={isSelected ? "hover" : "initial"}
       transition={{ type: 'spring', stiffness: 400, damping: 40 }}
     >
