@@ -1,6 +1,6 @@
 
 import { create } from 'zustand';
-import type { Entry, Tab, EntryType, Block } from '@/types';
+import type { Entry, Tab, EntryType, Block, CanvasImage } from '@/types';
 import { 
   collection, 
   getDocs, 
@@ -26,6 +26,7 @@ interface EntryState {
   addTab: (tab: { label: string; type: EntryType }) => Promise<string | undefined>;
   deleteTab: (tabId: string) => Promise<void>;
   setTabColor: (tabId: string, color: string) => Promise<void>;
+  updateTabCanvas: (tabId: string, canvasImages: CanvasImage[]) => Promise<void>;
 }
 
 const fetchTabs = async (): Promise<{ tabs: Tab[], colors: Record<string, string> }> => {
@@ -35,7 +36,12 @@ const fetchTabs = async (): Promise<{ tabs: Tab[], colors: Record<string, string
   const colors: Record<string, string> = {};
   tabSnapshot.forEach((doc) => {
     const data = doc.data();
-    tabs.push({ id: doc.id, label: data.label, type: data.type });
+    tabs.push({ 
+        id: doc.id, 
+        label: data.label, 
+        type: data.type,
+        canvasImages: data.canvasImages || [],
+    });
     colors[doc.id] = data.color || '#C0C0C0';
   });
   return { tabs, colors };
@@ -138,9 +144,9 @@ export const useEntryStore = create<EntryState>((set, get) => ({
 
   addTab: async (tab) => {
     try {
-        const newTabData = { ...tab, color: '#C0C0C0' };
+        const newTabData = { ...tab, color: '#C0C0C0', canvasImages: [] };
         const docRef = await addDoc(collection(db, 'tabs'), newTabData);
-        const newTab: Tab = { id: docRef.id, ...tab };
+        const newTab: Tab = { id: docRef.id, ...tab, canvasImages: [] };
         set((state) => ({
           tabs: [...state.tabs, newTab],
           colors: { ...state.colors, [newTab.id]: newTabData.color },
@@ -174,6 +180,20 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         }));
     } catch (error) {
         console.error("Error updating tab color: ", error);
+    }
+  },
+
+  updateTabCanvas: async (tabId, canvasImages) => {
+    try {
+      const tabRef = doc(db, 'tabs', tabId);
+      await updateDoc(tabRef, { canvasImages });
+      set((state) => ({
+        tabs: state.tabs.map((tab) =>
+          tab.id === tabId ? { ...tab, canvasImages } : tab
+        ),
+      }));
+    } catch (error) {
+      console.error("Error updating tab canvas: ", error);
     }
   },
 }));

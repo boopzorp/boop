@@ -21,10 +21,21 @@ export type Entry = {
   imageUrl: string;
 };
 
+export type CanvasImage = {
+  id: string;
+  url: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+};
+
 export type Tab = {
   id: string;
   label: string;
   type: EntryType;
+  canvasImages?: CanvasImage[];
 };
 
 // Spotify API Types
