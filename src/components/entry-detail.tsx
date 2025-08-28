@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 
 function renderContent(entry: Entry) {
   // Always render from the 'notes' field which contains the rich HTML content
-  return <div className="prose prose-lg dark:prose-invert max-w-none prose-p:text-foreground prose-a:text-primary hover:prose-a:opacity-80" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
+  return <div className="prose prose-lg dark:prose-invert max-w-none prose-a:text-primary hover:prose-a:opacity-80" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
 }
 
 export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {

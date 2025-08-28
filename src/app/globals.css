@@ -46,7 +46,7 @@
   margin-top: 0.75em;
 }
 
-.tiptap p {
+.tiptap p, .tiptap ul, .tiptap ol, .tiptap li, .tiptap blockquote, .tiptap span {
   color: hsl(var(--foreground));
 }
 
