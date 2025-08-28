@@ -142,12 +142,13 @@ export default function AdminPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg min-h-[400px] md:min-h-[500px] relative overflow-auto"
+                  className="p-4 rounded-b-lg rounded-tr-lg shadow-lg relative"
                   style={{ 
                       backgroundColor: activeTab ? `${colors[activeTabId!] || '#cccccc'}33` : '#f0f0f033',
                       transition: 'background-color 0.5s ease-in-out',
                   }} 
               >
+                <div className="h-[400px] md:h-[500px] overflow-x-auto overflow-y-hidden w-full relative">
                   {activeTab && (
                     <Canvas 
                       images={activeTab.canvasImages || []} 
@@ -157,7 +158,7 @@ export default function AdminPage() {
                     />
                   )}
                   {activeTab ? (
-                      <div className={cn("relative", {
+                      <div className={cn("relative h-full", {
                         'z-10': !isCanvasEditMode,
                         'z-0 pointer-events-none opacity-50': isCanvasEditMode,
                       })}>
@@ -172,6 +173,10 @@ export default function AdminPage() {
                           <p>No tabs yet. Click the '+' button in the tab bar to create your first one!</p>
                       </div>
                   )}
+                </div>
+                 {activeTab && (
+                   <div className="h-4 w-full bg-secondary rounded-sm shadow-lg mt-[-1px]" style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }} />
+                 )}
               </motion.div>
             </AnimatePresence>
         </div>

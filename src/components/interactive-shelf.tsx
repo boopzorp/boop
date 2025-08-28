@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef } from 'react';
@@ -50,18 +51,14 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
 
   if (type === 'music') {
     return (
-      <div className="w-full flex flex-col items-center justify-center">
+      <div className="w-full h-full flex flex-col items-center justify-center">
         <div 
-          className="relative w-full h-[400px] flex items-center justify-center"
+          className="relative w-full h-full flex items-center justify-center"
           style={{ perspective: '1000px' }}
         >
           <div
             ref={scrollContainerRef}
-            className="w-full h-full overflow-x-auto overflow-y-hidden flex items-end justify-start px-12"
-            style={{
-              scrollbarWidth: 'none', 
-              msOverflowStyle: 'none'
-            }}
+            className="w-full h-full flex items-end justify-start px-12"
           >
             <div
               className="flex items-end gap-4"
@@ -91,7 +88,6 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
             </div>
           </div>
         </div>
-        <div className="h-4 w-11/12 max-w-6xl bg-secondary rounded-sm shadow-lg" style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }} />
       </div>
     );
   }
@@ -126,19 +122,15 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
 
   return (
     <div 
-      className="w-full flex flex-col items-center justify-center"
+      className="w-full h-full flex flex-col items-center justify-center"
       onClick={handleDeselect}
     >
         <div 
-          className="relative w-full h-[400px] flex items-center justify-center"
+          className="relative w-full h-full flex items-center justify-center"
         >
           <div 
             ref={scrollContainerRef}
-            className="w-full h-full overflow-x-auto overflow-y-hidden flex items-end justify-start px-12"
-            style={{
-              scrollbarWidth: 'none', 
-              msOverflowStyle: 'none'
-            }}
+            className="w-full h-full flex items-end justify-start px-12"
           >
               <motion.div
                 className="relative flex items-end"
@@ -172,7 +164,6 @@ export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShe
               </motion.div>
           </div>
         </div>
-        <div className="h-4 w-11/12 max-w-6xl bg-secondary rounded-sm shadow-lg" style={{ boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }} />
     </div>
   );
 }
