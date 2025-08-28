@@ -7,7 +7,7 @@ import { editorExtensions } from './block-editor/extensions';
 import { useCallback, useState } from 'react';
 import {
   Bold, Italic, Underline, Link as LinkIcon, Pilcrow,
-  Heading1, Heading2, Heading3, List, ListOrdered, Image as ImageIcon
+  Heading1, Heading2, Heading3, Heading4, List, ListOrdered, Image as ImageIcon, Minus, Quote
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -61,6 +61,10 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
           className={cn({ 'bg-accent': editor.isActive('heading', { level: 3 }) })}
         > <Heading3 className="h-4 w-4" /> </Button>
         <Button
+          variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+          className={cn({ 'bg-accent': editor.isActive('heading', { level: 4 }) })}
+        > <Heading4 className="h-4 w-4" /> </Button>
+        <Button
           variant="ghost" size="sm" onClick={() => editor.chain().focus().setParagraph().run()}
           className={cn({ 'bg-accent': editor.isActive('paragraph') })}
         > <Pilcrow className="h-4 w-4" /> </Button>
@@ -89,6 +93,13 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
           variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={cn({ 'bg-accent': editor.isActive('orderedList') })}
         > <ListOrdered className="h-4 w-4" /> </Button>
+        <Button
+            variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            className={cn({ 'bg-accent': editor.isActive('blockquote') })}
+        > <Quote className="h-4 w-4" /> </Button>
+        <Button
+            variant="ghost" size="sm" onClick={() => editor.chain().focus().setHorizontalRule().run()}
+        > <Minus className="h-4 w-4" /> </Button>
         <Button variant="ghost" size="sm" onClick={() => setIsImageDialogOpen(true)}>
           <ImageIcon className="h-4 w-4" />
         </Button>

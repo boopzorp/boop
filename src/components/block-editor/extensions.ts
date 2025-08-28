@@ -7,10 +7,9 @@ import Underline from '@tiptap/extension-underline';
 export const editorExtensions = [
   StarterKit.configure({
     heading: {
-      levels: [1, 2, 3],
+      levels: [1, 2, 3, 4],
     },
     codeBlock: false,
-    blockquote: false,
   }),
   Link.configure({
     openOnClick: false,

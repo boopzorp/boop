@@ -79,6 +79,10 @@
     font-size: 1.75em;
     font-weight: 700;
 }
+.tiptap h4 {
+    font-size: 1.5em;
+    font-weight: 700;
+}
 
 
 .tiptap img {
@@ -88,7 +92,10 @@
 
 .tiptap blockquote {
   padding-left: 1rem;
-  border-left: 2px solid;
+  border-left: 3px solid hsl(var(--foreground));
+  margin-left: 1rem;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
 }
 
 .tiptap hr {
