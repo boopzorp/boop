@@ -12,7 +12,6 @@ import { ScrollArea } from './ui/scroll-area';
 import { useEntryStore } from '@/store/entries';
 import { ConfirmationDialog } from './confirmation-dialog';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 function renderContent(entry: Entry) {
   // Always render from the 'notes' field which contains the rich HTML content
@@ -85,7 +84,7 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
              <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 rounded-full h-8 w-8 z-50 text-white bg-black/50 hover:bg-black/75 hover:text-white"
+                className="absolute top-4 right-4 rounded-full h-8 w-8 z-[60] text-white bg-black/50 hover:bg-black/75 hover:text-white"
                 onClick={onClose}
               >
                 <X className="h-4 w-4" />
@@ -101,76 +100,71 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
             >
               {/* Mobile Layout */}
               <div className="relative h-full md:hidden">
-                <AnimatePresence>
-                  {isScrolled && (
-                    <motion.div
-                      key="compact-header"
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-0 left-0 right-0 z-20 p-4 border-b bg-background/80 backdrop-blur-sm"
-                    >
-                      <h1 className="font-bold text-lg text-center text-foreground truncate">{entry.title}</h1>
-                    </motion.div>
-                  )}
+                 <AnimatePresence>
+                    {!isScrolled && (
+                       <motion.div
+                          key="hero-header"
+                          initial={{ opacity: 0, y: -20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+                          className="absolute top-0 left-0 right-0 z-20 p-6 pt-8"
+                       >
+                         <div className="w-full max-w-[200px] mx-auto">
+                              <Image
+                                src={entry.imageUrl}
+                                alt={`Cover for ${entry.title}`}
+                                width={imageDimensions.width}
+                                height={imageDimensions.height}
+                                className="rounded-md object-cover shadow-lg w-full h-auto"
+                                data-ai-hint={`${entry.type} cover`}
+                              />
+                          </div>
+                          {showDelete && (
+                            <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto">
+                              <Link href={`/editor/${entry.id}`} className="w-full">
+                                <Button variant="outline" className="w-full">
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  Edit
+                                </Button>
+                              </Link>
+                              <Button 
+                                  variant="destructive" 
+                                  size="icon"
+                                  onClick={() => setDeleteAlertOpen(true)}
+                                >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                          <div className="text-center mt-4">
+                              <h1 className="font-bold text-2xl text-foreground">{entry.title}</h1>
+                              {entry.creator && (
+                                  <h2 className="text-md text-muted-foreground font-normal">{entry.creator}</h2>
+                              )}
+                              <p className="text-sm text-muted-foreground">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
+                          </div>
+                       </motion.div>
+                    )}
+
+                    {isScrolled && (
+                      <motion.div
+                        key="compact-header"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-0 left-0 right-0 z-20 p-4 border-b bg-background/80 backdrop-blur-sm"
+                      >
+                        <h1 className="font-bold text-lg text-center text-foreground truncate">{entry.title}</h1>
+                      </motion.div>
+                    )}
                 </AnimatePresence>
                 
                 <ScrollArea className="h-full" viewportRef={scrollRef} onScroll={handleScroll}>
-                  <div className="pt-8 pb-16">
-                    <motion.div 
-                      className="px-6 pb-6"
-                      animate={{ 
-                          height: isScrolled ? 0 : 'auto', 
-                          opacity: isScrolled ? 0 : 1,
-                          paddingTop: isScrolled ? 0 : '1.5rem',
-                          paddingBottom: isScrolled ? 0 : '1.5rem',
-                          overflow: 'hidden'
-                      }}
-                      transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    >
-                       <div className="w-full max-w-[200px] mx-auto">
-                            <Image
-                              src={entry.imageUrl}
-                              alt={`Cover for ${entry.title}`}
-                              width={imageDimensions.width}
-                              height={imageDimensions.height}
-                              className="rounded-md object-cover shadow-lg w-full h-auto"
-                              data-ai-hint={`${entry.type} cover`}
-                            />
-                        </div>
-                        {showDelete && (
-                          <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto">
-                            <Link href={`/editor/${entry.id}`} className="w-full">
-                              <Button variant="outline" className="w-full">
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Edit
-                              </Button>
-                            </Link>
-                            <Button 
-                                variant="destructive" 
-                                size="icon"
-                                onClick={() => setDeleteAlertOpen(true)}
-                              >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
-                        <div className="text-center mt-4">
-                            <h1 className="font-bold text-2xl text-foreground">{entry.title}</h1>
-                            {entry.creator && (
-                                <h2 className="text-md text-muted-foreground font-normal">{entry.creator}</h2>
-                            )}
-                            <p className="text-sm text-muted-foreground">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
-                        </div>
-                    </motion.div>
-
-                    <div className={cn("px-6 pt-6 border-t", {
-                        "border-transparent": !isScrolled
-                    })}>
+                    {/* Use padding to create space for the initial hero header */}
+                    <div className="pt-[450px] px-6 pb-16">
                         {renderContent(entry)}
                     </div>
-                  </div>
                 </ScrollArea>
               </div>
 
