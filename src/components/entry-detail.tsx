@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 
 function renderContent(entry: Entry) {
   // Always render from the 'notes' field which contains the rich HTML content
-  return <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ol:text-foreground prose-ul:text-foreground prose-li:text-foreground" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
+  return <div className="prose prose-lg max-w-none prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ol:text-foreground prose-ul:text-foreground prose-li:text-foreground" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
 }
 
 export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
@@ -109,22 +109,23 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
-                        className="flex-shrink-0 p-4 border-b flex items-center justify-center"
+                        className="flex-shrink-0 p-4 border-b bg-background/80 backdrop-blur-sm"
                       >
-                        <h1 className="font-bold text-lg text-foreground truncate">{entry.title}</h1>
+                        <h1 className="font-bold text-lg text-center text-foreground truncate">{entry.title}</h1>
                       </motion.div>
                   )}
                 </AnimatePresence>
                 
-                {/* Scrollable Content Part */}
-                <ScrollArea className="flex-grow h-0" viewportRef={scrollRef} onScroll={handleScroll}>
-                    <motion.div 
-                      animate={{ paddingTop: isScrolled ? 0 : 24 }}
-                      transition={{ duration: 0.3 }}
-                    >
+                <ScrollArea className="flex-grow" viewportRef={scrollRef} onScroll={handleScroll}>
+                    <div className="pb-8">
                       <motion.div 
-                        className="flex-shrink-0 px-6"
-                        animate={{ height: isScrolled ? 0 : 'auto', opacity: isScrolled ? 0 : 1, marginBottom: isScrolled ? 0 : '1rem' }}
+                        className="px-6 pt-6"
+                        animate={{ 
+                            height: isScrolled ? 0 : 'auto', 
+                            opacity: isScrolled ? 0 : 1, 
+                            marginBottom: isScrolled ? '0rem' : '1.5rem',
+                            overflow: 'hidden'
+                        }}
                         transition={{ duration: 0.3 }}
                       >
                          <div className="w-full max-w-[200px] mx-auto">
@@ -162,12 +163,12 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
                               <p className="text-sm text-muted-foreground">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
                           </div>
                       </motion.div>
-                      <div className={cn("p-6 border-t", {
+                      <div className={cn("px-6 pt-6 border-t", {
                           "border-transparent": !isScrolled
                       })}>
                           {renderContent(entry)}
                       </div>
-                    </motion.div>
+                    </div>
                 </ScrollArea>
               </div>
 
