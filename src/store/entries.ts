@@ -21,7 +21,7 @@ interface EntryState {
   isLoaded: boolean;
   fetchAllData: () => Promise<void>;
   fetchEntryById: (id: string) => Promise<Entry | null>;
-  addEntry: (entry: Omit<Entry, 'id' | 'addedAt'>) => Promise<void>;
+  addEntry: (entry: Omit<Entry, 'id' | 'addedAt'>) => Promise<string | undefined>;
   updateEntry: (id: string, entry: Partial<Omit<Entry, 'id' | 'addedAt'>>) => Promise<void>;
   deleteEntry: (entryId: string) => Promise<void>;
   addTab: (tab: { label: string; type: EntryType }) => Promise<string | undefined>;
@@ -39,7 +39,6 @@ const fetchTabs = async (): Promise<{ tabs: Tab[], colors: Record<string, string
   for (const tabDoc of tabSnapshot.docs) {
     const tabData = tabDoc.data();
     
-    // Fetch canvas images from the subcollection
     const canvasImagesCollectionRef = collection(db, 'tabs', tabDoc.id, 'canvasImages');
     const canvasImagesSnapshot = await getDocs(canvasImagesCollectionRef);
     const canvasImages: CanvasImage[] = canvasImagesSnapshot.docs.map(doc => ({
@@ -84,7 +83,7 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       set({ tabs, colors, entries, isLoaded: true });
     } catch (error) {
       console.error("Error fetching data from Firestore:", error);
-      set({ isLoaded: true }); // Mark as loaded even if there's an error
+      set({ isLoaded: true });
     }
   },
 
@@ -123,8 +122,10 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         addedAt: newEntryData.addedAt.toDate(),
       };
       set((state) => ({ entries: [newEntry, ...state.entries] }));
+      return docRef.id;
     } catch (error) {
       console.error("Error adding entry: ", error);
+      return undefined;
     }
   },
 
@@ -165,13 +166,12 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         return newTab.id;
     } catch (error) {
         console.error("Error adding tab: ", error);
+        return undefined;
     }
   },
 
   deleteTab: async (tabId) => {
     try {
-      // Note: This is a simple delete. For a real app, you'd want a transaction
-      // to delete all entries associated with this tab as well.
       await deleteDoc(doc(db, 'tabs', tabId));
       set((state) => ({
         tabs: state.tabs.filter((tab) => tab.id !== tabId),
@@ -203,29 +203,21 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       const batch = writeBatch(db);
       const canvasImagesCollectionRef = collection(db, 'tabs', tabId, 'canvasImages');
 
-      // 1. Delete all existing images in the subcollection
       const existingImagesSnapshot = await getDocs(canvasImagesCollectionRef);
       existingImagesSnapshot.forEach((doc) => {
         batch.delete(doc.ref);
       });
 
-      // 2. Add all the new images
       const finalImagesForState: CanvasImage[] = [];
       images.forEach(image => {
         const { id, ...imageData } = image;
-        // If image has a valid ID, use it. Otherwise, create a new doc ref to generate one.
         const imageRef = id ? doc(canvasImagesCollectionRef, id) : doc(canvasImagesCollectionRef);
-        
-        // CRITICAL FIX: The data we set must be the plain object. 
-        // We use the new ID for our local state update.
         batch.set(imageRef, imageData);
         finalImagesForState.push({ ...imageData, id: imageRef.id });
       });
 
-      // 3. Commit the batch
       await batch.commit();
 
-      // Update local state to reflect the changes
       set((state) => ({
         tabs: state.tabs.map(tab => 
           tab.id === tabId ? { ...tab, canvasImages: finalImagesForState } : tab

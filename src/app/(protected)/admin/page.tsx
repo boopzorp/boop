@@ -165,7 +165,8 @@ export default function AdminPage() {
                         <InteractiveShelf 
                             entries={entries.filter(e => e.tabId === activeTabId)} 
                             type={activeTab.type} 
-                            onOpenDetail={handleOpenDetail} 
+                            onOpenDetail={handleOpenDetail}
+                            showDrafts={true}
                         />
                       </div>
                   ) : (

@@ -63,6 +63,9 @@ export default function Home() {
     return <div className="flex h-screen w-full items-center justify-center">Loading The Logs...</div>
   }
 
+  // Filter for published entries only
+  const publishedEntries = entries.filter(e => e.status === 'published');
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="fixed top-0 left-0 z-20 p-4 w-full flex justify-between items-center bg-background/80 backdrop-blur-sm border-b">
@@ -126,7 +129,7 @@ export default function Home() {
                             />
                             <div className="relative z-10 h-full">
                                 <InteractiveShelf 
-                                    entries={entries.filter(e => e.tabId === activeTabId)} 
+                                    entries={publishedEntries.filter(e => e.tabId === activeTabId)} 
                                     type={activeTab.type} 
                                     onOpenDetail={handleOpenDetail} 
                                 />

@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
@@ -23,14 +23,18 @@ import { useEntryStore } from '@/store/entries';
 
 export default function EditorPage() {
   const router = useRouter();
-  const { tabs, addEntry, fetchAllData, isLoaded } = useEntryStore();
+  const { tabs, addEntry, updateEntry, fetchAllData, isLoaded } = useEntryStore();
   
+  const [draftId, setDraftId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [creator, setCreator] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [selectedTabId, setSelectedTabId] = useState<string | undefined>(undefined);
   const [content, setContent] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -44,101 +48,131 @@ export default function EditorPage() {
     }
   }, [isLoaded, tabs, selectedTabId]);
 
-  const handleSave = () => {
-    const selectedTab = tabs.find(t => t.id === selectedTabId);
-    if (!selectedTab) {
-      toast({
-        title: 'No Tab Selected',
-        description: 'Please select a tab for this entry.',
-        variant: 'destructive',
-      });
-      return;
+  const saveDraft = useCallback(() => {
+    if (title.trim() === '' && content.trim() === '') {
+        return; // Don't save empty drafts
     }
+    setIsSaving(true);
+
+    const selectedTab = tabs.find(t => t.id === selectedTabId);
+    if (!selectedTab) return; // Can't save without a tab
 
     let finalImageUrl = imageUrl;
     if (selectedTab.type === 'apps' && creator) {
         try {
             const url = new URL(creator.startsWith('http') ? creator : `https://${creator}`);
             finalImageUrl = `https://icons.duckduckgo.com/ip3/${url.hostname}.ico`;
-        } catch (error) {
-            finalImageUrl = ''; // Invalid URL
-        }
+        } catch (error) { finalImageUrl = ''; }
     }
 
-    const newEntry: Omit<Entry, 'id' | 'addedAt'> = {
-      title,
+    const entryData: Omit<Entry, 'id' | 'addedAt'> = {
+      title: title || 'Untitled Draft',
       creator,
       imageUrl: finalImageUrl || `https://picsum.photos/400/600`,
       tabId: selectedTabId!,
       type: selectedTab.type,
-      notes: content, // Save rich text HTML to 'notes' field
-      content: [], // Deprecate old block content
+      notes: content,
+      content: [],
+      status: 'draft',
     };
 
-    addEntry(newEntry);
+    if (draftId) {
+      // Update existing draft
+      updateEntry(draftId, entryData).then(() => setIsSaving(false));
+    } else {
+      // Create new draft
+      addEntry(entryData).then((newId) => {
+        if (newId) {
+          setDraftId(newId);
+        }
+        setIsSaving(false);
+      });
+    }
+  }, [title, content, creator, imageUrl, selectedTabId, draftId, tabs, addEntry, updateEntry]);
 
-    toast({
-      title: 'Entry Published!',
-      description: 'Your journal entry has been published.',
-    });
+  useEffect(() => {
+    if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+    }
+    debounceTimeout.current = setTimeout(() => {
+        saveDraft();
+    }, 2000); // Auto-save after 2 seconds of inactivity
+
+    return () => {
+        if (debounceTimeout.current) {
+            clearTimeout(debounceTimeout.current);
+        }
+    };
+  }, [title, creator, imageUrl, selectedTabId, content, saveDraft]);
+
+  const handlePublish = () => {
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
     
+    const selectedTab = tabs.find(t => t.id === selectedTabId);
+    if (!selectedTab) {
+      toast({ title: 'No Tab Selected', description: 'Please select a tab for this entry.', variant: 'destructive' });
+      return;
+    }
+
+    const entryData = {
+      title,
+      creator,
+      imageUrl: imageUrl || `https://picsum.photos/400/600`,
+      tabId: selectedTabId!,
+      type: selectedTab.type,
+      notes: content,
+      status: 'published' as const,
+    };
+    
+    if(draftId) {
+        updateEntry(draftId, entryData);
+    } else {
+        addEntry(entryData as Omit<Entry, 'id' | 'addedAt'>);
+    }
+
+    toast({ title: 'Entry Published!', description: 'Your journal entry has been published.' });
     router.push('/admin');
   };
 
   const handleTrackSelect = (track: SpotifyTrack) => {
     setTitle(track.name);
     setCreator(track.artists.map(a => a.name).join(', '));
-    if (track.album.images.length > 0) {
-      setImageUrl(track.album.images[0].url);
-    }
+    if (track.album.images.length > 0) setImageUrl(track.album.images[0].url);
   };
 
   const handleBookSelect = (book: GoogleBookVolume) => {
     setTitle(book.volumeInfo.title);
     setCreator(book.volumeInfo.authors?.join(', ') || 'Unknown Author');
-    if (book.volumeInfo.imageLinks?.thumbnail) {
-      setImageUrl(book.volumeInfo.imageLinks.thumbnail);
-    }
+    if (book.volumeInfo.imageLinks?.thumbnail) setImageUrl(book.volumeInfo.imageLinks.thumbnail);
   };
 
   const handleAnimeSelect = (anime: JikanAnime) => {
     setTitle(anime.title);
     setCreator(anime.studios.map(s => s.name).join(', '));
-    if (anime.images.jpg.large_image_url) {
-      setImageUrl(anime.images.jpg.large_image_url);
-    }
+    if (anime.images.jpg.large_image_url) setImageUrl(anime.images.jpg.large_image_url);
   };
 
   const handleMangaSelect = (manga: JikanManga) => {
     setTitle(manga.title);
     setCreator(manga.authors.map(a => a.name).join(', '));
-    if (manga.images.jpg.large_image_url) {
-      setImageUrl(manga.images.jpg.large_image_url);
-    }
+    if (manga.images.jpg.large_image_url) setImageUrl(manga.images.jpg.large_image_url);
   };
 
   const handleMovieSelect = (movie: OMDBSearchResult) => {
     setTitle(movie.Title);
     setCreator(movie.Year);
-    if (movie.Poster && movie.Poster !== 'N/A') {
-      setImageUrl(movie.Poster);
-    }
+    if (movie.Poster && movie.Poster !== 'N/A') setImageUrl(movie.Poster);
   };
 
   const handleAppUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const urlValue = e.target.value;
-    setCreator(urlValue); // Store the full URL in the creator field
+    setCreator(urlValue);
     if (urlValue) {
         try {
             const url = new URL(urlValue.startsWith('http') ? urlValue : `https://${urlValue}`);
             setImageUrl(`https://icons.duckduckgo.com/ip3/${url.hostname}.ico`);
-        } catch (error) {
-            // Invalid URL, clear image
-            setImageUrl('');
-        }
-    } else {
-        setImageUrl('');
-    }
+        } catch (error) { setImageUrl(''); }
+    } else { setImageUrl(''); }
   };
 
   const activeTab = tabs.find(t => t.id === selectedTabId);
@@ -151,18 +185,22 @@ export default function EditorPage() {
     <div className="flex min-h-screen w-full flex-col">
       <header className="fixed top-0 left-0 z-20 p-4 w-full flex flex-wrap justify-between items-center bg-background/80 backdrop-blur-sm border-b">
         <div className="flex items-center gap-2">
-          <Link href="/admin" className="flex items-center gap-2">
-            <Logo />
-          </Link>
+          <Link href="/admin" className="flex items-center gap-2"> <Logo /> </Link>
         </div>
         <div className="flex items-center gap-2 md:gap-4 mt-2 md:mt-0 w-full md:w-auto justify-end">
+          <div className="text-sm text-muted-foreground mr-4">
+            {isSaving ? 'Saving...' : 'Draft saved'}
+          </div>
           <Link href="/admin">
             <Button variant="ghost">
               <ArrowLeft className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Back to Shelf</span>
             </Button>
           </Link>
-          <Button onClick={handleSave}>Publish</Button>
+          <Button onClick={handlePublish}>
+            <Check className="mr-2 h-4 w-4" />
+            Publish
+          </Button>
         </div>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center pt-32 md:pt-24">
@@ -181,40 +219,11 @@ export default function EditorPage() {
             </Select>
           </div>
           
-          {(activeTab?.type === 'movie' || activeTab?.type === 'tv') && (
-            <div className="space-y-4">
-              <Label>Search OMDB</Label>
-              <OMDBSearch onMovieSelect={handleMovieSelect} />
-            </div>
-          )}
-
-          {activeTab?.type === 'music' && (
-            <div className="space-y-4">
-              <Label>Search Spotify</Label>
-              <SpotifySearch onTrackSelect={handleTrackSelect} />
-            </div>
-          )}
-
-          {activeTab?.type === 'book' && (
-            <div className="space-y-4">
-              <Label>Search Books</Label>
-              <BookSearch onBookSelect={handleBookSelect} />
-            </div>
-          )}
-
-          {activeTab?.type === 'anime' && (
-            <div className="space-y-4">
-              <Label>Search MyAnimeList</Label>
-              <JikanSearch onAnimeSelect={handleAnimeSelect} />
-            </div>
-          )}
-
-          {activeTab?.type === 'manga' && (
-            <div className="space-y-4">
-              <Label>Search MyAnimeList</Label>
-              <MangaSearch onMangaSelect={handleMangaSelect} />
-            </div>
-          )}
+          {(activeTab?.type === 'movie' || activeTab?.type === 'tv') && (<OMDBSearch onMovieSelect={handleMovieSelect} />)}
+          {activeTab?.type === 'music' && (<SpotifySearch onTrackSelect={handleTrackSelect} />)}
+          {activeTab?.type === 'book' && (<BookSearch onBookSelect={handleBookSelect} />)}
+          {activeTab?.type === 'anime' && (<JikanSearch onAnimeSelect={handleAnimeSelect} />)}
+          {activeTab?.type === 'manga' && (<MangaSearch onMangaSelect={handleMangaSelect} />)}
           
           <div className="space-y-4">
             <Input
@@ -228,29 +237,14 @@ export default function EditorPage() {
               <div className="space-y-4">
                 <div className="space-y-2">
                     <Label htmlFor="creator">Author / Creator</Label>
-                    <Input
-                      id="creator"
-                      placeholder="e.g. Jane Doe"
-                      value={creator}
-                      onChange={(e) => setCreator(e.target.value)}
-                    />
+                    <Input id="creator" placeholder="e.g. Jane Doe" value={creator} onChange={(e) => setCreator(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="cover-image">Cover Image URL</Label>
-                    <Input
-                    id="cover-image"
-                    placeholder="https://..."
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    />
+                    <Input id="cover-image" placeholder="https://..." value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
                     {imageUrl && (
                     <div className="mt-4 relative aspect-video w-full max-w-md rounded-md overflow-hidden">
-                        <Image
-                        src={imageUrl}
-                        alt="Cover image preview"
-                        fill
-                        className="object-cover"
-                        />
+                        <Image src={imageUrl} alt="Cover image preview" fill className="object-cover" />
                     </div>
                     )}
                 </div>
@@ -260,23 +254,13 @@ export default function EditorPage() {
               <div className="space-y-4">
                 <div className="space-y-2">
                     <Label htmlFor="app-url">App URL</Label>
-                    <Input
-                      id="app-url"
-                      placeholder="https://example.com"
-                      value={creator}
-                      onChange={handleAppUrlChange}
-                    />
+                    <Input id="app-url" placeholder="https://example.com" value={creator} onChange={handleAppUrlChange} />
                 </div>
                 {imageUrl && (
                 <div className="mt-4">
                     <Label>Icon Preview</Label>
                     <div className="mt-2 relative w-24 h-24 rounded-lg overflow-hidden border p-2 bg-secondary">
-                        <Image
-                        src={imageUrl}
-                        alt="Icon preview"
-                        fill
-                        className="object-contain"
-                        />
+                        <Image src={imageUrl} alt="Icon preview" fill className="object-contain" />
                     </div>
                 </div>
                 )}

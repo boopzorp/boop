@@ -9,10 +9,15 @@ type InteractiveShelfProps = {
   entries: Entry[];
   type: EntryType;
   onOpenDetail: (entry: Entry) => void;
+  showDrafts?: boolean;
 };
 
-export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShelfProps) {
-  const filteredEntries = entries.filter(e => e.type === type);
+export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = false }: InteractiveShelfProps) {
+  const filteredEntries = entries.filter(e => {
+    const typeMatch = e.type === type;
+    const statusMatch = showDrafts ? true : e.status === 'published';
+    return typeMatch && statusMatch;
+  });
 
   if (type === 'music' || type === 'blog') {
     return (

@@ -19,6 +19,7 @@ export type Entry = {
   content?: Block[];
   addedAt: Date;
   imageUrl: string;
+  status: 'draft' | 'published';
 };
 
 export type CanvasImage = {

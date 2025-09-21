@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Check, BookOpen } from 'lucide-react';
 import { BlockEditor } from '@/components/block-editor';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
@@ -33,6 +33,7 @@ export default function EditEntryPage() {
   const [imageUrl, setImageUrl] = useState('');
   const [selectedTabId, setSelectedTabId] = useState<string | undefined>(undefined);
   const [content, setContent] = useState('');
+  const [status, setStatus] = useState<'draft' | 'published'>('draft');
   const [isContentLoaded, setIsContentLoaded] = useState(false);
   const { toast } = useToast();
 
@@ -50,8 +51,9 @@ export default function EditEntryPage() {
           setCreator(fetchedEntry.creator);
           setImageUrl(fetchedEntry.imageUrl);
           setSelectedTabId(fetchedEntry.tabId);
-          setContent(fetchedEntry.notes || ''); // notes field now stores the HTML content
-          setIsContentLoaded(true); // Signal that content is loaded
+          setContent(fetchedEntry.notes || '');
+          setStatus(fetchedEntry.status || 'draft');
+          setIsContentLoaded(true);
         } else {
           toast({
             title: 'Entry not found',
@@ -64,7 +66,7 @@ export default function EditEntryPage() {
     }
   }, [isLoaded, entryId, fetchEntryById, router, toast]);
 
-  const handleSave = () => {
+  const handleSave = (newStatus: 'draft' | 'published') => {
     const selectedTab = tabs.find(t => t.id === selectedTabId);
     if (!selectedTab) {
       toast({
@@ -91,15 +93,16 @@ export default function EditEntryPage() {
       imageUrl: finalImageUrl || `https://picsum.photos/400/600`,
       tabId: selectedTabId,
       type: selectedTab.type,
-      notes: content, // Save rich text HTML to the 'notes' field
-      content: [], // Deprecate the old block content
+      notes: content,
+      content: [],
+      status: newStatus,
     };
 
     updateEntry(entryId, updatedEntry);
 
     toast({
-      title: 'Entry Updated!',
-      description: 'Your journal entry has been saved.',
+      title: newStatus === 'published' ? 'Entry Published!' : 'Changes Saved!',
+      description: `Your entry has been ${newStatus === 'published' ? 'published' : 'saved'}.`,
     });
     
     router.push('/admin');
@@ -147,13 +150,12 @@ export default function EditEntryPage() {
 
   const handleAppUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const urlValue = e.target.value;
-    setCreator(urlValue); // Store the full URL in the creator field
+    setCreator(urlValue);
     if (urlValue) {
         try {
             const url = new URL(urlValue.startsWith('http') ? urlValue : `https://${urlValue}`);
             setImageUrl(`https://icons.duckduckgo.com/ip3/${url.hostname}.ico`);
         } catch (error) {
-            // Invalid URL, clear image
             setImageUrl('');
         }
     } else {
@@ -182,7 +184,16 @@ export default function EditEntryPage() {
               <span className="hidden md:inline">Back to Shelf</span>
             </Button>
           </Link>
-          <Button onClick={handleSave}>Save Changes</Button>
+          {status === 'published' && (
+            <Button variant="outline" onClick={() => handleSave('draft')}>
+              <BookOpen className="mr-2 h-4 w-4" />
+              Unpublish
+            </Button>
+          )}
+          <Button onClick={() => handleSave('published')}>
+            <Check className="mr-2 h-4 w-4" />
+            {status === 'draft' ? 'Publish' : 'Save Changes'}
+          </Button>
         </div>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center pt-32 md:pt-24">

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Entry, EntryType } from "@/types";
 import { cn } from '@/lib/utils';
+import { Badge } from './ui/badge';
 
 type ShelfItemProps = {
   entry: Entry;
@@ -88,7 +89,7 @@ const typeStyles: Record<EntryType, {
 
 
 export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
-  const { title, type } = entry;
+  const { title, type, status } = entry;
   const styles = typeStyles[type];
   
   const handleCoverClick = (e: React.MouseEvent) => {
@@ -97,6 +98,11 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   };
   
   const showCover = isSelected || type === 'music' || type === 'blog' || type === 'apps';
+  const isDraft = status === 'draft';
+
+  const renderDraftBadge = () => isDraft && (
+    <Badge variant="secondary" className="absolute -top-2 -right-2 z-20">Draft</Badge>
+  );
 
   if (type === 'apps') {
     return (
@@ -107,7 +113,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             }}
             onClick={handleCoverClick}
         >
-            <div className="w-full relative drop-shadow-lg transition-transform duration-200 group-hover:drop-shadow-xl" style={{ aspectRatio: '1 / 1' }}>
+            <div className="w-full relative drop-shadow-lg transition-transform duration-200 group-hover:drop-shadow-xl">
+                {renderDraftBadge()}
                 <div
                     className="absolute inset-0 bg-secondary rounded-[22.5%]"
                  />
@@ -136,6 +143,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             transition={{ type: 'spring', stiffness: 400, damping: 40 }}
             onClick={handleCoverClick}
         >
+            {renderDraftBadge()}
             <Image
                 src={entry.imageUrl}
                 alt={`Cover for ${title}`}
@@ -169,6 +177,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                     "relative w-full h-full rounded-md shadow-2xl transition-transform duration-300 ease-in-out group-hover:scale-105",
                 )}
             >
+                {renderDraftBadge()}
                 {/* CD Disc */}
                 <div className={cn(
                     "absolute top-0 right-[-60px] w-[200px] h-[200px] rounded-full transition-transform duration-500 ease-out group-hover:translate-x-[-45px]",
@@ -212,6 +221,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             className="absolute inset-0"
             onClick={handleCoverClick}
           >
+            {renderDraftBadge()}
             <Image
               src={entry.imageUrl}
               alt={`Cover for ${title}`}
@@ -234,6 +244,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                     styles.spineShadow
                 )}
             >
+                {renderDraftBadge()}
                 <Image 
                     src={entry.imageUrl} 
                     alt={`${title} spine`}
@@ -270,6 +281,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 styles.spineShadow
             )}
           >
+            {renderDraftBadge()}
             <span
               className={cn("font-headline text-sm font-bold", {
                 'text-primary-foreground': type === 'book',
