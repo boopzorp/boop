@@ -9,12 +9,10 @@ type InteractiveShelfProps = {
   entries: Entry[];
   type: EntryType;
   onOpenDetail: (entry: Entry) => void;
-  showDrafts?: boolean;
 };
 
-export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = false }: InteractiveShelfProps) {
-  const filteredEntries = showDrafts ? entries : entries.filter(e => e.status === 'published');
-
+export function InteractiveShelf({ entries, type, onOpenDetail }: InteractiveShelfProps) {
+  
   if (type === 'music' || type === 'blog') {
     return (
       <div className="absolute top-0 left-0 h-full w-full">
@@ -29,7 +27,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
               className="flex items-end gap-4"
               style={{ height: '350px' }}
             >
-              {filteredEntries.map((item) => (
+              {entries.map((item) => (
                 <motion.div
                   key={item.id}
                    onClick={(e) => {
@@ -55,9 +53,9 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
 
   if (type === 'apps') {
     return (
-      <div className="absolute inset-0 h-full w-full p-8 md:p-12 overflow-hidden">
+      <div className="absolute inset-0 h-full w-full p-8 md:p-12 overflow-hidden flex items-end justify-center pb-8">
         <motion.div 
-          className="w-full h-full grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-8"
+          className="w-auto h-auto flex items-center justify-center gap-6"
           variants={{
             hidden: { opacity: 0 },
             show: {
@@ -70,7 +68,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
           initial="hidden"
           animate="show"
         >
-          {filteredEntries.map((item) => (
+          {entries.map((item) => (
             <motion.div
               key={item.id}
               onClick={(e) => {
@@ -81,7 +79,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
                 hidden: { opacity: 0, y: 20 },
                 show: { opacity: 1, y: 0 }
               }}
-              whileHover={{ scale: 1.1, zIndex: 10 }}
+              whileHover={{ scale: 1.1, zIndex: 10, y: -10 }}
               transition={{ type: 'spring', stiffness: 400, damping: 15 }}
             >
               <ShelfItem
@@ -110,7 +108,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
                 className="relative flex items-end gap-4"
                 style={{ height: '350px' }}
               >
-                {filteredEntries.map((item, index) => {
+                {entries.map((item, index) => {
                   return (
                     <motion.div
                       key={item.id}
