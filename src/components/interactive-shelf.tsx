@@ -13,11 +13,7 @@ type InteractiveShelfProps = {
 };
 
 export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = false }: InteractiveShelfProps) {
-  const filteredEntries = entries.filter(e => {
-    const typeMatch = e.type === type;
-    const statusMatch = showDrafts ? true : e.status === 'published';
-    return typeMatch && statusMatch;
-  });
+  const filteredEntries = showDrafts ? entries : entries.filter(e => e.status === 'published');
 
   if (type === 'music' || type === 'blog') {
     return (
