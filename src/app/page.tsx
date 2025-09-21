@@ -58,7 +58,6 @@ export default function Home() {
   };
 
   const activeTab = tabs.find(t => t.id === activeTabId);
-  const publishedEntries = entries.filter(e => e.status === 'published');
 
   if (!isLoaded) {
     return <div className="flex h-screen w-full items-center justify-center">Loading The Logs...</div>
@@ -127,7 +126,7 @@ export default function Home() {
                             />
                             <div className="relative z-10 h-full">
                                 <InteractiveShelf 
-                                    entries={publishedEntries.filter(e => e.tabId === activeTabId)} 
+                                    entries={entries.filter(e => e.tabId === activeTabId)} 
                                     type={activeTab.type} 
                                     onOpenDetail={handleOpenDetail} 
                                 />
