@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,10 +12,11 @@ import { ScrollArea } from './ui/scroll-area';
 import { useEntryStore } from '@/store/entries';
 import { ConfirmationDialog } from './confirmation-dialog';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 function renderContent(entry: Entry) {
   // Always render from the 'notes' field which contains the rich HTML content
-  return <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
+  return <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ol:text-foreground prose-ul:text-foreground prose-li:text-foreground" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
 }
 
 export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
@@ -26,6 +27,23 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
 }) {
   const { deleteEntry } = useEntryStore();
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Reset scroll state when a new entry is opened
+    if (isOpen) {
+      setIsScrolled(false);
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = 0;
+      }
+    }
+  }, [isOpen, entry]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = e.currentTarget.scrollTop;
+    setIsScrolled(scrollTop > 50); // Trigger when scrolled more than 50px
+  };
   
   const getImageDimensions = (entryType: string | undefined) => {
     switch (entryType) {
@@ -83,48 +101,73 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
             >
               {/* Mobile Layout: Header is fixed, content scrolls */}
               <div className="flex md:hidden flex-col h-full">
-                {/* Fixed Header Part */}
-                <div className="flex-shrink-0 p-6 border-b">
-                   <div className="w-full max-w-[200px] mx-auto">
-                        <Image
-                          src={entry.imageUrl}
-                          alt={`Cover for ${entry.title}`}
-                          width={imageDimensions.width}
-                          height={imageDimensions.height}
-                          className="rounded-md object-cover shadow-lg w-full h-auto"
-                          data-ai-hint={`${entry.type} cover`}
-                        />
-                    </div>
-                    {showDelete && (
-                      <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto">
-                        <Link href={`/editor/${entry.id}`} className="w-full">
-                          <Button variant="outline" className="w-full">
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
-                          </Button>
-                        </Link>
-                        <Button 
-                            variant="destructive" 
-                            size="icon"
-                            onClick={() => setDeleteAlertOpen(true)}
-                          >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                <AnimatePresence>
+                  {isScrolled && (
+                     <motion.div
+                        key="compact-header"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex-shrink-0 p-4 border-b flex items-center justify-center"
+                      >
+                        <h1 className="font-bold text-lg text-foreground truncate">{entry.title}</h1>
+                      </motion.div>
+                  )}
+                </AnimatePresence>
+                
+                {/* Scrollable Content Part */}
+                <ScrollArea className="flex-grow h-0" viewportRef={scrollRef} onScroll={handleScroll}>
+                    <motion.div 
+                      animate={{ paddingTop: isScrolled ? 0 : 24 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <motion.div 
+                        className="flex-shrink-0 px-6"
+                        animate={{ height: isScrolled ? 0 : 'auto', opacity: isScrolled ? 0 : 1, marginBottom: isScrolled ? 0 : '1rem' }}
+                        transition={{ duration: 0.3 }}
+                      >
+                         <div className="w-full max-w-[200px] mx-auto">
+                              <Image
+                                src={entry.imageUrl}
+                                alt={`Cover for ${entry.title}`}
+                                width={imageDimensions.width}
+                                height={imageDimensions.height}
+                                className="rounded-md object-cover shadow-lg w-full h-auto"
+                                data-ai-hint={`${entry.type} cover`}
+                              />
+                          </div>
+                          {showDelete && (
+                            <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto">
+                              <Link href={`/editor/${entry.id}`} className="w-full">
+                                <Button variant="outline" className="w-full">
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  Edit
+                                </Button>
+                              </Link>
+                              <Button 
+                                  variant="destructive" 
+                                  size="icon"
+                                  onClick={() => setDeleteAlertOpen(true)}
+                                >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                          <div className="text-center mt-4">
+                              <h1 className="font-bold text-2xl text-foreground">{entry.title}</h1>
+                              {entry.creator && (
+                                  <h2 className="text-md text-muted-foreground font-normal">{entry.creator}</h2>
+                              )}
+                              <p className="text-sm text-muted-foreground">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
+                          </div>
+                      </motion.div>
+                      <div className={cn("p-6 border-t", {
+                          "border-transparent": !isScrolled
+                      })}>
+                          {renderContent(entry)}
                       </div>
-                    )}
-                    <div className="text-center mt-4">
-                        <h1 className="font-bold text-2xl text-foreground">{entry.title}</h1>
-                        {entry.creator && (
-                            <h2 className="text-md text-muted-foreground font-normal">{entry.creator}</h2>
-                        )}
-                        <p className="text-sm text-muted-foreground">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
-                    </div>
-                </div>
-                 {/* Scrollable Content Part */}
-                <ScrollArea className="flex-grow h-0">
-                    <div className="p-6">
-                        {renderContent(entry)}
-                    </div>
+                    </motion.div>
                 </ScrollArea>
               </div>
 
