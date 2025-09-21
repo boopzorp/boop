@@ -50,24 +50,24 @@
   }
 
   .theme-eva {
-    --background: 240 10% 10%;
-    --foreground: 145 10% 90%;
-    --card: 240 10% 12%;
-    --card-foreground: 145 10% 90%;
-    --popover: 240 10% 10%;
-    --popover-foreground: 145 10% 90%;
-    --primary: 265 80% 55%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 145 70% 45%;
-    --secondary-foreground: 240 10% 10%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --background: 265 35% 15%;
+    --foreground: 265 10% 85%;
+    --card: 265 35% 18%;
+    --card-foreground: 265 10% 85%;
+    --popover: 265 35% 12%;
+    --popover-foreground: 265 10% 85%;
+    --primary: 145 70% 45%;
+    --primary-foreground: 145 90% 10%;
+    --secondary: 265 35% 25%;
+    --secondary-foreground: 265 10% 90%;
+    --muted: 265 35% 25%;
+    --muted-foreground: 265 10% 60%;
     --accent: 145 70% 45%;
-    --accent-foreground: 240 10% 10%;
+    --accent-foreground: 145 90% 10%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 20%;
-    --input: 240 3.7% 15.9%;
+    --border: 265 35% 25%;
+    --input: 265 35% 22%;
     --ring: 145 70% 45%;
   }
 }
