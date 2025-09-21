@@ -13,11 +13,10 @@ type InteractiveShelfProps = {
 };
 
 export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = false }: InteractiveShelfProps) {
-
-  // The component now always receives all entries.
-  // The logic to lock/style drafts is handled in ShelfItem and the page's onOpenDetail handler.
+  // Logic to show drafts is now handled in the page and the ShelfItem component.
+  // The `showDrafts` prop determines if draft items are interactive.
   const allEntries = entries;
-
+  
   if (type === 'music' || type === 'blog') {
     return (
       <div className="absolute top-0 left-0 h-full w-full">
@@ -91,7 +90,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
               }}
               variants={itemVariants}
               whileHover={{ scale: 1.1, zIndex: 10, y: -10, transition: { type: 'spring', stiffness: 400, damping: 10 } }}
-              className="h-28" // Added fixed height to prevent collapse
+              className="h-28"
             >
               <ShelfItem
                 entry={item}
