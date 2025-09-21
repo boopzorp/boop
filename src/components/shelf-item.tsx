@@ -114,7 +114,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail, showDrafts = false 
     return (
         <div
             className={cn(
-              "group relative flex-shrink-0 flex flex-col items-center gap-2 w-24",
+              "group relative flex-shrink-0 flex flex-col items-center gap-2 w-24 h-28", // Give a fixed height
               isLocked ? "cursor-not-allowed" : "cursor-pointer"
             )}
             onClick={handleCoverClick}

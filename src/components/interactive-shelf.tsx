@@ -4,6 +4,7 @@
 import { motion } from 'framer-motion';
 import type { Entry, EntryType } from "@/types";
 import { ShelfItem } from "./shelf-item";
+import { useMemo } from 'react';
 
 type InteractiveShelfProps = {
   entries: Entry[];
@@ -11,6 +12,81 @@ type InteractiveShelfProps = {
   onOpenDetail: (entry: Entry) => void;
   showDrafts?: boolean;
 };
+
+const DriftingGrid = ({ entries, onOpenDetail, showDrafts }: Omit<InteractiveShelfProps, 'type'>) => {
+  const allEntries = showDrafts ? entries : entries.filter(e => e.status === 'published');
+
+  const variants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = (index: number) => ({
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 10,
+      }
+    },
+  });
+
+  const animationProps = useMemo(() => (index: number) => ({
+    animate: {
+      y: [`${Math.sin(index * 0.5) * 10}px`, `${Math.sin(index * 0.5 + Math.PI) * 10}px`],
+      x: [`${Math.cos(index * 0.5) * 10}px`, `${Math.cos(index * 0.5 + Math.PI) * 10}px`],
+    },
+    transition: {
+      duration: Math.random() * 5 + 5, // Random duration between 5 and 10 seconds
+      repeat: Infinity,
+      repeatType: "reverse" as const,
+      ease: "easeInOut" as const,
+      delay: Math.random() * 2,
+    },
+  }), []);
+
+  return (
+    <motion.div 
+      className="absolute inset-0 flex items-center justify-center p-8"
+      variants={variants}
+      initial="hidden"
+      animate="visible"
+    >
+      <div className="w-full h-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8">
+        {allEntries.map((item, index) => (
+          <motion.div
+            key={item.id}
+            variants={itemVariants(index)}
+            {...animationProps(index)}
+            onClick={(e) => {
+                e.stopPropagation();
+                if (item.status === 'draft' && !showDrafts) return;
+                onOpenDetail(item);
+            }}
+            whileHover={{ scale: 1.1, zIndex: 10, y: -10, transition: { type: 'spring', stiffness: 400, damping: 10 } }}
+            className="flex items-center justify-center"
+          >
+            <ShelfItem
+              entry={item}
+              isSelected={false}
+              onOpenDetail={onOpenDetail}
+              showDrafts={showDrafts}
+            />
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
 
 export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = false }: InteractiveShelfProps) {
   const allEntries = showDrafts ? entries : entries.filter(e => e.status === 'published');
@@ -56,34 +132,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
   }
   
   if (type === 'apps') {
-    return (
-      <div className="absolute inset-x-0 bottom-0 h-48 flex items-end justify-center">
-        <div className="w-full max-w-7xl overflow-x-auto px-4 pb-4">
-            <motion.div 
-              className="flex items-end justify-center gap-6"
-            >
-              {allEntries.map((item) => (
-                <motion.div
-                  key={item.id}
-                  onClick={(e) => {
-                      e.stopPropagation();
-                      if (item.status === 'draft' && !showDrafts) return;
-                      onOpenDetail(item);
-                  }}
-                  whileHover={{ scale: 1.1, zIndex: 10, y: -10, transition: { type: 'spring', stiffness: 400, damping: 10 } }}
-                >
-                  <ShelfItem
-                    entry={item}
-                    isSelected={false}
-                    onOpenDetail={onOpenDetail}
-                    showDrafts={showDrafts}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
-        </div>
-      </div>
-    );
+    return <DriftingGrid entries={entries} onOpenDetail={onOpenDetail} showDrafts={showDrafts} />;
   }
   
   return (
