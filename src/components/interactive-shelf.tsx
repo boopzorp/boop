@@ -13,9 +13,7 @@ type InteractiveShelfProps = {
 };
 
 export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = false }: InteractiveShelfProps) {
-  // Logic to show drafts is now handled in the page and the ShelfItem component.
-  // The `showDrafts` prop determines if draft items are interactive.
-  const allEntries = entries;
+  const allEntries = showDrafts ? entries : entries.filter(e => e.status === 'published');
   
   if (type === 'music' || type === 'blog') {
     return (
@@ -36,6 +34,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
                   key={item.id}
                    onClick={(e) => {
                     e.stopPropagation();
+                    if (item.status === 'draft' && !showDrafts) return;
                     onOpenDetail(item);
                   }}
                   whileHover={{ y: -15 }}
@@ -57,50 +56,32 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
   }
   
   if (type === 'apps') {
-    const containerVariants = {
-      hidden: { opacity: 0 },
-      show: {
-        opacity: 1,
-        transition: {
-          staggerChildren: 0.1,
-          delayChildren: 0.2,
-        },
-      },
-    };
-
-    const itemVariants = {
-      hidden: { opacity: 0, y: 20 },
-      show: { opacity: 1, y: 0 },
-    };
-    
     return (
-      <div className="absolute inset-0 h-full w-full p-4 md:p-8 flex items-end justify-center">
-        <motion.div 
-          className="w-full h-auto flex items-end justify-center gap-4 flex-wrap"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
-          {allEntries.map((item) => (
-            <motion.div
-              key={item.id}
-              onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenDetail(item);
-              }}
-              variants={itemVariants}
-              whileHover={{ scale: 1.1, zIndex: 10, y: -10, transition: { type: 'spring', stiffness: 400, damping: 10 } }}
-              className="h-28"
+      <div className="absolute inset-x-0 bottom-0 h-48 flex items-end justify-center">
+        <div className="w-full max-w-7xl overflow-x-auto px-4 pb-4">
+            <motion.div 
+              className="flex items-end justify-center gap-6"
             >
-              <ShelfItem
-                entry={item}
-                isSelected={false}
-                onOpenDetail={onOpenDetail}
-                showDrafts={showDrafts}
-              />
+              {allEntries.map((item) => (
+                <motion.div
+                  key={item.id}
+                  onClick={(e) => {
+                      e.stopPropagation();
+                      if (item.status === 'draft' && !showDrafts) return;
+                      onOpenDetail(item);
+                  }}
+                  whileHover={{ scale: 1.1, zIndex: 10, y: -10, transition: { type: 'spring', stiffness: 400, damping: 10 } }}
+                >
+                  <ShelfItem
+                    entry={item}
+                    isSelected={false}
+                    onOpenDetail={onOpenDetail}
+                    showDrafts={showDrafts}
+                  />
+                </motion.div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -128,6 +109,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
                       transition={{ type: 'spring', stiffness: 400, damping: 40 }}
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (item.status === 'draft' && !showDrafts) return;
                         onOpenDetail(item);
                       }}
                     >

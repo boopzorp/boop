@@ -93,29 +93,28 @@ export function ShelfItem({ entry, isSelected, onOpenDetail, showDrafts = false 
   const { title, type, status } = entry;
   const styles = typeStyles[type];
   
+  const isDraft = status === 'draft';
+  const isLocked = !showDrafts && isDraft;
+
   const handleCoverClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // In public view (showDrafts=false), don't open drafts.
-    if (!showDrafts && isDraft) {
+    if (isLocked) {
       return;
     }
     onOpenDetail(entry);
   };
   
   const showCover = isSelected || type === 'music' || type === 'blog' || type === 'apps';
-  const isDraft = status === 'draft';
 
   const renderDraftBadge = () => isDraft && (
     <Badge variant="secondary" className="absolute top-2 right-2 z-20">Draft</Badge>
   );
   
-  const isLocked = !showDrafts && isDraft;
-
   if (type === 'apps') {
     return (
         <div
             className={cn(
-              "group relative flex-shrink-0 flex flex-col items-center gap-2 w-full",
+              "group relative flex-shrink-0 flex flex-col items-center gap-2 w-24",
               isLocked ? "cursor-not-allowed" : "cursor-pointer"
             )}
             onClick={handleCoverClick}
