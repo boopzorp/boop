@@ -48,6 +48,28 @@
     --input: 240 3.7% 15.9%;
     --ring: 262.1 83.3% 57.8%;
   }
+
+  .theme-eva {
+    --background: 240 10% 10%;
+    --foreground: 145 10% 90%;
+    --card: 240 10% 12%;
+    --card-foreground: 145 10% 90%;
+    --popover: 240 10% 10%;
+    --popover-foreground: 145 10% 90%;
+    --primary: 265 80% 55%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 145 70% 45%;
+    --secondary-foreground: 240 10% 10%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 145 70% 45%;
+    --accent-foreground: 240 10% 10%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 20%;
+    --input: 240 3.7% 15.9%;
+    --ring: 145 70% 45%;
+  }
 }
 
 @layer base {
