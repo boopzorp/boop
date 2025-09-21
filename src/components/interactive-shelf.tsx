@@ -1,7 +1,7 @@
 
 "use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import type { Entry, EntryType } from "@/types";
 import { ShelfItem } from "./shelf-item";
 
@@ -13,7 +13,10 @@ type InteractiveShelfProps = {
 };
 
 export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = false }: InteractiveShelfProps) {
-  const filteredEntries = showDrafts ? entries : entries.filter(e => e.status === 'published');
+
+  // The component now always receives all entries.
+  // The logic to lock/style drafts is handled in ShelfItem and the page's onOpenDetail handler.
+  const allEntries = entries;
 
   if (type === 'music' || type === 'blog') {
     return (
@@ -29,7 +32,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
               className="flex items-end gap-4"
               style={{ height: '350px' }}
             >
-              {filteredEntries.map((item) => (
+              {allEntries.map((item) => (
                 <motion.div
                   key={item.id}
                    onClick={(e) => {
@@ -43,6 +46,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
                     entry={item}
                     isSelected={false}
                     onOpenDetail={onOpenDetail}
+                    showDrafts={showDrafts}
                   />
                 </motion.div>
               ))}
@@ -52,7 +56,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
       </div>
     );
   }
-
+  
   if (type === 'apps') {
     const containerVariants = {
       hidden: { opacity: 0 },
@@ -69,7 +73,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
       hidden: { opacity: 0, y: 20 },
       show: { opacity: 1, y: 0 },
     };
-
+    
     return (
       <div className="absolute inset-0 h-full w-full p-4 md:p-8 flex items-end justify-center">
         <motion.div 
@@ -78,7 +82,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
           initial="hidden"
           animate="show"
         >
-          {filteredEntries.map((item) => (
+          {allEntries.map((item) => (
             <motion.div
               key={item.id}
               onClick={(e) => {
@@ -93,6 +97,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
                 entry={item}
                 isSelected={false}
                 onOpenDetail={onOpenDetail}
+                showDrafts={showDrafts}
               />
             </motion.div>
           ))}
@@ -115,7 +120,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
                 className="relative flex items-end gap-4"
                 style={{ height: '350px' }}
               >
-                {filteredEntries.map((item) => {
+                {allEntries.map((item) => {
                   return (
                     <motion.div
                       key={item.id}
@@ -131,6 +136,7 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
                         entry={item}
                         isSelected={false}
                         onOpenDetail={onOpenDetail}
+                        showDrafts={showDrafts}
                       />
                     </motion.div>
                   );

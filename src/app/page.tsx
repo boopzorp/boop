@@ -39,6 +39,8 @@ export default function Home() {
   };
 
   const handleOpenDetail = (entry: Entry) => {
+    // Prevent opening detail view for drafts on the public page
+    if (entry.status === 'draft') return;
     setSelectedEntry(entry);
     setDetailViewOpen(true);
   };
@@ -129,6 +131,7 @@ export default function Home() {
                                     entries={entries.filter(e => e.tabId === activeTabId)} 
                                     type={activeTab.type} 
                                     onOpenDetail={handleOpenDetail} 
+                                    showDrafts={true}
                                 />
                             </div>
                          </div>

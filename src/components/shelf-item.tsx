@@ -11,6 +11,7 @@ type ShelfItemProps = {
   entry: Entry;
   isSelected: boolean;
   onOpenDetail: (entry: Entry) => void;
+  showDrafts?: boolean;
 };
 
 const typeStyles: Record<EntryType, {
@@ -88,12 +89,16 @@ const typeStyles: Record<EntryType, {
 }
 
 
-export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
+export function ShelfItem({ entry, isSelected, onOpenDetail, showDrafts = false }: ShelfItemProps) {
   const { title, type, status } = entry;
   const styles = typeStyles[type];
   
   const handleCoverClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    // In public view (showDrafts=false), don't open drafts.
+    if (!showDrafts && isDraft) {
+      return;
+    }
     onOpenDetail(entry);
   };
   
@@ -103,14 +108,22 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   const renderDraftBadge = () => isDraft && (
     <Badge variant="secondary" className="absolute top-2 right-2 z-20">Draft</Badge>
   );
+  
+  const isLocked = !showDrafts && isDraft;
 
   if (type === 'apps') {
     return (
         <div
-            className="group relative flex-shrink-0 cursor-pointer flex flex-col items-center gap-2 w-full"
+            className={cn(
+              "group relative flex-shrink-0 flex flex-col items-center gap-2 w-full",
+              isLocked ? "cursor-not-allowed" : "cursor-pointer"
+            )}
             onClick={handleCoverClick}
         >
-            <div className="w-full relative drop-shadow-lg transition-transform duration-200 group-hover:drop-shadow-xl aspect-square">
+            <div className={cn(
+              "w-full relative drop-shadow-lg transition-transform duration-200 group-hover:drop-shadow-xl aspect-square",
+              { "grayscale": isLocked }
+            )}>
                 {renderDraftBadge()}
                 <div
                     className="absolute inset-0 bg-secondary rounded-[22.5%]"
@@ -132,7 +145,10 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   if (type === 'blog') {
     return (
         <motion.div
-            className="group relative flex-shrink-0 cursor-pointer overflow-hidden rounded-lg shadow-xl"
+            className={cn(
+                "group relative flex-shrink-0 overflow-hidden rounded-lg shadow-xl",
+                isLocked ? "cursor-not-allowed" : "cursor-pointer"
+            )}
             style={{ 
                 width: `${styles.coverWidth}px`, 
                 height: `${styles.itemHeight}px`,
@@ -146,7 +162,10 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 alt={`Cover for ${title}`}
                 width={styles.coverWidth}
                 height={styles.itemHeight}
-                className="absolute inset-0 w-full h-full object-cover transition-all duration-300 filter blur-sm group-hover:blur-none group-hover:scale-110"
+                className={cn(
+                    "absolute inset-0 w-full h-full object-cover transition-all duration-300 filter blur-sm group-hover:blur-none group-hover:scale-110",
+                    { "grayscale": isLocked }
+                )}
                 data-ai-hint={`${type} cover`}
             />
             <div className="absolute inset-0 bg-black/50" />
@@ -160,7 +179,10 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   if (type === 'music') {
     return (
         <motion.div
-            className="group relative flex-shrink-0 cursor-pointer"
+            className={cn(
+                "group relative flex-shrink-0",
+                 isLocked ? "cursor-not-allowed" : "cursor-pointer"
+            )}
             style={{ 
                 width: `${styles.coverWidth}px`, 
                 height: `${styles.itemHeight}px`
@@ -172,6 +194,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             <div 
                 className={cn(
                     "relative w-full h-full rounded-md shadow-2xl transition-transform duration-300 ease-in-out group-hover:scale-105",
+                    { "grayscale": isLocked }
                 )}
             >
                 {renderDraftBadge()}
@@ -200,7 +223,10 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
 
   return (
     <motion.div
-      className="group relative flex-shrink-0 cursor-pointer"
+      className={cn(
+        "group relative flex-shrink-0",
+        isLocked ? "cursor-not-allowed" : "cursor-pointer"
+      )}
       style={{ 
         width: showCover ? `${styles.coverWidth}px` : `${styles.spineWidth}px`, 
         height: `${styles.itemHeight}px`
@@ -225,7 +251,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
               width={styles.coverWidth}
               height={styles.itemHeight}
               className={cn("rounded-md object-cover shadow-2xl w-full h-full", {
-                'border-2 border-white/20': type === 'movie' || type === 'music' || type === 'anime' || type === 'manga'
+                'border-2 border-white/20': type === 'movie' || type === 'music' || type === 'anime' || type === 'manga',
+                "grayscale": isLocked
               })}
               data-ai-hint={`${type} cover`}
             />
@@ -238,7 +265,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
                 exit={{ opacity: 0, transition: { duration: 0.05 } }}
                 className={cn(
                     "absolute inset-0 overflow-hidden",
-                    styles.spineShadow
+                    styles.spineShadow,
+                    { "grayscale": isLocked }
                 )}
             >
                 {renderDraftBadge()}
@@ -275,7 +303,8 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
             className={cn(
                 "absolute inset-0 flex items-center p-1 overflow-hidden", 
                 styles.spineBg, 
-                styles.spineShadow
+                styles.spineShadow,
+                { "grayscale": isLocked }
             )}
           >
             {renderDraftBadge()}
