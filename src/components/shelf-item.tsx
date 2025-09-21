@@ -107,13 +107,10 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   if (type === 'apps') {
     return (
         <div
-            className="group relative flex-shrink-0 cursor-pointer flex flex-col items-center gap-2"
-            style={{ 
-                width: `${styles.coverWidth}px`, 
-            }}
+            className="group relative flex-shrink-0 cursor-pointer flex flex-col items-center gap-2 w-full"
             onClick={handleCoverClick}
         >
-            <div className="w-full relative drop-shadow-lg transition-transform duration-200 group-hover:drop-shadow-xl">
+            <div className="w-full relative drop-shadow-lg transition-transform duration-200 group-hover:drop-shadow-xl aspect-square">
                 {renderDraftBadge()}
                 <div
                     className="absolute inset-0 bg-secondary rounded-[22.5%]"

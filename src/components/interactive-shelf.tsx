@@ -59,31 +59,44 @@ export function InteractiveShelf({ entries, type, onOpenDetail, showDrafts = fal
 
   if (type === 'apps') {
     return (
-        <div className="absolute inset-0 h-full w-full">
-            <div className="relative w-full h-full flex items-end pb-4">
-                <div className="w-full flex items-center justify-start px-12">
-                    <div className="flex items-center justify-center gap-6">
-                        {filteredEntries.map((item) => (
-                            <motion.div
-                                key={item.id}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onOpenDetail(item);
-                                }}
-                                whileHover={{ y: -15, scale: 1.1 }}
-                                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                            >
-                                <ShelfItem
-                                    entry={item}
-                                    isSelected={false}
-                                    onOpenDetail={onOpenDetail}
-                                />
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div className="absolute inset-0 h-full w-full p-8 md:p-12 overflow-hidden">
+        <motion.div 
+          className="w-full h-full grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-8"
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1
+              }
+            }
+          }}
+          initial="hidden"
+          animate="show"
+        >
+          {filteredEntries.map((item) => (
+            <motion.div
+              key={item.id}
+              onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenDetail(item);
+              }}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                show: { opacity: 1, y: 0 }
+              }}
+              whileHover={{ scale: 1.1, zIndex: 10 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            >
+              <ShelfItem
+                entry={item}
+                isSelected={false}
+                onOpenDetail={onOpenDetail}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
     );
   }
   
