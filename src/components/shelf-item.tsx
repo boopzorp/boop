@@ -101,7 +101,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail }: ShelfItemProps) {
   const isDraft = status === 'draft';
 
   const renderDraftBadge = () => isDraft && (
-    <Badge variant="secondary" className="absolute -top-2 -right-2 z-20">Draft</Badge>
+    <Badge variant="secondary" className="absolute top-2 right-2 z-20">Draft</Badge>
   );
 
   if (type === 'apps') {
