@@ -13,6 +13,7 @@ import { useEntryStore } from '@/store/entries';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas } from '@/components/canvas';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function Home() {
   const { entries, tabs, addTab, colors, setTabColor, fetchAllData, isLoaded } = useEntryStore();
@@ -71,6 +72,7 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <Logo />
         </div>
+        <ThemeToggle />
       </header>
       <main className="flex-1 flex flex-col items-center pt-24 space-y-8 px-4">
 

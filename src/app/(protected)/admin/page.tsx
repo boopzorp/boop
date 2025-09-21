@@ -16,6 +16,7 @@ import { useEntryStore } from '@/store/entries';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas } from '@/components/canvas';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function AdminPage() {
   const { entries, tabs, addTab, colors, setTabColor, fetchAllData, isLoaded, updateTabCanvas } = useEntryStore();
@@ -100,6 +101,7 @@ export default function AdminPage() {
               New Entry
             </Button>
           </Link>
+          <ThemeToggle />
         </div>
       </header>
       <main className="flex-1 flex flex-col items-center pt-24 space-y-8 px-4">
