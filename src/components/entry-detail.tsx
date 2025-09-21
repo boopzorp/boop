@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 
 function renderContent(entry: Entry) {
   // Always render from the 'notes' field which contains the rich HTML content
-  return <div className="prose prose-lg max-w-none prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ol:text-foreground prose-ul:text-foreground prose-li:text-foreground" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
+  return <div className="prose prose-lg max-w-none prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ol:text-foreground prose-ul:text-foreground prose-li:text-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
 }
 
 export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
@@ -99,76 +99,78 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
               className="relative bg-background border w-full max-w-4xl h-full md:h-[90vh] rounded-lg shadow-2xl flex flex-col md:flex-row overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Mobile Layout: Header is fixed, content scrolls */}
-              <div className="flex md:hidden flex-col h-full">
+              {/* Mobile Layout */}
+              <div className="relative h-full md:hidden">
                 <AnimatePresence>
                   {isScrolled && (
-                     <motion.div
-                        key="compact-header"
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.2 }}
-                        className="flex-shrink-0 p-4 border-b bg-background/80 backdrop-blur-sm"
-                      >
-                        <h1 className="font-bold text-lg text-center text-foreground truncate">{entry.title}</h1>
-                      </motion.div>
+                    <motion.div
+                      key="compact-header"
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-0 left-0 right-0 z-20 p-4 border-b bg-background/80 backdrop-blur-sm"
+                    >
+                      <h1 className="font-bold text-lg text-center text-foreground truncate">{entry.title}</h1>
+                    </motion.div>
                   )}
                 </AnimatePresence>
                 
-                <ScrollArea className="flex-grow" viewportRef={scrollRef} onScroll={handleScroll}>
-                    <div className="pb-8">
-                      <motion.div 
-                        className="px-6 pt-6"
-                        animate={{ 
-                            height: isScrolled ? 0 : 'auto', 
-                            opacity: isScrolled ? 0 : 1, 
-                            marginBottom: isScrolled ? '0rem' : '1.5rem',
-                            overflow: 'hidden'
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                         <div className="w-full max-w-[200px] mx-auto">
-                              <Image
-                                src={entry.imageUrl}
-                                alt={`Cover for ${entry.title}`}
-                                width={imageDimensions.width}
-                                height={imageDimensions.height}
-                                className="rounded-md object-cover shadow-lg w-full h-auto"
-                                data-ai-hint={`${entry.type} cover`}
-                              />
-                          </div>
-                          {showDelete && (
-                            <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto">
-                              <Link href={`/editor/${entry.id}`} className="w-full">
-                                <Button variant="outline" className="w-full">
-                                  <Pencil className="mr-2 h-4 w-4" />
-                                  Edit
-                                </Button>
-                              </Link>
-                              <Button 
-                                  variant="destructive" 
-                                  size="icon"
-                                  onClick={() => setDeleteAlertOpen(true)}
-                                >
-                                <Trash2 className="h-4 w-4" />
+                <ScrollArea className="h-full" viewportRef={scrollRef} onScroll={handleScroll}>
+                  <div className="pt-8 pb-16">
+                    <motion.div 
+                      className="px-6 pb-6"
+                      animate={{ 
+                          height: isScrolled ? 0 : 'auto', 
+                          opacity: isScrolled ? 0 : 1,
+                          paddingTop: isScrolled ? 0 : '1.5rem',
+                          paddingBottom: isScrolled ? 0 : '1.5rem',
+                          overflow: 'hidden'
+                      }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    >
+                       <div className="w-full max-w-[200px] mx-auto">
+                            <Image
+                              src={entry.imageUrl}
+                              alt={`Cover for ${entry.title}`}
+                              width={imageDimensions.width}
+                              height={imageDimensions.height}
+                              className="rounded-md object-cover shadow-lg w-full h-auto"
+                              data-ai-hint={`${entry.type} cover`}
+                            />
+                        </div>
+                        {showDelete && (
+                          <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto">
+                            <Link href={`/editor/${entry.id}`} className="w-full">
+                              <Button variant="outline" className="w-full">
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Edit
                               </Button>
-                            </div>
-                          )}
-                          <div className="text-center mt-4">
-                              <h1 className="font-bold text-2xl text-foreground">{entry.title}</h1>
-                              {entry.creator && (
-                                  <h2 className="text-md text-muted-foreground font-normal">{entry.creator}</h2>
-                              )}
-                              <p className="text-sm text-muted-foreground">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
+                            </Link>
+                            <Button 
+                                variant="destructive" 
+                                size="icon"
+                                onClick={() => setDeleteAlertOpen(true)}
+                              >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
-                      </motion.div>
-                      <div className={cn("px-6 pt-6 border-t", {
-                          "border-transparent": !isScrolled
-                      })}>
-                          {renderContent(entry)}
-                      </div>
+                        )}
+                        <div className="text-center mt-4">
+                            <h1 className="font-bold text-2xl text-foreground">{entry.title}</h1>
+                            {entry.creator && (
+                                <h2 className="text-md text-muted-foreground font-normal">{entry.creator}</h2>
+                            )}
+                            <p className="text-sm text-muted-foreground">{format(entry.addedAt, 'MMMM d, yyyy')}</p>
+                        </div>
+                    </motion.div>
+
+                    <div className={cn("px-6 pt-6 border-t", {
+                        "border-transparent": !isScrolled
+                    })}>
+                        {renderContent(entry)}
                     </div>
+                  </div>
                 </ScrollArea>
               </div>
 
