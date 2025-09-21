@@ -114,7 +114,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail, showDrafts = false 
     return (
         <div
             className={cn(
-              "group relative flex-shrink-0 flex flex-col items-center gap-2 w-24 h-28", // Give a fixed height
+              "group relative flex-shrink-0 flex flex-col items-center gap-2 w-24 h-32", // Give a fixed height
               isLocked ? "cursor-not-allowed" : "cursor-pointer"
             )}
             onClick={handleCoverClick}
@@ -136,7 +136,7 @@ export function ShelfItem({ entry, isSelected, onOpenDetail, showDrafts = false 
                     data-ai-hint="app icon"
                 />
             </div>
-            <p className="text-xs font-semibold text-center truncate w-full">{title}</p>
+            <p className="text-xs font-semibold text-center w-full">{title}</p>
         </div>
     )
   }
