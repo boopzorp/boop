@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 
 function renderContent(entry: Entry) {
   // Always render from the 'notes' field which contains the rich HTML content
-  return <div className="prose prose-lg max-w-none prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ol:text-foreground prose-ul:text-foreground prose-li:text-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
+  return <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ol:text-foreground prose-ul:text-foreground prose-li:text-foreground dark:prose-invert" dangerouslySetInnerHTML={{ __html: entry.notes }} />;
 }
 
 export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
@@ -100,16 +100,16 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
             >
               {/* Mobile Layout */}
               <div className="relative h-full md:hidden">
-                 <AnimatePresence>
+                <AnimatePresence>
                     {!isScrolled && (
                        <motion.div
                           key="hero-header"
                           initial={{ opacity: 0, y: -20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
-                          className="absolute top-0 left-0 right-0 z-20 p-6 pt-8"
+                          className="absolute top-0 left-0 right-0 z-20 p-6 pt-8 bg-gradient-to-b from-background via-background/90 to-transparent pointer-events-none"
                        >
-                         <div className="w-full max-w-[200px] mx-auto">
+                         <div className="w-full max-w-[200px] mx-auto pointer-events-auto">
                               <Image
                                 src={entry.imageUrl}
                                 alt={`Cover for ${entry.title}`}
@@ -120,7 +120,7 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
                               />
                           </div>
                           {showDelete && (
-                            <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto">
+                            <div className="flex items-center gap-2 mt-4 w-full max-w-[200px] mx-auto pointer-events-auto">
                               <Link href={`/editor/${entry.id}`} className="w-full">
                                 <Button variant="outline" className="w-full">
                                   <Pencil className="mr-2 h-4 w-4" />
