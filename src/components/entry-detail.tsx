@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, Pencil } from 'lucide-react';
-import type { Entry } from "@/types";
+import type { Entry, EntryType } from "@/types";
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { useEntryStore } from '@/store/entries';
@@ -53,12 +53,31 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
         case 'tv':
             return { width: 400, height: 560 };
         case 'blog':
+             return { width: 600, height: 400 };
         case 'book':
         case 'manga':
         default:
             return { width: 400, height: 600 };
     }
   }
+
+  const getMobileHeaderPadding = (entryType: EntryType | undefined) => {
+    switch (entryType) {
+      case 'book':
+      case 'manga':
+        return 'pt-[520px]'; // Taller portrait images
+      case 'movie':
+      case 'tv':
+      case 'anime':
+        return 'pt-[500px]'; // Standard portrait
+       case 'music':
+        return 'pt-[450px]'; // Square images
+      case 'blog':
+        return 'pt-[380px]'; // Landscape images
+      default:
+        return 'pt-[520px]';
+    }
+  };
 
   const handleDeleteEntry = () => {
     if (entry) {
@@ -100,13 +119,18 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
             >
               {/* Mobile Layout */}
               <div className="relative h-full md:hidden">
+                <ScrollArea className="h-full" viewportRef={scrollRef} onScroll={handleScroll}>
+                    <div className={`${getMobileHeaderPadding(entry.type)} px-6 pb-16`}>
+                        {renderContent(entry)}
+                    </div>
+                </ScrollArea>
                 <AnimatePresence>
                     {!isScrolled && (
                        <motion.div
                           key="hero-header"
-                          initial={{ opacity: 0, y: -20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0, transition: { duration: 0.2 } }}
                           className="absolute top-0 left-0 right-0 z-20 p-6 pt-8 bg-gradient-to-b from-background via-background/90 to-transparent pointer-events-none"
                        >
                          <div className="w-full max-w-[200px] mx-auto pointer-events-auto">
@@ -159,13 +183,6 @@ export function EntryDetail({ entry, isOpen, onClose, showDelete = false }: {
                       </motion.div>
                     )}
                 </AnimatePresence>
-                
-                <ScrollArea className="h-full" viewportRef={scrollRef} onScroll={handleScroll}>
-                    {/* Use padding to create space for the initial hero header */}
-                    <div className="pt-[450px] px-6 pb-16">
-                        {renderContent(entry)}
-                    </div>
-                </ScrollArea>
               </div>
 
               {/* Desktop Layout */}
